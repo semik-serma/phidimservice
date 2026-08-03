@@ -1,0 +1,165 @@
+import { Phone, Mail, MapPin, ShieldCheck, Facebook, Youtube, Linkedin } from "lucide-react";
+export const Footer = ({
+  onSelectCategory,
+  onOpenAbout,
+  onOpenContact
+}) => {
+  return <footer className="bg-slate-900 text-gray-300 pt-12 pb-6 border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
+          
+          {
+    /* Col 1: About */
+  }
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-green-500/80 shadow-md bg-slate-950 p-0.5 shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="Phidim Service Logo"
+                  className="w-full h-full object-contain rounded-full"
+                />
+              </div>
+              <span className="text-lg font-black text-white tracking-tight">PHIDIM SERVICE</span>
+            </div>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Panchthar&apos;s primary service & technology destination for technical doorstep repairs, house wiring, Dahua CCTV systems, DishHome DTH, and local technical solutions.
+            </p>
+            <div className="flex items-center gap-2 text-xs font-semibold text-green-400">
+              <ShieldCheck className="w-4 h-4" />
+              <span>100% Certified Field Technicians</span>
+            </div>
+            
+            <div className="pt-2 flex items-center gap-2">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Connect:</span>
+              <a
+    href="https://www.facebook.com/dhanraj.serma.14"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-7 h-7 rounded-full bg-[#1877f2] text-white flex items-center justify-center hover:scale-110 transition-transform"
+    title="Facebook: Dhanraj Serma"
+  >
+                <Facebook className="w-3.5 h-3.5 fill-current" />
+              </a>
+              <a
+    href="https://www.youtube.com/@semikserma"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-7 h-7 rounded-full bg-[#ff0000] text-white flex items-center justify-center hover:scale-110 transition-transform"
+    title="YouTube: @semikserma"
+  >
+                <Youtube className="w-3.5 h-3.5 fill-current" />
+              </a>
+              <a
+    href="https://www.linkedin.com/in/semik-serma-8263a3391/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-7 h-7 rounded-full bg-[#0a66c2] text-white flex items-center justify-center hover:scale-110 transition-transform"
+    title="LinkedIn: Semik Serma"
+  >
+                <Linkedin className="w-3.5 h-3.5 fill-current" />
+              </a>
+            </div>
+          </div>
+
+          {
+    /* Col 2: Quick Links */
+  }
+          <div className="space-y-3">
+            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Quick Navigation</h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button onClick={() => onSelectCategory("ALL")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Our Technical Services
+                </button>
+              </li>
+              <li>
+                <button onClick={onOpenAbout} className="hover:text-green-400 transition-colors cursor-pointer">
+                  About Phidim Service
+                </button>
+              </li>
+              <li>
+                <button onClick={onOpenContact} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Contact & Support
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectCategory("DishHome DTH")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  DishHome DTH Packages
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {
+    /* Col 3: Categories */
+  }
+          <div className="space-y-3">
+            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Top Categories</h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button onClick={() => onSelectCategory("CCTV & Security Systems")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  CCTV & HD Security Cameras
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectCategory("Smart Home Cameras")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Uniarch WiFi Cameras
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectCategory("Networking & Routers")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Fiber ONU Routers
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectCategory("Consumer Electronics")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Consumer Electronics
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {
+    /* Col 4: Contact Info */
+  }
+          <div className="space-y-3">
+            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Phidim Store Location</h4>
+            <div className="space-y-2 text-xs text-gray-400">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                <span>Main Road, Ward No. 1, Phidim, Panchthar, Koshi Province, Nepal</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-green-500 shrink-0" />
+                <span>+977 986-2772457</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue-400 shrink-0" />
+                <span>info@phidimservice.com.np</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {
+    /* Payment Gateways & Bottom Bar */
+  }
+        <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+          <div>
+            © {(/* @__PURE__ */ new Date()).getFullYear()} <span className="text-white font-bold">Phidim Service</span>. All Rights Reserved. Panchthar, Nepal.
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase font-bold text-gray-400">Accepted Payments:</span>
+            <span className="bg-green-600 text-white px-2 py-0.5 rounded-xs font-black text-[10px]">eSewa</span>
+            <span className="bg-purple-600 text-white px-2 py-0.5 rounded-xs font-black text-[10px]">Khalti</span>
+            <span className="bg-amber-600 text-white px-2 py-0.5 rounded-xs font-black text-[10px]">COD</span>
+          </div>
+        </div>
+
+      </div>
+    </footer>;
+};

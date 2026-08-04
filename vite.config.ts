@@ -5,9 +5,9 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    plugins: [react({ include: /\.(jsx|js|tsx|ts)$/ }), tailwindcss()],
+    plugins: [...react({include: /\.(jsx|js|tsx|ts)$/}), tailwindcss()],
     esbuild: {
-      loader: 'jsx',
+      loader: 'jsx' as const,
       include: /src[\\/].*\.[jt]sx?$/,
       exclude: [],
     },

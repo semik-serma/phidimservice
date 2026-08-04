@@ -12,7 +12,9 @@ import {
   Clock,
   Users,
   Cable,
-  Award
+  Award,
+  Globe,
+  ExternalLink
 } from "lucide-react";
 export const HomePageOverview = ({ onNavigateTab, onOpenWhatsApp }) => {
   return <div className="space-y-12 pb-12">
@@ -309,6 +311,17 @@ export const HomePageOverview = ({ onNavigateTab, onOpenWhatsApp }) => {
             <p className="text-[11px] text-gray-600 italic">
               &quot;Delivering certified technical excellence and digital convenience to Panchthar.&quot;
             </p>
+            <a
+              href="https://portfolio.phidimservice.com.np"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-cyan-300 font-extrabold px-3 py-1.5 rounded-xl text-xs transition-all border border-slate-700 shadow-xs cursor-pointer"
+              title="Visit Semik Serma's Portfolio Website"
+            >
+              <Globe className="w-3.5 h-3.5 text-cyan-400" />
+              <span>portfolio.phidimservice.com.np</span>
+              <ExternalLink className="w-3 h-3 text-cyan-400" />
+            </a>
           </div>
 
         </div>

@@ -60,7 +60,7 @@ export const HeroCarousel = ({ onShopNow, onFiberSelect }) => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6e3);
+    }, 10000);
     return () => clearInterval(timer);
   }, [slides.length]);
 

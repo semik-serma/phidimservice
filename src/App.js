@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -214,6 +216,22 @@ export default function App() {
           }}
           likeCount={likeCount}
           onIncrementLikes={handleIncrementLikes}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedCategory={selectedCategory}
+          cartCount={cartCount}
+          cartTotal={cartTotal}
+          wishlistCount={wishlistCount}
+          visitorCount={visitorCount}
+          onOpenCart={() => setIsCartOpen(true)}
+          onOpenWishlist={() => setIsWishlistOpen(true)}
+          onOpenAuth={() => {
+            setActiveTab("LOGIN / REGISTER");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onSearchSubmit={() => {
+            if (activeTab !== "ALL SERVICES") setActiveTab("ALL SERVICES");
+          }}
         />
       </header>
 

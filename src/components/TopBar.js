@@ -27,7 +27,7 @@ export const TopBar = () => {
   useEffect(() => {
     const adTimer = setInterval(() => {
       setAdIndex((prev) => (prev + 1) % adTexts.length);
-    }, 2000);
+    }, 10000);
     return () => clearInterval(adTimer);
   }, [adTexts.length]);
 

@@ -1,4 +1,5 @@
-import { Search, Heart, ShoppingBag, User, Eye, Facebook, Youtube, Linkedin } from "lucide-react";
+import Link from "next/link";
+import { Search, Heart, ShoppingBag, User, Eye, Facebook, Youtube, Linkedin, LayoutDashboard } from "lucide-react";
 import { CATEGORIES } from "../data/products";
 import { formatCount } from "../utils/formatCount";
 export const Header = ({
@@ -20,7 +21,7 @@ export const Header = ({
       onSearchSubmit();
     }
   };
-  return <header className="bg-white py-3 px-4 md:px-8 border-b border-gray-200">
+  return <header className="hidden md:block bg-white py-3 px-4 md:px-8 border-b border-gray-200">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         
         {
@@ -84,16 +85,25 @@ export const Header = ({
   }
         <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto justify-between md:justify-end">
           
+          <a
+            href="/dashboard"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-300 text-xs font-bold transition-all shadow-xs"
+            title="Open Admin Dashboard"
+          >
+            <LayoutDashboard className="w-4 h-4 text-emerald-600" />
+            <span>DASHBOARD</span>
+          </a>
+
           {
     /* Login / Register */
   }
-          <button
-    onClick={onOpenAuth}
-    className="flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-green-600 transition-colors cursor-pointer"
-  >
+          <Link
+            href="/login"
+            className="flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-green-600 transition-colors cursor-pointer"
+          >
             <User className="w-4 h-4 text-gray-500" />
             <span>LOGIN / REGISTER</span>
-          </button>
+          </Link>
 
           {
     /* Wishlist */

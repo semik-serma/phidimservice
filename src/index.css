@@ -2,23 +2,23 @@
 
 @keyframes slideRight {
   0% {
-    transform: translateX(-80%);
+    transform: translateX(-50%);
     opacity: 0;
   }
-  20% {
+  8% {
     transform: translateX(0%);
     opacity: 1;
   }
-  80% {
+  92% {
     transform: translateX(0%);
     opacity: 1;
   }
   100% {
-    transform: translateX(80%);
+    transform: translateX(50%);
     opacity: 0;
   }
 }
 
 .animate-slide-right {
-  animation: slideRight 2s ease-in-out infinite;
+  animation: slideRight 10s ease-in-out infinite;
 }

@@ -440,10 +440,21 @@ export const AboutModal = ({ isOpen, onClose }) => {
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider block">
                   TECHNICAL SKILLS & STACK
                 </span>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {devSkills.map((skill, i) => <span key={i} className="bg-white/10 hover:bg-white/20 text-green-300 font-bold px-3 py-1 rounded-lg text-xs border border-white/10 transition-colors">
                       {skill}
                     </span>)}
+                  <a
+                    href="https://portfolio.phidimservice.com.np"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 font-black px-3 py-1 rounded-lg text-xs shadow-md border border-cyan-200 hover:scale-105 transition-all inline-flex items-center gap-1.5 cursor-pointer tracking-tight"
+                    title="Visit Semik Serma's Portfolio Website"
+                  >
+                    <Globe className="w-3.5 h-3.5 text-slate-950 shrink-0 animate-pulse" />
+                    <span>Portfolio (portfolio.phidimservice.com.np)</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-950 shrink-0" />
+                  </a>
                 </div>
               </div>
 

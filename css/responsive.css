@@ -1,0 +1,190 @@
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .brand-section {
+    flex: 0 0 45%;
+    padding: 32px;
+  }
+
+  .brand-heading {
+    font-size: 40px;
+  }
+
+  .brand-illustration {
+    height: 160px;
+  }
+
+  .login-section {
+    flex: 1;
+    padding: 32px;
+  }
+
+  .login-card {
+    padding: 40px 32px;
+  }
+}
+
+/* Tablet Portrait */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .brand-section {
+    flex: none;
+    padding: 32px 24px 24px;
+    min-height: auto;
+    justify-content: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand-content {
+    max-width: 100%;
+  }
+
+  .brand-heading {
+    font-size: 36px;
+  }
+
+  .brand-description {
+    margin-bottom: 24px;
+  }
+
+  .brand-illustration {
+    height: 140px;
+    margin-bottom: 24px;
+  }
+
+  .floating-card {
+    display: none;
+  }
+
+  .code-snippet {
+    display: none;
+  }
+
+  .login-section {
+    flex: 1;
+    padding: 32px 24px;
+    min-height: 100vh;
+  }
+
+  .login-card {
+    padding: 36px 28px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .login-heading {
+    font-size: 28px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .brand-section {
+    padding: 24px 16px 20px;
+  }
+
+  .brand-heading {
+    font-size: 30px;
+  }
+
+  .brand-description {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .brand-illustration {
+    height: 100px;
+    margin-bottom: 20px;
+  }
+
+  .shape-1 { width: 50px; height: 50px; }
+  .shape-2 { width: 80px; height: 80px; }
+  .shape-3 { width: 30px; height: 30px; }
+  .shape-4 { width: 40px; height: 40px; }
+  .shape-5 { width: 16px; height: 16px; }
+  .shape-6 { width: 12px; height: 12px; }
+  .shape-7 { width: 20px; height: 20px; }
+  .shape-8 { width: 14px; height: 14px; }
+
+  .login-section {
+    padding: 24px 16px;
+  }
+
+  .login-card {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  .login-heading {
+    font-size: 24px;
+  }
+
+  .form-input {
+    height: 52px;
+    font-size: 14px;
+  }
+
+  .btn-primary {
+    height: 52px;
+  }
+
+  .btn-social {
+    height: 44px;
+  }
+
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  #toastContainer {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 360px) {
+  .brand-heading {
+    font-size: 26px;
+  }
+
+  .login-card {
+    padding: 24px 16px;
+  }
+
+  .login-heading {
+    font-size: 22px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .brand-section {
+    padding: 64px 80px;
+  }
+
+  .brand-heading {
+    font-size: 56px;
+  }
+
+  .login-card {
+    padding: 56px 48px;
+  }
+
+  .login-section {
+    padding: 64px 80px;
+  }
+}

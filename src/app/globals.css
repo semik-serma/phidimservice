@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@layer theme, base, components, utilities;
-
 :root {
   --color-primary: #10B981;
   --color-primary-dark: #059669;
@@ -69,6 +67,20 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #10B981;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
 }
 
 @keyframes fadeInUp {

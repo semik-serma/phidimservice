@@ -98,7 +98,7 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 custom-scrollbar">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {USER_NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
 

@@ -206,7 +206,7 @@ export function BottomSection() {
             </span>
           </div>
 
-          <div className="space-y-2 text-[11px] max-h-[220px] overflow-y-auto custom-scrollbar pr-1">
+          <div className="space-y-2 text-[11px] max-h-[220px] overflow-y-auto pr-1">
             {logs.map((log, index) => (
               <div key={index} className="leading-tight">
                 <span className="text-slate-500">[{log.time}]</span>{" "}

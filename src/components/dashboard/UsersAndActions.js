@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
+import { toast } from "@/components/ui/toast";
 import {
   Users,
   Search,
@@ -101,11 +102,11 @@ export function UsersAndActions({
   });
 
   const exportExcel = () => {
-    alert("Exporting Users Data as Excel Spreadsheet (.xlsx)...");
+    toast.info("Exporting Users Data as Excel Spreadsheet (.xlsx)...");
   };
 
   const exportPDF = () => {
-    alert("Generating & Exporting Users Report as PDF Document...");
+    toast.info("Generating & Exporting Users Report as PDF Document...");
   };
 
   return (

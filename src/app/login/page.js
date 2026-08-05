@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ArrowLeft, CheckCircle2, Sparkles } from 'lucide-react';
+import { toast } from '@/components/ui/toast';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ export default function LoginPage() {
     // Simulate login action
     setTimeout(() => {
       setIsLoading(false);
-      alert('Login functionality submitted for demo');
+      toast.info('Login functionality submitted for demo');
     }, 800);
   };
 
@@ -188,7 +189,7 @@ export default function LoginPage() {
                 </label>
                 <a
                   href="#"
-                  onClick={(e) => { e.preventDefault(); alert('Password reset link sent.'); }}
+                  onClick={(e) => { e.preventDefault(); toast.success('Password reset link sent.'); }}
                   className="text-xs font-bold text-[#16A34A] hover:text-[#22C55E] transition-colors"
                 >
                   Forgot Password?
@@ -258,7 +259,7 @@ export default function LoginPage() {
             {/* Google Button */}
             <button
               type="button"
-              onClick={() => alert('Google login integration')}
+              onClick={() => toast.info('Google login integration')}
               className="w-full h-[56px] rounded-[14px] border border-[#E5E7EB] bg-white hover:bg-gray-50/80 text-[#111827] text-sm font-semibold flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 shadow-2xs cursor-pointer"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -285,7 +286,7 @@ export default function LoginPage() {
             {/* GitHub Button */}
             <button
               type="button"
-              onClick={() => alert('GitHub login integration')}
+              onClick={() => toast.info('GitHub login integration')}
               className="w-full h-[56px] rounded-[14px] border border-[#E5E7EB] bg-white hover:bg-gray-50/80 text-[#111827] text-sm font-semibold flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 shadow-2xs cursor-pointer"
             >
               <svg className="w-5 h-5 fill-[#111827]" viewBox="0 0 24 24">

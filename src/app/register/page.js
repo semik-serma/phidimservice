@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ArrowLeft, CheckCircle2, Sparkles } from 'lucide-react';
+import { toast } from '@/components/ui/toast';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -29,18 +30,18 @@ export default function RegisterPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
     if (!formData.agreeTerms) {
-      alert('Please agree to the Terms of Service & Privacy Policy');
+      toast.warning('Please agree to the Terms of Service & Privacy Policy');
       return;
     }
     setIsLoading(true);
     // Simulate registration
     setTimeout(() => {
       setIsLoading(false);
-      alert('Registration successful!');
+      toast.success('Registration successful!');
     }, 800);
   };
 
@@ -348,7 +349,7 @@ export default function RegisterPage() {
             {/* Google Button */}
             <button
               type="button"
-              onClick={() => alert('Google registration integration')}
+              onClick={() => toast.info('Google registration integration')}
               className="w-full h-[56px] rounded-[14px] border border-[#E5E7EB] bg-white hover:bg-gray-50/80 text-[#111827] text-sm font-semibold flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 shadow-2xs cursor-pointer"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -375,7 +376,7 @@ export default function RegisterPage() {
             {/* GitHub Button */}
             <button
               type="button"
-              onClick={() => alert('GitHub registration integration')}
+              onClick={() => toast.info('GitHub registration integration')}
               className="w-full h-[56px] rounded-[14px] border border-[#E5E7EB] bg-white hover:bg-gray-50/80 text-[#111827] text-sm font-semibold flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 shadow-2xs cursor-pointer"
             >
               <svg className="w-5 h-5 fill-[#111827]" viewBox="0 0 24 24">

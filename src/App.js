@@ -29,42 +29,35 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("HOME");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
-  const [cart, setCart] = useState(() => {
+  const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [visitorCount, setVisitorCount] = useState(1285);
+  const [likeCount, setLikeCount] = useState(582);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
     try {
-      const saved = localStorage.getItem("phidim_service_cart");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
+      const savedCart = localStorage.getItem("phidim_service_cart");
+      if (savedCart) setCart(JSON.parse(savedCart));
+
+      const savedWishlist = localStorage.getItem("phidim_service_wishlist");
+      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+
+      const savedVisitor = localStorage.getItem("phidim_service_visitor_count");
+      const initialVisitor = savedVisitor ? parseInt(savedVisitor, 10) : 1284;
+      const nextVisitor = isNaN(initialVisitor) ? 1285 : initialVisitor + 1;
+      localStorage.setItem("phidim_service_visitor_count", nextVisitor.toString());
+      setVisitorCount(nextVisitor);
+
+      const savedLikes = localStorage.getItem("phidim_service_like_count");
+      const initialLikes = savedLikes ? parseInt(savedLikes, 10) : 582;
+      if (!isNaN(initialLikes)) setLikeCount(initialLikes);
+    } catch (e) {
+      console.error("Error reading localStorage:", e);
     }
-  });
-  const [wishlist, setWishlist] = useState(() => {
-    try {
-      const saved = localStorage.getItem("phidim_service_wishlist");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [visitorCount, setVisitorCount] = useState(() => {
-    try {
-      const saved = localStorage.getItem("phidim_service_visitor_count");
-      const initial = saved ? parseInt(saved, 10) : 1284;
-      const next = isNaN(initial) ? 1285 : initial + 1;
-      localStorage.setItem("phidim_service_visitor_count", next.toString());
-      return next;
-    } catch {
-      return 1285;
-    }
-  });
-  const [likeCount, setLikeCount] = useState(() => {
-    try {
-      const saved = localStorage.getItem("phidim_service_like_count");
-      const initial = saved ? parseInt(saved, 10) : 582;
-      return isNaN(initial) ? 582 : initial;
-    } catch {
-      return 582;
-    }
-  });
+    setIsMounted(true);
+  }, []);
+
   const handleIncrementLikes = () => {
     setLikeCount((prev) => {
       const next = prev + 1;
@@ -85,19 +78,21 @@ export default function App() {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   useEffect(() => {
+    if (!isMounted) return;
     try {
       localStorage.setItem("phidim_service_cart", JSON.stringify(cart));
     } catch (e) {
       console.error(e);
     }
-  }, [cart]);
+  }, [cart, isMounted]);
   useEffect(() => {
+    if (!isMounted) return;
     try {
       localStorage.setItem("phidim_service_wishlist", JSON.stringify(wishlist));
     } catch (e) {
       console.error(e);
     }
-  }, [wishlist]);
+  }, [wishlist, isMounted]);
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => {

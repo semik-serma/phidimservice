@@ -20,10 +20,13 @@ import {
   Eye,
   Facebook,
   Youtube,
-  Linkedin
+  Linkedin,
+  LogOut,
+  LayoutDashboard
 } from "lucide-react";
 import { CATEGORIES } from "../data/products";
 import { formatCount } from "../utils/formatCount";
+import { useAuth } from "@/context/AuthContext";
 
 export const Navbar = ({
   activeTab,
@@ -44,6 +47,7 @@ export const Navbar = ({
   onOpenAuth,
   onSearchSubmit
 }) => {
+  const { user, isAuthenticated, logout } = useAuth();
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
@@ -203,16 +207,48 @@ export const Navbar = ({
             <span>{formatCount(likeCount)}</span>
           </button>
 
-          {/* Technician Login / Portal */}
-          <button
-            onClick={onOpenTechnicianAuth}
-            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors cursor-pointer tracking-tight"
-            title="Technician Login or Register"
-          >
-            <Wrench className="w-3.5 h-3.5 text-green-400" />
-            <span className="hidden sm:inline">Continue as technician</span>
-            <span className="sm:hidden">Tech</span>
-          </button>
+          {/* Authentication Actions */}
+          {isAuthenticated && user ? (
+            <div className="flex items-center gap-2">
+              <Link
+                href={user.dashboardPath || "/user-dashboard"}
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
+                title="Go to Dashboard"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">My Dashboard ({user.role})</span>
+                <span className="sm:hidden">Dashboard</span>
+              </Link>
+
+              <button
+                onClick={logout}
+                className="flex items-center gap-1 p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-rose-200"
+                title="Logout"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">Logout</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
+              >
+                <User className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Sign In</span>
+              </Link>
+
+              <Link
+                href="/technician-dashboard"
+                className="hidden sm:flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
+                title="Open Technician Dashboard"
+              >
+                <Wrench className="w-3.5 h-3.5 text-white" />
+                <span>Tech Portal</span>
+              </Link>
+            </div>
+          )}
         </div>
 
       </div>

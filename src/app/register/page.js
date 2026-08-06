@@ -2,16 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ArrowLeft, CheckCircle2, Sparkles } from 'lucide-react';
+import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ArrowLeft, CheckCircle2, Sparkles, Wrench } from 'lucide-react';
 import { toast } from '@/components/ui/toast';
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function RegisterPage() {
+  const { register, isLoading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phoneNumber: '',
     password: '',
     confirmPassword: '',
+    role: 'USER',
     agreeTerms: false,
   });
 
@@ -27,7 +31,7 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
@@ -37,12 +41,18 @@ export default function RegisterPage() {
       toast.warning('Please agree to the Terms of Service & Privacy Policy');
       return;
     }
-    setIsLoading(true);
-    // Simulate registration
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success('Registration successful!');
-    }, 800);
+    try {
+      const account = await register({
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phoneNumber,
+        password: formData.password,
+        role: formData.role,
+      });
+      toast.success(`Account created successfully for ${account.name}! Redirecting...`);
+    } catch (err) {
+      toast.error('Registration failed.');
+    }
   };
 
   return (
@@ -181,6 +191,34 @@ export default function RegisterPage() {
             <p className="text-sm text-[#6B7280] mt-1">
               Join Phidim Service to access all features &amp; services
             </p>
+          </div>
+
+          {/* Role Selection Tabs */}
+          <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-6 border border-slate-200">
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, role: 'USER' }))}
+              className={`flex-1 py-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all duration-200 ${
+                formData.role === 'USER'
+                  ? 'bg-white text-[#16A34A] shadow-xs border border-slate-200/60'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Customer</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, role: 'TECHNICIAN' }))}
+              className={`flex-1 py-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all duration-200 ${
+                formData.role === 'TECHNICIAN'
+                  ? 'bg-white text-[#16A34A] shadow-xs border border-slate-200/60'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              <span>Technician</span>
+            </button>
           </div>
 
           {/* Form */}

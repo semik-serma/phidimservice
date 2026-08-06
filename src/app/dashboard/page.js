@@ -14,8 +14,10 @@ import { RightSideWidgets } from "../../components/dashboard/RightSideWidgets";
 import { CommandPalette } from "../../components/dashboard/CommandPalette";
 import { QuickActionModals } from "../../components/dashboard/QuickActionModals";
 import { CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardPage() {
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -67,6 +69,7 @@ export default function DashboardPage() {
         setCollapsed={setCollapsed}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
+        onLogout={logout}
       />
 
       {/* Main Layout Container */}

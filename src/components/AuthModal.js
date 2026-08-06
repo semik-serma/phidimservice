@@ -1,19 +1,26 @@
 import { useState } from "react";
 import { X, UserCheck } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+
 export const AuthModal = ({ isOpen, onClose }) => {
+  const { login, register } = useAuth();
   const [mode, setMode] = useState("LOGIN");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
+
   if (!isOpen) return null;
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!emailOrPhone || !password) return;
     setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      onClose();
-    }, 1200);
+    if (mode === "LOGIN") {
+      await login({ emailOrPhone, password, role: "USER" });
+    } else {
+      await register({ name: "Customer User", email: emailOrPhone, phone: emailOrPhone, password, role: "USER" });
+    }
+    onClose();
   };
   return <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {

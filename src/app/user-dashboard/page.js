@@ -16,8 +16,10 @@ import { HelpCenterWidget } from "../../components/user-dashboard/HelpCenterWidg
 import { MobileBottomNav } from "../../components/user-dashboard/MobileBottomNav";
 import { UserCommandPalette } from "../../components/user-dashboard/UserCommandPalette";
 import { CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UserDashboardPage() {
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -74,6 +76,7 @@ export default function UserDashboardPage() {
         setCollapsed={setCollapsed}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
+        onLogout={logout}
       />
 
       {/* Main Layout Content */}

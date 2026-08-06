@@ -3,16 +3,17 @@
 import { motion } from "motion/react";
 import {
   LayoutDashboard,
-  Users,
-  UserCheck,
-  Wrench,
+  Sparkles,
+  Briefcase,
   Calendar,
-  CreditCard,
+  Wallet,
+  Users,
   Star,
   TrendingUp,
-  Boxes,
-  Ticket,
-  MessageSquare,
+  MapPin,
+  CreditCard,
+  FileCheck,
+  Wrench,
   Bell,
   Settings,
   LogOut,
@@ -22,30 +23,31 @@ import {
   Zap,
 } from "lucide-react";
 
-export const NAV_ITEMS = [
+export const TECHNICIAN_NAV_ITEMS = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null },
-  { id: "users", name: "Users", icon: Users, badge: "14.8k" },
-  { id: "technicians", name: "Technicians", icon: UserCheck, badge: "164" },
-  { id: "services", name: "Services", icon: Wrench, badge: null },
-  { id: "bookings", name: "Bookings", icon: Calendar, badge: "12", badgeColor: "bg-emerald-500 text-white" },
-  { id: "payments", name: "Payments", icon: CreditCard, badge: null },
-  { id: "reviews", name: "Reviews", icon: Star, badge: "4.9 ★" },
-  { id: "analytics", name: "Analytics", icon: TrendingUp, badge: "Hot" },
-  { id: "categories", name: "Categories", icon: Boxes, badge: null },
-  { id: "coupons", name: "Coupons", icon: Ticket, badge: "New" },
-  { id: "messages", name: "Messages", icon: MessageSquare, badge: "5", badgeColor: "bg-blue-500 text-white" },
-  { id: "notifications", name: "Notifications", icon: Bell, badge: "3", badgeColor: "bg-amber-500 text-white" },
+  { id: "new-jobs", name: "New Jobs", icon: Sparkles, badge: "3 New", badgeColor: "bg-emerald-500 text-white animate-pulse" },
+  { id: "my-jobs", name: "My Jobs", icon: Briefcase, badge: "2 Active", badgeColor: "bg-blue-500 text-white" },
+  { id: "schedule", name: "Schedule", icon: Calendar, badge: "Today" },
+  { id: "earnings", name: "Earnings", icon: Wallet, badge: "Rs 4.8k" },
+  { id: "customers", name: "Customers", icon: Users, badge: null },
+  { id: "reviews", name: "Reviews", icon: Star, badge: "4.95 ★" },
+  { id: "performance", name: "Performance", icon: TrendingUp, badge: "Top 1%" },
+  { id: "live-location", name: "Live Location", icon: MapPin, badge: "Live", badgeColor: "bg-teal-500 text-white" },
+  { id: "wallet", name: "Wallet", icon: CreditCard, badge: "Payout Ready" },
+  { id: "documents", name: "Documents", icon: FileCheck, badge: "Verified", badgeColor: "bg-emerald-600 text-white" },
+  { id: "equipment", name: "Equipment", icon: Wrench, badge: null },
+  { id: "notifications", name: "Notifications", icon: Bell, badge: "5", badgeColor: "bg-amber-500 text-white" },
   { id: "settings", name: "Settings", icon: Settings, badge: null },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
-export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
+export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
   return (
     <>
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -77,11 +79,11 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                     Phidim<span className="text-emerald-400">Service</span>
                   </span>
                   <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
-                    PRO
+                    TECH
                   </span>
                 </div>
                 <p className="text-[11px] text-emerald-400/70 font-medium truncate">
-                  Admin Marketplace
+                  Technician Pro Portal
                 </p>
               </motion.div>
             )}
@@ -98,8 +100,8 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
         </div>
 
         {/* Navigation Items List */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {NAV_ITEMS.map((item) => {
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 scrollbar-thin scrollbar-thumb-emerald-900/50">
+          {TECHNICIAN_NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
 
             return (
@@ -125,7 +127,7 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                 {/* Active Indicator Glow Pill */}
                 {isActive && (
                   <motion.span
-                    layoutId="activeGlowPill"
+                    layoutId="activeTechGlowPill"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-emerald-400 rounded-r-full shadow-[0_0_12px_#22c55e]"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
@@ -162,29 +164,31 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
           })}
         </nav>
 
-        {/* Sidebar Footer Storage & System Health Status */}
+        {/* Sidebar Footer Technician Status & Wallet Summary */}
         {!collapsed && (
           <div className="p-4 border-t border-emerald-900/30 space-y-3 bg-[#040e0b]">
             <div className="bg-emerald-950/40 border border-emerald-800/30 rounded-2xl p-3">
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="font-semibold text-slate-300 flex items-center gap-1">
-                  <Zap size={12} className="text-amber-400 animate-pulse" /> Dispatch Hub
+                  <Zap size={12} className="text-emerald-400 animate-pulse" /> Dispatch Status
                 </span>
-                <span className="text-emerald-400 font-mono text-[11px]">84% Active</span>
+                <span className="text-emerald-400 font-mono text-[11px] font-bold">● Available</span>
               </div>
               <div className="w-full h-1.5 bg-emerald-950 rounded-full overflow-hidden border border-emerald-800/40">
-                <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full w-[84%]" />
+                <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full w-[92%]" />
               </div>
-              <p className="text-[10px] text-slate-400 mt-1.5">Phidim & Panchthar Operations</p>
+              <p className="text-[10px] text-slate-400 mt-1.5">Zone: Phidim Bazar & Panchthar Sector-A</p>
             </div>
 
-            <div className="flex items-center gap-3 p-2 rounded-2xl bg-emerald-950/20 border border-emerald-900/40">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-blue-600 flex items-center justify-center text-white text-xs font-black shadow">
-                PA
-              </div>
+            <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-emerald-950/30 border border-emerald-900/40">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                alt="Rajesh Tamang"
+                className="w-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow"
+              />
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white truncate">Phidim Admin</p>
-                <p className="text-[11px] text-emerald-400/80 truncate">admin@phidim.np</p>
+                <p className="text-xs font-bold text-white truncate">Rajesh Tamang</p>
+                <p className="text-[11px] text-emerald-400/80 truncate">Senior AC & Fiber Specialist</p>
               </div>
             </div>
           </div>

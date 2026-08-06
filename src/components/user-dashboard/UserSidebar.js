@@ -41,7 +41,7 @@ export const USER_NAV_ITEMS = [
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
-export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
+export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
   return (
     <>
       {/* Mobile Backdrop */}
@@ -53,7 +53,7 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
       )}
 
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen bg-[#071913] dark:bg-[#040e0b] text-slate-300 border-r border-emerald-900/30 transition-all duration-300 flex flex-col ${
+        className={`fixed top-0 left-0 z-50 h-screen bg-[#061510] dark:bg-[#040d0a] text-slate-300 border-r border-emerald-900/30 transition-all duration-300 flex flex-col ${
           collapsed ? "w-[84px]" : "w-[280px]"
         } ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
@@ -64,25 +64,26 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(22,163,74,0.4)] text-white font-black">
                 <ShieldCheck size={24} className="text-white drop-shadow" />
               </div>
-              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 ring-2 ring-[#071913] animate-pulse" />
+              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-[#061510] animate-pulse" />
             </div>
 
             {!collapsed && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
                 className="leading-tight min-w-0"
               >
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-lg text-white tracking-tight truncate">
                     Phidim<span className="text-emerald-400">Service</span>
                   </span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
+                  <span className="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider border border-blue-500/30">
                     USER
                   </span>
                 </div>
                 <p className="text-[11px] text-emerald-400/70 font-medium truncate">
-                  Customer Portal
+                  Customer Hub
                 </p>
               </motion.div>
             )}
@@ -106,7 +107,11 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
               <button
                 key={item.id}
                 onClick={() => {
-                  setActiveTab(item.id);
+                  if (item.id === "logout" && onLogout) {
+                    onLogout();
+                  } else {
+                    setActiveTab(item.id);
+                  }
                   if (mobileOpen) setMobileOpen(false);
                 }}
                 className={`group relative w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[14px] font-medium transition-all duration-200 ${

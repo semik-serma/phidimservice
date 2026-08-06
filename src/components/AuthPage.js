@@ -9,13 +9,19 @@ import {
   CheckCircle2,
   Shield,
   Home,
-  ChevronRight
+  ChevronRight,
+  Sparkles,
+  ArrowRight
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+
 export const AuthPage = ({ onNavigateHome, initialRole = "USER" }) => {
+  const { login, register, isLoading } = useAuth();
   const [role, setRole] = useState(initialRole);
   const [mode, setMode] = useState("LOGIN");
   const [userContact, setUserContact] = useState("");
   const [userPassword, setUserPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [userSubmitted, setUserSubmitted] = useState(false);
   const [techIdOrPhone, setTechIdOrPhone] = useState("");
   const [techPassword, setTechPassword] = useState("");
@@ -23,15 +29,25 @@ export const AuthPage = ({ onNavigateHome, initialRole = "USER" }) => {
   const [techSpecialty, setTechSpecialty] = useState("LAN Networking & Fiber Splicing");
   const [techWard, setTechWard] = useState("Phidim Ward 1 (Main Bazar)");
   const [techLoggedIn, setTechLoggedIn] = useState(false);
-  const handleUserSubmit = (e) => {
+
+  const handleUserSubmit = async (e) => {
     e.preventDefault();
     if (!userContact || !userPassword) return;
-    setUserSubmitted(true);
+    if (mode === "LOGIN") {
+      await login({ emailOrPhone: userContact, password: userPassword, role: "USER" });
+    } else {
+      await register({ name: userName || "Customer User", email: userContact, phone: userContact, password: userPassword, role: "USER" });
+    }
   };
-  const handleTechSubmit = (e) => {
+
+  const handleTechSubmit = async (e) => {
     e.preventDefault();
     if (!techIdOrPhone || !techPassword) return;
-    setTechLoggedIn(true);
+    if (mode === "LOGIN") {
+      await login({ emailOrPhone: techIdOrPhone, password: techPassword, role: "TECHNICIAN" });
+    } else {
+      await register({ name: techFullName || "Technician", email: techIdOrPhone, phone: techIdOrPhone, password: techPassword, role: "TECHNICIAN" });
+    }
   };
   const activeTickets = [
     { id: "TKT-9081", customer: "Himalayan Hotel & Cafe", location: "Phidim Ward 1, Main Road", service: "Cat6 LAN Cable Cabling & Switch Setup", status: "Pending", time: "Today, 2:30 PM" },
@@ -340,14 +356,20 @@ export const AuthPage = ({ onNavigateHome, initialRole = "USER" }) => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <a
+                      href="/technician-dashboard"
+                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl shadow-lg transition-transform hover:scale-105"
+                    >
+                      🚀 Open Full Technician Dashboard UI
+                    </a>
                     <span className="bg-green-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
                       ONLINE ON DUTY
                     </span>
                     <button
-    onClick={() => setTechLoggedIn(false)}
-    className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-3 py-1.5 rounded-lg border border-white/20 transition-colors cursor-pointer"
-  >
+                      onClick={() => setTechLoggedIn(false)}
+                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-3 py-1.5 rounded-lg border border-white/20 transition-colors cursor-pointer"
+                    >
                       Log Out
                     </button>
                   </div>

@@ -95,18 +95,21 @@ function ToastContent({ className, ...props }: ToastPrimitive.Content.Props) {
   )
 }
 
-function ToastTitle({ className, ...props }: ToastPrimitive.Title.Props) {
+function ToastTitle({ className, children, ...props }: ToastPrimitive.Title.Props) {
   return (
     <ToastPrimitive.Title
       data-slot="toast-title"
       className={cn("text-sm font-medium", className)}
       {...props}
-    />
+    >
+      {children}
+    </ToastPrimitive.Title>
   )
 }
 
 function ToastDescription({
   className,
+  children,
   ...props
 }: ToastPrimitive.Description.Props) {
   return (
@@ -114,7 +117,9 @@ function ToastDescription({
       data-slot="toast-description"
       className={cn("text-sm text-muted-foreground", className)}
       {...props}
-    />
+    >
+      {children}
+    </ToastPrimitive.Description>
   )
 }
 
@@ -212,10 +217,9 @@ function ToastList() {
       <ToastContent>
         <ToastIcon type={toastItem.type} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          {toastItem.title && <ToastTitle />}
-          {toastItem.description && <ToastDescription />}
+          {toastItem.title && <ToastTitle>{toastItem.title}</ToastTitle>}
+          {toastItem.description && <ToastDescription>{toastItem.description}</ToastDescription>}
         </div>
-        <ToastAction />
         <ToastClose />
       </ToastContent>
     </Toast>

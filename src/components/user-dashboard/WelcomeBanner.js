@@ -1,9 +1,10 @@
-"use client";
-
 import { motion } from "motion/react";
 import { Search, CalendarPlus, Sparkles, ShieldCheck, Zap, ArrowRight } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
-export function WelcomeBanner({ userName = "Ram Shrestha", onBookNow, onSearch }) {
+export function WelcomeBanner({ userName, onBookNow, onSearch }) {
+  const { user } = useAuth();
+  const nameToDisplay = userName || user?.name || "Customer User";
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,7 +24,7 @@ export function WelcomeBanner({ userName = "Ram Shrestha", onBookNow, onSearch }
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-            Welcome back, <span className="text-emerald-200">{userName}</span> 👋
+            Welcome back, <span className="text-emerald-200">{nameToDisplay}</span> 👋
           </h2>
 
           <p className="text-sm sm:text-base text-emerald-100 font-medium leading-relaxed max-w-xl">

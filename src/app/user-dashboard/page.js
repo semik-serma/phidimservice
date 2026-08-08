@@ -18,6 +18,8 @@ import { UserCommandPalette } from "../../components/user-dashboard/UserCommandP
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+import { AccountSettings } from "../../components/AccountSettings";
+
 export default function UserDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -88,6 +90,7 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
         {/* Top Navbar */}
         <UserTopNavbar
           activeTab={activeTab}
+          setActiveTab={setActiveTab}
           setMobileOpen={setMobileOpen}
           darkMode={darkMode}
           setDarkMode={setDarkMode}
@@ -96,60 +99,66 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
 
         {/* Dashboard Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
-          {/* Welcome Banner */}
-          <WelcomeBanner
-            userName="Ram Shrestha"
-            onBookNow={() => setActiveTab("book")}
-            onSearch={() => setIsSearchOpen(true)}
-          />
+          {activeTab === "account-settings" || activeTab === "settings" ? (
+            <AccountSettings onShowToast={showToast} />
+          ) : (
+            <>
+              {/* Welcome Banner */}
+              <WelcomeBanner
+                userName={user?.displayName || user?.name || "Ram Shrestha"}
+                onBookNow={() => setActiveTab("book")}
+                onSearch={() => setIsSearchOpen(true)}
+              />
 
-          {/* Quick 1-Click Booking Form */}
-          <section id="quick-booking">
-            <QuickBookingCard onConfirmBooking={handleConfirmBooking} />
-          </section>
+              {/* Quick 1-Click Booking Form */}
+              <section id="quick-booking">
+                <QuickBookingCard onConfirmBooking={handleConfirmBooking} />
+              </section>
 
-          {/* Live Technician Tracking (Uber / Urban Company style) */}
-          <section id="live-tracking">
-            <LiveTechnicianTracker />
-          </section>
+              {/* Live Technician Tracking (Uber / Urban Company style) */}
+              <section id="live-tracking">
+                <LiveTechnicianTracker />
+              </section>
 
-          {/* Popular 16 Service Categories */}
-          <section id="services-grid">
-            <PopularServicesGrid onSelectService={handleSelectService} />
-          </section>
+              {/* Popular 16 Service Categories */}
+              <section id="services-grid">
+                <PopularServicesGrid onSelectService={handleSelectService} />
+              </section>
 
-          {/* My Active & Past Bookings */}
-          <section id="my-bookings">
-            <MyBookingsList
-              onTrackLive={() => setActiveTab("track")}
-              onChat={(b) => showToast(`Opening chat with technician ${b.technician.name}...`)}
-              onCall={(b) => showToast(`Calling ${b.technician.name} at ${b.technician.phone}...`)}
-              onInvoice={(b) => showToast(`Downloading PDF Invoice for ${b.id}...`)}
-            />
-          </section>
+              {/* My Active & Past Bookings */}
+              <section id="my-bookings">
+                <MyBookingsList
+                  onTrackLive={() => setActiveTab("track")}
+                  onChat={(b) => showToast(`Opening chat with technician ${b.technician.name}...`)}
+                  onCall={(b) => showToast(`Calling ${b.technician.name} at ${b.technician.phone}...`)}
+                  onInvoice={(b) => showToast(`Downloading PDF Invoice for ${b.id}...`)}
+                />
+              </section>
 
-          {/* Payments & Phidim Wallet */}
-          <section id="payments">
-            <PaymentsAndWallet />
-          </section>
+              {/* Payments & Phidim Wallet */}
+              <section id="payments">
+                <PaymentsAndWallet />
+              </section>
 
-          {/* Coupons & AI Recommendations */}
-          <section id="offers">
-            <OffersAndAIRecommend
-              onClaimCoupon={(code) => showToast(`Coupon code ${code} claimed!`)}
-              onBookRecommended={(rec) => showToast(`Added ${rec.title} to your bookings!`)}
-            />
-          </section>
+              {/* Coupons & AI Recommendations */}
+              <section id="offers">
+                <OffersAndAIRecommend
+                  onClaimCoupon={(code) => showToast(`Coupon code ${code} claimed!`)}
+                  onBookRecommended={(rec) => showToast(`Added ${rec.title} to your bookings!`)}
+                />
+              </section>
 
-          {/* Profile Card & Activity Stream */}
-          <section id="profile">
-            <UserProfileAndTimeline />
-          </section>
+              {/* Profile Card & Activity Stream */}
+              <section id="profile">
+                <UserProfileAndTimeline />
+              </section>
 
-          {/* Help & Support Center */}
-          <section id="help">
-            <HelpCenterWidget />
-          </section>
+              {/* Help & Support Center */}
+              <section id="help">
+                <HelpCenterWidget />
+              </section>
+            </>
+          )}
         </main>
 
         {/* Footer */}

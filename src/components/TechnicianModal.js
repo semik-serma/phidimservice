@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { X, Wrench, HardHat, MapPin, Cable } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+
 export const TechnicianModal = ({ isOpen, onClose }) => {
+  const { login, register } = useAuth();
   const [mode, setMode] = useState("LOGIN");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [techIdOrPhone, setTechIdOrPhone] = useState("");
@@ -9,10 +12,32 @@ export const TechnicianModal = ({ isOpen, onClose }) => {
   const [specialty, setSpecialty] = useState("LAN Networking & Fiber Splicing");
   const [ward, setWard] = useState("Phidim Ward 1 (Main Bazar)");
   if (!isOpen) return null;
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!techIdOrPhone || !password) return;
-    setIsLoggedIn(true);
+    try {
+      if (mode === "LOGIN") {
+        await login({ emailOrPhone: techIdOrPhone, password, role: "TECHNICIAN" });
+      } else {
+        const cleanEmail = techIdOrPhone.includes("@")
+          ? techIdOrPhone
+          : `${techIdOrPhone.toLowerCase().replace(/[^a-z0-9]/g, "")}@phidim.np`;
+        await register({
+          name: fullName || "Field Technician",
+          email: cleanEmail,
+          phone: techIdOrPhone,
+          password,
+          role: "TECHNICIAN",
+        });
+      }
+      setIsLoggedIn(true);
+      if (typeof window !== "undefined") {
+        window.location.href = "/technician/dashboard";
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
   const activeTickets = [
     { id: "TKT-9081", customer: "Himalayan Hotel & Cafe", location: "Phidim Ward 1, Main Road", service: "Cat6 LAN Cable Cabling & Switch Setup", status: "Pending", time: "Today, 2:30 PM" },

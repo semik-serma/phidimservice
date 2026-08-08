@@ -40,6 +40,7 @@ function normalizeDoc(doc) {
 
 export async function findUserByEmail(email) {
   const lower = String(email || "").trim().toLowerCase();
+  await seedDemoUsers();
 
   if (!(await ensureBackend())) {
     const mem = getMemoryUsers();
@@ -58,13 +59,14 @@ export async function findUserByEmail(email) {
 
 export async function findUserByEmailOrPhone(identity) {
   const trimmed = String(identity || "").trim();
+  await seedDemoUsers();
 
   if (!(await ensureBackend())) {
     const mem = getMemoryUsers();
     const byEmail = mem.get(trimmed.toLowerCase());
     if (byEmail) return byEmail;
     for (const [, user] of mem.entries()) {
-      if (user.phone === trimmed) return user;
+      if (user.phone === trimmed || user._id === trimmed || user.email.toLowerCase() === trimmed.toLowerCase()) return user;
     }
     return null;
   }

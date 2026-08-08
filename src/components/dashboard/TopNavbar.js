@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Menu,
@@ -17,13 +18,15 @@ import {
   Clock as ClockIcon,
   CheckCircle2,
   AlertTriangle,
-  Info,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Home,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export function TopNavbar({
   activeTab,
+  setActiveTab,
   collapsed,
   setCollapsed,
   setMobileOpen,
@@ -31,6 +34,7 @@ export function TopNavbar({
   setDarkMode,
   onOpenCommandPalette,
 }) {
+  const { user, logout } = useAuth();
   // Live Clock
   const [time, setTime] = useState("");
   const [dateStr, setDateStr] = useState("");
@@ -40,6 +44,15 @@ export function TopNavbar({
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const displayName = user?.name || "Phidim Admin";
+  const displayEmail = user?.email || "admin@phidim.np";
+  const userInitials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
 
   useEffect(() => {
     const updateTime = () => {
@@ -150,7 +163,10 @@ export function TopNavbar({
 
           <div>
             <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
-              <span>Admin</span>
+              <Link href="/" className="hover:text-emerald-600 font-bold flex items-center gap-1">
+                <Home size={13} />
+                <span>Home</span>
+              </Link>
               <ChevronRight size={12} />
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Phidim Service</span>
               <ChevronRight size={12} />
@@ -182,8 +198,18 @@ export function TopNavbar({
           </div>
         </div>
 
-        {/* Right Side: Live Clock, Language, Dark Mode, Notifications, Admin Profile */}
+        {/* Right Side: Home Button, Live Clock, Language, Dark Mode, Notifications, Admin Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Go Back to Home Page Button */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition-all hover:scale-105"
+            title="Go Back to Main Website Homepage"
+          >
+            <Home size={15} />
+            <span className="hidden sm:inline">Back to Home</span>
+          </Link>
+
           {/* Live Clock & Date Widget */}
           <div className="hidden xl:flex flex-col items-end px-3 py-1.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-right">
             <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-300">
@@ -343,14 +369,18 @@ export function TopNavbar({
               }}
               className="flex items-center gap-2 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500/50 transition-all"
             >
-              <div className="relative">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-blue-600 text-white font-extrabold text-xs flex items-center justify-center shadow-md">
-                  PS
+              {user?.avatar ? (
+                <img src={user.avatar} alt={displayName} className="w-8 h-8 rounded-xl object-cover ring-2 ring-emerald-500/50" />
+              ) : (
+                <div className="relative">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-blue-600 text-white font-extrabold text-xs flex items-center justify-center shadow-md">
+                    {userInitials}
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
-              </div>
+              )}
               <span className="hidden sm:inline text-xs font-extrabold text-slate-800 dark:text-slate-100">
-                Phidim Admin
+                {displayName}
               </span>
               <ChevronDown size={14} className="text-slate-400 hidden sm:inline" />
             </button>
@@ -364,17 +394,38 @@ export function TopNavbar({
                   className="absolute right-0 mt-3 w-56 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50"
                 >
                   <div className="p-3 border-b border-slate-100 dark:border-slate-800">
-                    <p className="text-xs font-extrabold text-slate-900 dark:text-white">Phidim Service Manager</p>
-                    <p className="text-[11px] text-slate-400 truncate">admin@phidim.com.np</p>
+                    <p className="text-xs font-extrabold text-slate-900 dark:text-white">{displayName}</p>
+                    <p className="text-[11px] text-slate-400 truncate">{displayEmail}</p>
                   </div>
                   <div className="py-1 space-y-0.5">
-                    <button className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                      <User size={15} className="text-emerald-500" /> Profile Settings
+                    <Link
+                      href="/"
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    >
+                      <Home size={15} /> Go Back to Home Page
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        if (setActiveTab) setActiveTab("account-settings");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    >
+                      <User size={15} className="text-emerald-500" /> Account Settings
                     </button>
-                    <button className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        if (setActiveTab) setActiveTab("account-settings");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    >
                       <Settings size={15} className="text-blue-500" /> System Preferences
                     </button>
-                    <button className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl transition-colors">
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl transition-colors"
+                    >
                       <LogOut size={15} /> Sign Out
                     </button>
                   </div>

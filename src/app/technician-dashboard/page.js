@@ -23,6 +23,8 @@ import { useAuth } from "@/context/AuthContext";
 import RoleGuard from "../../components/RoleGuard";
 import { LogoutConfirmModal } from "../../components/LogoutConfirmModal";
 
+import { AccountSettings } from "../../components/AccountSettings";
+
 export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -173,6 +175,7 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
         {/* Top Navbar */}
         <TechnicianTopNavbar
           activeTab={activeTab}
+          setActiveTab={setActiveTab}
           setMobileOpen={setMobileOpen}
           darkMode={darkMode}
           setDarkMode={setDarkMode}
@@ -185,7 +188,11 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
 
         {/* Main Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
-          {/* Section 1: Welcome Hero Banner */}
+          {activeTab === "account-settings" || activeTab === "settings" ? (
+            <AccountSettings onShowToast={showToast} />
+          ) : (
+            <>
+              {/* Section 1: Welcome Hero Banner */}
           <section id="welcome-banner">
             <TechnicianWelcomeCard
               isOnline={isOnline}
@@ -305,6 +312,8 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
               />
             </div>
           </section>
+          </>
+          )}
         </main>
 
         {/* Footer */}

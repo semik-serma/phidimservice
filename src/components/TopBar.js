@@ -32,7 +32,8 @@ export const TopBar = () => {
   }, [adTexts.length]);
 
   return (
-    <div className="bg-[#8cc63f] text-gray-900 px-4 py-2 text-sm font-bold flex flex-wrap items-center justify-between gap-3 border-b border-[#7db333]">
+    <div className="bg-[#8cc63f] text-gray-900 px-3 sm:px-5 lg:px-8 py-1.5 text-xs font-bold border-b border-[#7db333]">
+      <div className="max-w-[1700px] mx-auto flex flex-wrap items-center justify-between gap-3">
       
       {/* Left Area: Location & PhidimBazar.com Ad Badge */}
       <div className="flex items-center gap-3">
@@ -64,34 +65,24 @@ export const TopBar = () => {
         Welcome to Phidim Service
       </div>
 
-    <div className="flex items-center justify-center md:justify-end gap-3 text-gray-900 font-bold mt-1 md:mt-0">
-      <div className="flex items-center gap-2 bg-white/35 backdrop-blur-xs px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
-        <span className="text-gray-950 font-black">नेपाली समय</span>
-        <span className="font-extrabold text-black">{timeStr || "०७ : २२ : १८ बिहान"}</span>
-        <span className="mx-1 text-gray-800">|</span>
-        <span className="font-extrabold text-black">{dateStr || "वि सं २०८३ श्रावण १७ आइतबार"}</span>
-      </div>
+      <div className="flex items-center justify-center md:justify-end gap-3 text-gray-900 font-bold mt-1 md:mt-0">
+        <div className="flex items-center gap-2 bg-white/35 backdrop-blur-xs px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
+          <span className="text-gray-950 font-black">नेपाली समय</span>
+          <span className="font-extrabold text-black">{timeStr || "०७ : २२ : १८ बिहान"}</span>
+          <span className="mx-1 text-gray-800">|</span>
+          <span className="font-extrabold text-black">{dateStr || "वि सं २०८३ श्रावण १७ आइतबार"}</span>
+        </div>
 
-      {
-        /* Nepal Flag Emblem */
-      }
-      <div className="flex items-center justify-center bg-white/20 p-1 rounded-sm shrink-0" title="Nepal">
-        <svg className="w-6 h-6 shadow-xs" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {
-            /* Red double triangle with blue border */
-          }
-          <path d="M5 10 L85 55 L35 55 L90 105 L5 105 Z" fill="#DC2626" stroke="#1D4ED8" strokeWidth="8" />
-          {
-            /* Crescent moon */
-          }
-          <path d="M22 32 A 10 10 0 0 0 38 32 A 8 8 0 0 1 22 32 Z" fill="white" />
-          {
-            /* Sun */
-          }
-          <circle cx="30" cy="80" r="10" fill="white" />
-        </svg>
+        {/* Nepal Flag Emblem */}
+        <div className="flex items-center justify-center bg-white/20 p-1 rounded-sm shrink-0" title="Nepal">
+          <svg className="w-6 h-6 shadow-xs" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 10 L85 55 L35 55 L90 105 L5 105 Z" fill="#DC2626" stroke="#1D4ED8" strokeWidth="8" />
+            <path d="M22 32 A 10 10 0 0 0 38 32 A 8 8 0 0 1 22 32 Z" fill="white" />
+            <circle cx="30" cy="80" r="10" fill="white" />
+          </svg>
+        </div>
       </div>
     </div>
   </div>
 );
-};
+}

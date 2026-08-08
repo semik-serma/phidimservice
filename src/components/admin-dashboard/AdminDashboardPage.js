@@ -17,6 +17,7 @@ import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import RoleGuard from "../RoleGuard";
 import { LogoutConfirmModal } from "../LogoutConfirmModal";
+import { AccountSettings } from "../AccountSettings";
 
 /**
  * Admin dashboard UI. This component renders inside a server guard
@@ -99,6 +100,7 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
         {/* Top Navbar */}
         <TopNavbar
           activeTab={activeTab}
+          setActiveTab={setActiveTab}
           collapsed={collapsed}
           setCollapsed={setCollapsed}
           setMobileOpen={setMobileOpen}
@@ -109,8 +111,12 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
 
         {/* Dashboard Content Container */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
-          {/* Top Section: 6 Stat Cards */}
-          <section>
+          {activeTab === "account-settings" || activeTab === "settings" ? (
+            <AccountSettings onShowToast={showToast} />
+          ) : (
+            <>
+              {/* Top Section: 6 Stat Cards */}
+              <section>
             <StatCards />
           </section>
 
@@ -151,6 +157,8 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
           <section>
             <BottomSection />
           </section>
+          </>
+          )}
         </main>
 
         {/* Footer info */}

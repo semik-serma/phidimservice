@@ -54,24 +54,17 @@ const FEATURES = [
 const QUICK_ROLES = [
   {
     key: 'USER',
-    label: 'Customer',
+    label: 'Customer Account',
     icon: User,
     tint: 'text-emerald-400',
     ring: 'hover:border-emerald-400/60 hover:bg-emerald-400/10',
   },
   {
     key: 'TECHNICIAN',
-    label: 'Technician',
+    label: 'Technician Portal',
     icon: Wrench,
     tint: 'text-teal-400',
     ring: 'hover:border-teal-400/60 hover:bg-teal-400/10',
-  },
-  {
-    key: 'ADMIN',
-    label: 'Admin',
-    icon: Shield,
-    tint: 'text-amber-400',
-    ring: 'hover:border-amber-400/60 hover:bg-amber-400/10',
   },
 ];
 

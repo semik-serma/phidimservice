@@ -215,7 +215,14 @@ export function AuthProvider({ children }) {
           throw err;
         }
 
-        const account = data.user || DEMO_ACCOUNTS[role] || DEMO_ACCOUNTS.USER;
+        const activeRole = role || data.user?.role || "USER";
+        const account = data.user
+          ? {
+              ...data.user,
+              role: activeRole,
+              dashboardPath: data.user.dashboardPath || dashboardPathFor(activeRole),
+            }
+          : DEMO_ACCOUNTS[activeRole] || DEMO_ACCOUNTS.USER;
         safeSetUser(account);
         setIsLoading(false);
 
@@ -282,6 +289,18 @@ export function AuthProvider({ children }) {
     return roles.length === 0 || roles.includes(role);
   }, [user]);
 
+  const updateUser = useCallback((updatedFields) => {
+    setUser((prev) => {
+      const next = { ...(prev || {}), ...updatedFields };
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(SESSION_KEY, JSON.stringify(next));
+        } catch (e) {}
+      }
+      return next;
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -294,8 +313,9 @@ export function AuthProvider({ children }) {
       register,
       refreshSession,
       hasRole,
+      updateUser,
     }),
-    [user, isLoading, login, loginWithGoogle, logout, register, refreshSession, hasRole]
+    [user, isLoading, login, loginWithGoogle, logout, register, refreshSession, hasRole, updateUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -315,6 +335,7 @@ export function useAuth() {
       register: async () => {},
       refreshSession: async () => {},
       hasRole: () => false,
+      updateUser: () => {},
     };
   }
   return context;

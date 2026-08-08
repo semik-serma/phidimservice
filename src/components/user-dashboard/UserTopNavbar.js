@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Menu,
@@ -8,28 +9,37 @@ import {
   Sun,
   Moon,
   Bell,
-  MessageSquare,
   Wallet,
   ChevronDown,
   User,
   Settings,
-  HelpCircle,
   LogOut,
   ChevronRight,
-  ShieldCheck,
+  Home,
   CheckCircle2,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export function UserTopNavbar({
   activeTab,
+  setActiveTab,
   setMobileOpen,
   darkMode,
   setDarkMode,
   onOpenSearch,
 }) {
+  const { user, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showMessages, setShowMessages] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const displayName = user?.name || "Customer User";
+  const displayEmail = user?.email || "user@phidim.np";
+  const userInitials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
 
   const getPageTitle = (tab) => {
     switch (tab) {
@@ -66,7 +76,10 @@ export function UserTopNavbar({
 
           <div>
             <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
-              <span>Customer</span>
+              <Link href="/" className="hover:text-emerald-600 font-bold flex items-center gap-1">
+                <Home size={13} />
+                <span>Home</span>
+              </Link>
               <ChevronRight size={12} />
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Phidim Service</span>
               <ChevronRight size={12} />
@@ -98,8 +111,18 @@ export function UserTopNavbar({
           </div>
         </div>
 
-        {/* Right Side: Wallet Balance, Theme Toggle, Notifications, User Avatar */}
+        {/* Right Side: Home Button, Wallet, Theme Toggle, Notifications, User Avatar */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Go Back to Home Page Button */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition-all hover:scale-105"
+            title="Go Back to Main Website Homepage"
+          >
+            <Home size={15} />
+            <span className="hidden sm:inline">Back to Home</span>
+          </Link>
+
           {/* Wallet Balance Badge */}
           <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/30 text-xs font-bold text-emerald-700 dark:text-emerald-300">
             <Wallet size={16} className="text-emerald-500" />
@@ -124,7 +147,6 @@ export function UserTopNavbar({
             <button
               onClick={() => {
                 setShowNotifications(!showNotifications);
-                setShowMessages(false);
                 setShowProfileMenu(false);
               }}
               className="relative p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 transition-all"
@@ -147,7 +169,7 @@ export function UserTopNavbar({
                       <Bell size={16} className="text-emerald-500" /> Notifications
                     </h4>
                     <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
-                      4 New
+                      1 New
                     </span>
                   </div>
 
@@ -157,9 +179,9 @@ export function UserTopNavbar({
                         <CheckCircle2 size={16} />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-slate-900 dark:text-white">Technician Niraj Sunuwar is on the way!</p>
-                        <p className="text-[11px] text-slate-500">Estimated arrival in 8 mins to Ward 1</p>
-                        <span className="text-[10px] text-slate-400 mt-1 block">5 mins ago</span>
+                        <p className="text-xs font-bold text-slate-900 dark:text-white">Welcome back, {displayName}!</p>
+                        <p className="text-[11px] text-slate-500">Account status active in Phidim Municipality</p>
+                        <span className="text-[10px] text-slate-400 mt-1 block">Just now</span>
                       </div>
                     </div>
                   </div>
@@ -174,15 +196,22 @@ export function UserTopNavbar({
               onClick={() => {
                 setShowProfileMenu(!showProfileMenu);
                 setShowNotifications(false);
-                setShowMessages(false);
               }}
               className="flex items-center gap-2 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500/50 transition-all"
             >
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white font-extrabold text-xs flex items-center justify-center shadow-md">
-                RS
-              </div>
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={displayName}
+                  className="w-8 h-8 rounded-xl object-cover ring-2 ring-emerald-500/50"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white font-extrabold text-xs flex items-center justify-center shadow-md">
+                  {userInitials}
+                </div>
+              )}
               <span className="hidden sm:inline text-xs font-extrabold text-slate-800 dark:text-slate-100">
-                Ram Shrestha
+                {displayName}
               </span>
               <ChevronDown size={14} className="text-slate-400 hidden sm:inline" />
             </button>
@@ -196,17 +225,38 @@ export function UserTopNavbar({
                   className="absolute right-0 mt-3 w-56 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50"
                 >
                   <div className="p-3 border-b border-slate-100 dark:border-slate-800">
-                    <p className="text-xs font-extrabold text-slate-900 dark:text-white">Ram Shrestha</p>
-                    <p className="text-[11px] text-slate-400 truncate">ram.phidim@gmail.com</p>
+                    <p className="text-xs font-extrabold text-slate-900 dark:text-white">{displayName}</p>
+                    <p className="text-[11px] text-slate-400 truncate">{displayEmail}</p>
                   </div>
                   <div className="py-1 space-y-0.5">
-                    <button className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                      <User size={15} className="text-emerald-500" /> My Profile
+                    <Link
+                      href="/"
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    >
+                      <Home size={15} /> Go Back to Home Page
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        if (setActiveTab) setActiveTab("account-settings");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    >
+                      <User size={15} className="text-emerald-500" /> Account Settings
                     </button>
-                    <button className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                      <Settings size={15} className="text-blue-500" /> Settings
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        if (setActiveTab) setActiveTab("account-settings");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    >
+                      <Settings size={15} className="text-blue-500" /> System Preferences
                     </button>
-                    <button className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl transition-colors">
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl transition-colors"
+                    >
                       <LogOut size={15} /> Sign Out
                     </button>
                   </div>

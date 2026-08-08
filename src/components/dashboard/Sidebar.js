@@ -1,6 +1,5 @@
-"use client";
-
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "motion/react";
 import {
   LayoutDashboard,
@@ -21,9 +20,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
+  Home,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export const NAV_ITEMS = [
+  { id: "home", name: "Back to Home Page", icon: Home, badge: "Website", badgeColor: "bg-emerald-600 text-white font-extrabold", path: "/" },
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null, path: "/admin/dashboard" },
   { id: "users", name: "Users", icon: Users, badge: "14.8k", path: "/admin/users" },
   { id: "technicians", name: "Technicians", icon: UserCheck, badge: "164", path: "/admin/technicians" },
@@ -35,13 +37,24 @@ export const NAV_ITEMS = [
   { id: "categories", name: "Categories", icon: Boxes, badge: null, path: "/admin/categories" },
   { id: "coupons", name: "Coupons", icon: Ticket, badge: "New" },
   { id: "messages", name: "Messages", icon: MessageSquare, badge: "5", badgeColor: "bg-blue-500 text-white", path: "/admin/support" },
-  { id: "notifications", name: "Notifications", icon: Bell, badge: "3", badgeColor: "bg-amber-500 text-white", path: "/admin/notifications" },
-  { id: "settings", name: "Settings", icon: Settings, badge: null, path: "/admin/settings" },
+  { id: "account-settings", name: "Account Settings", icon: UserCheck, badge: "Edit", badgeColor: "bg-emerald-600 text-white" },
+  { id: "settings", name: "System Settings", icon: Settings, badge: null, path: "/admin/settings" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
 export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
   const router = useRouter();
+  const { user } = useAuth();
+
+  const displayName = user?.name || "Phidim Admin";
+  const displayEmail = user?.email || "admin@phidim.np";
+  const userInitials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -57,15 +70,15 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
           collapsed ? "w-[84px]" : "w-[280px]"
         } ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
-        {/* Sidebar Header / Logo */}
+        {/* Header / Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-emerald-900/30">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="relative flex-shrink-0">
+            <Link href="/" className="relative flex-shrink-0 cursor-pointer">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(22,163,74,0.4)] text-white font-black">
                 <ShieldCheck size={24} className="text-white drop-shadow" />
               </div>
               <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-[#061510] animate-pulse" />
-            </div>
+            </Link>
 
             {!collapsed && (
               <motion.div
@@ -74,22 +87,21 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                 exit={{ opacity: 0, x: -10 }}
                 className="leading-tight min-w-0"
               >
-                <div className="flex items-center gap-1.5">
+                <Link href="/" className="flex items-center gap-1.5 hover:opacity-90">
                   <span className="font-extrabold text-lg text-white tracking-tight truncate">
                     Phidim<span className="text-emerald-400">Service</span>
                   </span>
                   <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
-                    PRO
+                    ADMIN
                   </span>
-                </div>
+                </Link>
                 <p className="text-[11px] text-emerald-400/70 font-medium truncate">
-                  Admin Marketplace
+                  Admin Control Center
                 </p>
               </motion.div>
             )}
           </div>
 
-          {/* Desktop Collapse Toggle */}
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="hidden lg:flex items-center justify-center w-7 h-7 rounded-xl bg-emerald-950/60 hover:bg-emerald-800/60 border border-emerald-700/40 text-emerald-400 hover:text-white transition-all shadow-sm"
@@ -99,7 +111,7 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
           </button>
         </div>
 
-        {/* Navigation Items List */}
+        {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
@@ -110,6 +122,8 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                 onClick={() => {
                   if (item.id === "logout" && onLogout) {
                     onLogout();
+                  } else if (item.id === "home") {
+                    router.push("/");
                   } else {
                     setActiveTab(item.id);
                     if (item.path && window.location.pathname !== item.path) {
@@ -118,8 +132,10 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}
-                className={`group relative w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[14px] font-medium transition-all duration-200 ${
-                  item.isDanger
+                className={`group relative w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[14px] font-medium transition-all duration-200 ${
+                  item.id === "home"
+                    ? "bg-emerald-600/30 hover:bg-emerald-600/50 text-white font-extrabold border border-emerald-500/50"
+                    : item.isDanger
                     ? "text-rose-400 hover:bg-rose-950/30 hover:text-rose-300"
                     : isActive
                     ? "bg-gradient-to-r from-emerald-500/25 via-emerald-500/15 to-transparent text-emerald-400 font-bold border border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
@@ -127,10 +143,9 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                 }`}
                 title={collapsed ? item.name : undefined}
               >
-                {/* Active Indicator Glow Pill */}
-                {isActive && (
+                {isActive && item.id !== "home" && (
                   <motion.span
-                    layoutId="activeGlowPill"
+                    layoutId="adminNavIndicator"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-emerald-400 rounded-r-full shadow-[0_0_12px_#22c55e]"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
@@ -139,7 +154,9 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                 <item.icon
                   size={20}
                   className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${
-                    isActive
+                    item.id === "home"
+                      ? "text-emerald-300"
+                      : isActive
                       ? "text-emerald-400 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
                       : item.isDanger
                       ? "text-rose-400"
@@ -167,7 +184,7 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
           })}
         </nav>
 
-        {/* Sidebar Footer Storage & System Health Status */}
+        {/* Footer */}
         {!collapsed && (
           <div className="p-4 border-t border-emerald-900/30 space-y-3 bg-[#040e0b]">
             <div className="bg-emerald-950/40 border border-emerald-800/30 rounded-2xl p-3">
@@ -184,12 +201,16 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
             </div>
 
             <div className="flex items-center gap-3 p-2 rounded-2xl bg-emerald-950/20 border border-emerald-900/40">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-blue-600 flex items-center justify-center text-white text-xs font-black shadow">
-                PA
-              </div>
+              {user?.avatar ? (
+                <img src={user.avatar} alt={displayName} className="w-9 h-9 rounded-xl object-cover ring-2 ring-emerald-500/50" />
+              ) : (
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-blue-600 flex items-center justify-center text-white text-xs font-black shadow">
+                  {userInitials}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white truncate">Phidim Admin</p>
-                <p className="text-[11px] text-emerald-400/80 truncate">admin@phidim.np</p>
+                <p className="text-xs font-bold text-white truncate">{displayName}</p>
+                <p className="text-[11px] text-emerald-400/80 truncate">{displayEmail}</p>
               </div>
             </div>
           </div>

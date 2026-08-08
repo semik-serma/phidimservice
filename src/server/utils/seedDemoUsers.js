@@ -26,6 +26,16 @@ export const DEMO_SEED_USERS = [
     dashboardPath: dashboardPathFor("TECHNICIAN"),
   },
   {
+    _id: "TECH-402",
+    name: "Rajesh Tamang (Tech ID 402)",
+    email: "tech402@phidim.np",
+    phone: "TECH-402",
+    role: "TECHNICIAN",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+    status: "active",
+    dashboardPath: dashboardPathFor("TECHNICIAN"),
+  },
+  {
     _id: "USR-8821",
     name: "Ram Shrestha",
     email: "user@phidim.np",

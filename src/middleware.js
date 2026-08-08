@@ -120,7 +120,11 @@ export async function middleware(request) {
     const authUserCookie = request.cookies.get("phidim_auth_user")?.value || null;
     if (authUserCookie) {
       try {
-        const parsedUser = JSON.parse(decodeURIComponent(authUserCookie));
+        let decoded = authUserCookie;
+        try {
+          decoded = decodeURIComponent(authUserCookie);
+        } catch (e) {}
+        const parsedUser = JSON.parse(decoded);
         if (parsedUser && parsedUser.role) {
           session = { role: parsedUser.role, email: parsedUser.email };
         }
@@ -133,8 +137,8 @@ export async function middleware(request) {
   const role = session?.role || null;
   const ownDashboard = role === "ADMIN" ? "/admin/dashboard" : role === "TECHNICIAN" ? "/technician/dashboard" : "/user/dashboard";
 
-  // 1. If logged in and visiting auth pages (/login, /register) or root (/), redirect directly to OWN DASHBOARD
-  if (session && ["/login", "/register", "/forgot-password", "/reset-password", "/"].includes(pathname)) {
+  // 1. If logged in and visiting password reset pages, redirect directly to OWN DASHBOARD
+  if (session && ["/forgot-password", "/reset-password"].includes(pathname)) {
     return NextResponse.redirect(new URL(ownDashboard, request.nextUrl));
   }
 

@@ -1,6 +1,5 @@
-"use client";
-
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "motion/react";
 import {
   LayoutDashboard,
@@ -21,10 +20,12 @@ import {
   ShieldCheck,
   ChevronLeft,
   ChevronRight,
-  Zap,
+  Home,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export const USER_NAV_ITEMS = [
+  { id: "home", name: "Back to Home Page", icon: Home, badge: "Website", badgeColor: "bg-emerald-600 text-white font-extrabold", path: "/" },
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null, path: "/user/dashboard" },
   { id: "book", name: "Book Service", icon: CalendarPlus, badge: "Quick", badgeColor: "bg-emerald-500 text-white", path: "/user/book-service" },
   { id: "my-bookings", name: "My Bookings", icon: BookOpen, badge: "3 Active", badgeColor: "bg-blue-500 text-white", path: "/user/requests" },
@@ -36,14 +37,25 @@ export const USER_NAV_ITEMS = [
   { id: "favorites", name: "Favorites", icon: Heart, badge: null },
   { id: "history", name: "Booking History", icon: History, badge: null, path: "/user/history" },
   { id: "notifications", name: "Notifications", icon: Bell, badge: "4", path: "/user/notifications" },
-  { id: "profile", name: "My Profile", icon: User, badge: "Gold", path: "/user/profile" },
-  { id: "settings", name: "Settings", icon: Settings, badge: null, path: "/user/settings" },
+  { id: "account-settings", name: "Account Settings", icon: User, badge: "Edit", badgeColor: "bg-emerald-600 text-white" },
+  { id: "settings", name: "System Settings", icon: Settings, badge: null, path: "/user/settings" },
   { id: "help", name: "Help Center", icon: HelpCircle, badge: "24/7" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
 export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
   const router = useRouter();
+  const { user } = useAuth();
+
+  const displayName = user?.name || "Customer User";
+  const displayEmail = user?.email || "user@phidim.np";
+  const userInitials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -62,12 +74,12 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
         {/* Header / Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-emerald-900/30">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="relative flex-shrink-0">
+            <Link href="/" className="relative flex-shrink-0 cursor-pointer">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(22,163,74,0.4)] text-white font-black">
                 <ShieldCheck size={24} className="text-white drop-shadow" />
               </div>
               <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-[#061510] animate-pulse" />
-            </div>
+            </Link>
 
             {!collapsed && (
               <motion.div
@@ -76,14 +88,14 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
                 exit={{ opacity: 0, x: -10 }}
                 className="leading-tight min-w-0"
               >
-                <div className="flex items-center gap-1.5">
+                <Link href="/" className="flex items-center gap-1.5 hover:opacity-90">
                   <span className="font-extrabold text-lg text-white tracking-tight truncate">
                     Phidim<span className="text-emerald-400">Service</span>
                   </span>
                   <span className="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider border border-blue-500/30">
                     USER
                   </span>
-                </div>
+                </Link>
                 <p className="text-[11px] text-emerald-400/70 font-medium truncate">
                   Customer Hub
                 </p>
@@ -111,6 +123,8 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
                 onClick={() => {
                   if (item.id === "logout" && onLogout) {
                     onLogout();
+                  } else if (item.id === "home") {
+                    router.push("/");
                   } else {
                     setActiveTab(item.id);
                     if (item.path && window.location.pathname !== item.path) {
@@ -120,7 +134,9 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
                   if (mobileOpen) setMobileOpen(false);
                 }}
                 className={`group relative w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[14px] font-medium transition-all duration-200 ${
-                  item.isDanger
+                  item.id === "home"
+                    ? "bg-emerald-600/30 hover:bg-emerald-600/50 text-white font-extrabold border border-emerald-500/50"
+                    : item.isDanger
                     ? "text-rose-400 hover:bg-rose-950/30 hover:text-rose-300"
                     : isActive
                     ? "bg-gradient-to-r from-emerald-500/25 via-emerald-500/15 to-transparent text-emerald-400 font-bold border border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
@@ -128,7 +144,7 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
                 }`}
                 title={collapsed ? item.name : undefined}
               >
-                {isActive && (
+                {isActive && item.id !== "home" && (
                   <motion.span
                     layoutId="userNavIndicator"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-emerald-400 rounded-r-full shadow-[0_0_12px_#22c55e]"
@@ -139,7 +155,9 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
                 <item.icon
                   size={20}
                   className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${
-                    isActive
+                    item.id === "home"
+                      ? "text-emerald-300"
+                      : isActive
                       ? "text-emerald-400 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
                       : item.isDanger
                       ? "text-rose-400"
@@ -181,12 +199,16 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
             </div>
 
             <div className="flex items-center gap-3 p-2 rounded-2xl bg-emerald-950/20 border border-emerald-900/40">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white text-xs font-black flex items-center justify-center shadow">
-                RS
-              </div>
+              {user?.avatar ? (
+                <img src={user.avatar} alt={displayName} className="w-9 h-9 rounded-xl object-cover ring-2 ring-emerald-500/50" />
+              ) : (
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white text-xs font-black flex items-center justify-center shadow">
+                  {userInitials}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white truncate">Ram Shrestha</p>
-                <p className="text-[11px] text-emerald-400/80 truncate">Phidim Ward 1</p>
+                <p className="text-xs font-bold text-white truncate">{displayName}</p>
+                <p className="text-[11px] text-emerald-400/80 truncate">{displayEmail}</p>
               </div>
             </div>
           </div>

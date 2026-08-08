@@ -43,10 +43,24 @@ export const AuthPage = ({ onNavigateHome, initialRole = "USER" }) => {
   const handleTechSubmit = async (e) => {
     e.preventDefault();
     if (!techIdOrPhone || !techPassword) return;
-    if (mode === "LOGIN") {
-      await login({ emailOrPhone: techIdOrPhone, password: techPassword, role: "TECHNICIAN" });
-    } else {
-      await register({ name: techFullName || "Technician", email: techIdOrPhone, phone: techIdOrPhone, password: techPassword, role: "TECHNICIAN" });
+    try {
+      if (mode === "LOGIN") {
+        await login({ emailOrPhone: techIdOrPhone, password: techPassword, role: "TECHNICIAN" });
+      } else {
+        const cleanEmail = techIdOrPhone.includes("@")
+          ? techIdOrPhone
+          : `${techIdOrPhone.toLowerCase().replace(/[^a-z0-9]/g, "")}@phidim.np`;
+        await register({
+          name: techFullName || "Field Technician",
+          email: cleanEmail,
+          phone: techIdOrPhone,
+          password: techPassword,
+          role: "TECHNICIAN",
+        });
+      }
+      setTechLoggedIn(true);
+    } catch (err) {
+      console.error(err);
     }
   };
   const activeTickets = [

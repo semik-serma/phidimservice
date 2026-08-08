@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "motion/react";
 import {
   LayoutDashboard,
@@ -22,9 +23,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
+  Home,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export const TECHNICIAN_NAV_ITEMS = [
+  { id: "home", name: "Back to Home Page", icon: Home, badge: "Website", badgeColor: "bg-emerald-600 text-white font-extrabold", path: "/" },
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null, path: "/technician/dashboard" },
   { id: "new-jobs", name: "New Jobs", icon: Sparkles, badge: "3 New", badgeColor: "bg-emerald-500 text-white animate-pulse", path: "/technician/pending-jobs" },
   { id: "my-jobs", name: "My Jobs", icon: Briefcase, badge: "2 Active", badgeColor: "bg-blue-500 text-white", path: "/technician/jobs" },
@@ -37,19 +41,30 @@ export const TECHNICIAN_NAV_ITEMS = [
   { id: "wallet", name: "Wallet", icon: CreditCard, badge: "Payout Ready", path: "/technician/earnings" },
   { id: "documents", name: "Documents", icon: FileCheck, badge: "Verified", badgeColor: "bg-emerald-600 text-white", path: "/technician/profile" },
   { id: "equipment", name: "Equipment", icon: Wrench, badge: null },
-  { id: "notifications", name: "Notifications", icon: Bell, badge: "5", badgeColor: "bg-amber-500 text-white", path: "/technician/notifications" },
-  { id: "settings", name: "Settings", icon: Settings, badge: null, path: "/technician/settings" },
+  { id: "account-settings", name: "Account Settings", icon: UserCheck, badge: "Edit", badgeColor: "bg-emerald-600 text-white" },
+  { id: "settings", name: "System Settings", icon: Settings, badge: null, path: "/technician/settings" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
 export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
   const router = useRouter();
+  const { user } = useAuth();
+
+  const displayName = user?.name || "Field Technician";
+  const displayEmail = user?.email || "tech@phidim.np";
+  const userInitials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+
   return (
     <>
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -59,15 +74,15 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
           collapsed ? "w-[84px]" : "w-[280px]"
         } ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
-        {/* Sidebar Header / Logo */}
+        {/* Header / Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-emerald-900/30">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="relative flex-shrink-0">
+            <Link href="/" className="relative flex-shrink-0 cursor-pointer">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(22,163,74,0.4)] text-white font-black">
                 <ShieldCheck size={24} className="text-white drop-shadow" />
               </div>
               <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-[#061510] animate-pulse" />
-            </div>
+            </Link>
 
             {!collapsed && (
               <motion.div
@@ -76,22 +91,21 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
                 exit={{ opacity: 0, x: -10 }}
                 className="leading-tight min-w-0"
               >
-                <div className="flex items-center gap-1.5">
+                <Link href="/" className="flex items-center gap-1.5 hover:opacity-90">
                   <span className="font-extrabold text-lg text-white tracking-tight truncate">
                     Phidim<span className="text-emerald-400">Service</span>
                   </span>
                   <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
                     TECH
                   </span>
-                </div>
+                </Link>
                 <p className="text-[11px] text-emerald-400/70 font-medium truncate">
-                  Technician Pro Portal
+                  Technician Portal
                 </p>
               </motion.div>
             )}
           </div>
 
-          {/* Desktop Collapse Toggle */}
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="hidden lg:flex items-center justify-center w-7 h-7 rounded-xl bg-emerald-950/60 hover:bg-emerald-800/60 border border-emerald-700/40 text-emerald-400 hover:text-white transition-all shadow-sm"
@@ -101,8 +115,8 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
           </button>
         </div>
 
-        {/* Navigation Items List */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 scrollbar-thin scrollbar-thumb-emerald-900/50">
+        {/* Nav Items */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {TECHNICIAN_NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
 
@@ -112,6 +126,8 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
                 onClick={() => {
                   if (item.id === "logout" && onLogout) {
                     onLogout();
+                  } else if (item.id === "home") {
+                    router.push("/");
                   } else {
                     setActiveTab(item.id);
                     if (item.path && window.location.pathname !== item.path) {
@@ -120,8 +136,10 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}
-                className={`group relative w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-[14px] font-medium transition-all duration-200 ${
-                  item.isDanger
+                className={`group relative w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[14px] font-medium transition-all duration-200 ${
+                  item.id === "home"
+                    ? "bg-emerald-600/30 hover:bg-emerald-600/50 text-white font-extrabold border border-emerald-500/50"
+                    : item.isDanger
                     ? "text-rose-400 hover:bg-rose-950/30 hover:text-rose-300"
                     : isActive
                     ? "bg-gradient-to-r from-emerald-500/25 via-emerald-500/15 to-transparent text-emerald-400 font-bold border border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
@@ -129,10 +147,9 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
                 }`}
                 title={collapsed ? item.name : undefined}
               >
-                {/* Active Indicator Glow Pill */}
-                {isActive && (
+                {isActive && item.id !== "home" && (
                   <motion.span
-                    layoutId="activeTechGlowPill"
+                    layoutId="techNavIndicator"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-emerald-400 rounded-r-full shadow-[0_0_12px_#22c55e]"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
@@ -141,7 +158,9 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
                 <item.icon
                   size={20}
                   className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${
-                    isActive
+                    item.id === "home"
+                      ? "text-emerald-300"
+                      : isActive
                       ? "text-emerald-400 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
                       : item.isDanger
                       ? "text-rose-400"
@@ -169,7 +188,7 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
           })}
         </nav>
 
-        {/* Sidebar Footer Technician Status & Wallet Summary */}
+        {/* Footer */}
         {!collapsed && (
           <div className="p-4 border-t border-emerald-900/30 space-y-3 bg-[#040e0b]">
             <div className="bg-emerald-950/40 border border-emerald-800/30 rounded-2xl p-3">
@@ -186,14 +205,20 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
             </div>
 
             <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-emerald-950/30 border border-emerald-900/40">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                alt="Rajesh Tamang"
-                className="w-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow"
-              />
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={displayName}
+                  className="w-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white font-extrabold text-xs flex items-center justify-center shadow">
+                  {userInitials}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white truncate">Rajesh Tamang</p>
-                <p className="text-[11px] text-emerald-400/80 truncate">Senior AC & Fiber Specialist</p>
+                <p className="text-xs font-bold text-white truncate">{displayName}</p>
+                <p className="text-[11px] text-emerald-400/80 truncate">{displayEmail}</p>
               </div>
             </div>
           </div>

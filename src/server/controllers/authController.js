@@ -157,26 +157,24 @@ export async function registerUser(req, res) {
     return res.status(400).json({ error: "Password must be at least 8 characters." });
   }
 
-  // SECURITY (RBAC): public self-registration can only ever create a USER
-  // account. Roles are NEVER accepted from the client — otherwise anyone
-  // could POST { role: "ADMIN" } and self-escalate. Promoting a user to
-  // TECHNICIAN/ADMIN is an ADMIN-only action performed through the
-  // /api/admin/users endpoint (which enforces requireAdmin + audit log).
-  if (role && role !== "USER") {
+  // SECURITY (RBAC): public self-registration can create USER or TECHNICIAN
+  // accounts. ADMIN roles are NEVER accepted from the client — promoting a user to
+  // ADMIN is an ADMIN-only action performed through the /api/admin/users endpoint.
+  if (role && role === "ADMIN") {
     try {
       await logLoginEvent({
         userEmail: String(email || "").toLowerCase(),
         type: "audit",
         action: "role_escalation_attempt",
         success: false,
-        reason: `Registration attempted with role "${role}". Self-assigned roles are denied.`,
+        reason: `Registration attempted with role "${role}". Admin self-assignment denied.`,
         ip: getClientIp(req),
         device: detectDevice(req),
       });
     } catch (e) {
       // ignore — never allow an audit failure to break registration flow
     }
-    return res.status(403).json({ error: "Self-registration with an elevated role is not allowed." });
+    return res.status(403).json({ error: "Self-registration as ADMIN is not allowed." });
   }
 
   try {
@@ -189,12 +187,13 @@ export async function registerUser(req, res) {
     }
 
     const passwordHash = await hashPassword(password);
+    const assignedRole = role === "TECHNICIAN" ? "TECHNICIAN" : "USER";
     const { error, user } = await createUser({
       name: name.trim(),
       email: lowerEmail,
       phone: phone || "",
       passwordHash,
-      role: "USER", // force the safe default — ignore anything else sent
+      role: assignedRole,
       authProvider: "local",
     });
 

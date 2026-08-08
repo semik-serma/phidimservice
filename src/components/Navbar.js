@@ -86,11 +86,11 @@ export const Navbar = ({
   const navItems = ["HOME", "ALL SERVICES", "LAN NETWORKING", "ABOUT", "CONTACT US"];
 
   return (
-    <nav className="bg-white border-b border-gray-200 relative z-30">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-4 md:px-8 py-2 md:py-0">
+    <nav className="bg-white border-b border-gray-200 relative z-30 shadow-xs px-6 sm:px-16 md:px-28 lg:px-44 xl:px-56">
+      <div className="max-w-[1700px] mx-auto flex items-center justify-between py-2.5 md:py-1.5">
         
         {/* Left Side: Mobile Hamburger & Browse Categories */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Mobile Hamburger Menu Toggle Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -105,16 +105,16 @@ export const Navbar = ({
           <div className="relative">
             <button
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              className="bg-[#8cc63f] hover:bg-[#7db333] text-white font-extrabold py-3 px-4 sm:px-6 md:py-3.5 md:px-7 flex items-center gap-2.5 sm:gap-3 transition-colors text-xs sm:text-sm uppercase tracking-wider cursor-pointer shadow-sm rounded-sm"
+              className="bg-[#8cc63f] hover:bg-[#7db333] text-white font-extrabold py-2.5 px-6 sm:px-8 flex items-center gap-2.5 transition-colors text-xs uppercase tracking-wider cursor-pointer shadow-xs rounded-sm"
             >
-              <Menu className="w-4 h-4 hidden sm:block" />
+              <Menu className="w-4 h-4 hidden sm:block shrink-0" />
               <span>CATEGORIES</span>
-              <ChevronDown className={`w-4 h-4 ml-1 transition-transform duration-200 ${isCategoryOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-4 h-4 ml-1 transition-transform duration-200 shrink-0 ${isCategoryOpen ? "rotate-180" : ""}`} />
             </button>
 
             {/* Categories Dropdown Menu */}
             {isCategoryOpen && (
-              <div className="absolute top-full left-0 w-64 bg-white border border-gray-200 shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute top-full left-0 w-64 bg-white border border-gray-200 shadow-xl py-2 z-50 rounded-b-lg animate-in fade-in slide-in-from-top-2 duration-150">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat.id}
@@ -123,13 +123,13 @@ export const Navbar = ({
                       setActiveTab("ALL SERVICES");
                       setIsCategoryOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center justify-between transition-colors border-b border-gray-50 last:border-0 font-medium cursor-pointer"
+                    className="w-full text-left px-4 py-2.5 text-xs text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center justify-between transition-colors border-b border-gray-50 last:border-0 font-semibold cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
                       {getIcon(cat.icon)}
                       <span>{cat.name}</span>
                     </div>
-                    <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                    <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full font-bold">
                       {cat.count}
                     </span>
                   </button>
@@ -139,8 +139,8 @@ export const Navbar = ({
           </div>
         </div>
 
-        {/* Center Nav Links (Desktop & Tablet) */}
-        <div className="hidden md:flex items-center gap-2 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8 text-xs sm:text-sm font-extrabold tracking-wider">
+        {/* Center Nav Links - Desktop */}
+        <div className="hidden lg:flex items-center gap-5 text-xs font-semibold tracking-wide ml-4 xl:ml-6">
           {navItems.map((item) => {
             const isActive = activeTab === item;
             return (
@@ -152,10 +152,10 @@ export const Navbar = ({
                     onSelectCategory("ALL");
                   }
                 }}
-                className={`py-3.5 px-3 sm:px-4 md:px-4 lg:px-5 rounded-lg transition-all relative cursor-pointer uppercase whitespace-nowrap ${
+                className={`py-2.5 px-3.5 rounded-md transition-all relative cursor-pointer uppercase whitespace-nowrap font-bold ${
                   isActive
-                    ? 'text-green-700 font-black bg-green-50/80 after:content-[""] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-green-600'
-                    : "text-gray-700 hover:text-green-600 hover:bg-gray-50"
+                    ? 'text-green-700 font-extrabold bg-green-50/80 after:content-[""] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-green-600'
+                    : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
                 }`}
               >
                 {item}
@@ -164,43 +164,48 @@ export const Navbar = ({
           })}
         </div>
 
-        {/* Right Side: Quick Action Icons on Navbar */}
-        <div className="flex items-center gap-2 sm:gap-3 text-xs">
+        {/* Right Side: Actions, Wishlist, Cart & Auth Links */}
+        <div className="flex items-center gap-2.5 sm:gap-3.5 text-xs">
           
-          {/* Quick Wishlist Icon for Mobile */}
+          {/* Wishlist Icon Badge */}
           <button
             onClick={onOpenWishlist}
-            className="md:hidden relative p-2 text-gray-700 hover:text-red-500 transition-colors cursor-pointer bg-gray-100 rounded-lg"
+            className="relative flex items-center text-gray-700 hover:text-red-500 transition-colors cursor-pointer p-1.5 hover:bg-gray-100 rounded-lg"
             title="Wishlist"
           >
-            <Heart className="w-4 h-4" />
+            <Heart className="w-4.5 h-4.5" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
                 {wishlistCount}
               </span>
             )}
           </button>
 
-          {/* Quick Cart Icon for Mobile */}
+          {/* Shopping Cart Pill */}
           <button
             onClick={onOpenCart}
-            className="md:hidden relative p-2 text-gray-700 hover:text-green-600 transition-colors cursor-pointer bg-gray-100 rounded-lg"
-            title="Cart"
+            className="flex items-center gap-1.5 text-gray-800 hover:text-green-600 transition-colors cursor-pointer p-1.5 hover:bg-gray-100 rounded-lg"
+            title="Shopping Cart"
           >
-            <ShoppingBag className="w-4 h-4" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
+            <div className="relative">
+              <ShoppingBag className="w-4.5 h-4.5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+            <span className="hidden sm:inline text-xs font-bold text-gray-900 whitespace-nowrap">
+              Rs {cartTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
           </button>
 
           {/* Navbar Like Button */}
           <button
             onClick={handleLikeClick}
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border ${
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer border ${
               hasLiked
-                ? "bg-red-500 text-white border-red-600 scale-110 shadow-md"
+                ? "bg-red-500 text-white border-red-600 scale-105 shadow-xs"
                 : "bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
             }`}
             title="Click to like Phidim Service!"
@@ -209,41 +214,44 @@ export const Navbar = ({
             <span>{formatCount(likeCount)}</span>
           </button>
 
-          {/* Developer Portfolio Link */}
-          
-
-          {/* Authentication Actions */}
+          {/* Authentication & Portal Links */}
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2">
               <Link
-                href={user.dashboardPath || "/dashboard/user"}
-                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
+                href={user.dashboardPath || "/user/dashboard"}
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-3 py-1.5 rounded-lg text-xs shadow-2xs transition-colors tracking-tight"
                 title="Go to Dashboard"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">My Dashboard ({user.role})</span>
-                <span className="sm:hidden">Dashboard</span>
+                <span className="hidden md:inline">Dashboard ({user.role})</span>
+                <span className="md:hidden">Dashboard</span>
               </Link>
 
               <button
                 onClick={logout}
-                className="flex items-center gap-1 p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-rose-200"
+                className="flex items-center gap-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-rose-200"
                 title="Logout"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-3.5 h-3.5 text-rose-600" />
                 <span className="hidden md:inline">Logout</span>
               </button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              
+              <Link
+                href="/login"
+                className="flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-green-600 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              >
+                <User className="w-3.5 h-3.5 text-gray-500" />
+                <span className="tracking-tight">LOGIN</span>
+              </Link>
 
               <Link
-                href="/dashboard/technician"
-                className="hidden sm:flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
-                title="Open Technician Dashboard"
+                href="/login?role=TECHNICIAN"
+                className="hidden sm:flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-emerald-400 font-extrabold px-3 py-1.5 rounded-lg text-xs shadow-2xs transition-colors tracking-tight border border-slate-800"
+                title="Open Technician Portal Login"
               >
-                <Wrench className="w-3.5 h-3.5 text-white" />
+                <Wrench className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Tech Portal</span>
               </Link>
             </div>
@@ -252,27 +260,27 @@ export const Navbar = ({
 
       </div>
 
-      {/* Mobile Navigation Hamburger Drawer Overlay */}
+      {/* Mobile Navigation Drawer Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
-          {/* Dark Backdrop */}
+          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
-          {/* Drawer Content */}
+          {/* Mobile Side Drawer Content */}
           <div className="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-50 animate-in slide-in-from-left duration-250 overflow-y-auto">
             
             {/* Drawer Header */}
             <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-slate-950 text-white">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-slate-900 border border-green-500 p-0.5 overflow-hidden shrink-0">
                   <img src="/logo.png" alt="Phidim Service Logo" className="w-full h-full object-contain rounded-full" />
                 </div>
                 <div>
                   <h2 className="font-black text-sm tracking-tight text-white leading-none">PHIDIM SERVICE</h2>
-                  <p className="text-[9px] text-gray-400 font-semibold uppercase mt-0.5">Panchthar • Koshi • Nepal</p>
+                  <p className="text-[9px] text-gray-400 font-semibold uppercase mt-1">Panchthar • Koshi • Nepal</p>
                 </div>
               </div>
               <button
@@ -284,7 +292,7 @@ export const Navbar = ({
               </button>
             </div>
 
-            {/* Mobile Search Bar */}
+            {/* Mobile Search Input */}
             <div className="p-3.5 border-b border-gray-100 bg-gray-50">
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-green-600 shadow-2xs">
                 <input
@@ -298,7 +306,7 @@ export const Navbar = ({
                       setIsMobileMenuOpen(false);
                     }
                   }}
-                  className="flex-1 px-3 py-2 text-xs text-gray-800 focus:outline-hidden"
+                  className="flex-1 px-3 py-2 text-xs text-gray-800 focus:outline-hidden font-medium"
                 />
                 <button
                   onClick={() => {
@@ -313,7 +321,7 @@ export const Navbar = ({
               </div>
             </div>
 
-            {/* Quick Action Buttons Grid (Login/Dashboard, Wishlist, Cart) */}
+            {/* Quick Action Badges Grid */}
             <div className="p-3.5 border-b border-gray-100 grid grid-cols-3 gap-2">
               {isAuthenticated && user ? (
                 <Link
@@ -358,9 +366,9 @@ export const Navbar = ({
               </button>
             </div>
 
-            {/* Main Mobile Navigation Links */}
+            {/* Mobile Navigation Links */}
             <div className="p-3.5 border-b border-gray-100 flex-1">
-              <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-2">Main Navigation</h3>
+              <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-2.5">Main Navigation</h3>
               <div className="space-y-1">
                 {navItems.map((item) => {
                   const isActive = activeTab === item;
@@ -388,45 +396,50 @@ export const Navbar = ({
               </div>
             </div>
 
-            {/* Footer inside Mobile Drawer: Social Links & Visitor Counter */}
+            {/* Mobile Drawer Footer */}
             <div className="p-3.5 bg-gray-50 border-t border-gray-200">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <a
-                    href="https://www.facebook.com/dhanraj.serma.14"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-full bg-[#1877f2] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
-                    title="Facebook"
-                  >
-                    <Facebook className="w-3.5 h-3.5 fill-current" />
-                  </a>
-                  <a
-                    href="https://www.youtube.com/@semikserma"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-full bg-[#ff0000] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
-                    title="YouTube"
-                  >
-                    <Youtube className="w-3.5 h-3.5 fill-current" />
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/in/semik-serma-8263a3391/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-full bg-[#0a66c2] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-xs"
-                    title="LinkedIn"
-                  >
-                    <Linkedin className="w-3.5 h-3.5 fill-current" />
-                  </a>
-                </div>
+                {!isAuthenticated ? (
+                  <div className="flex items-center gap-2">
+                    <a
+                      href="https://www.facebook.com/dhanraj.serma.14"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-7 h-7 rounded-full bg-[#1877f2] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-2xs"
+                      title="Facebook"
+                    >
+                      <Facebook className="w-3.5 h-3.5 fill-current" />
+                    </a>
+                    <a
+                      href="https://www.youtube.com/@semikserma"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-7 h-7 rounded-full bg-[#ff0000] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-2xs"
+                      title="YouTube"
+                    >
+                      <Youtube className="w-3.5 h-3.5 fill-current" />
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/semik-serma-8263a3391/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-7 h-7 rounded-full bg-[#0a66c2] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-2xs"
+                      title="LinkedIn"
+                    >
+                      <Linkedin className="w-3.5 h-3.5 fill-current" />
+                    </a>
+                  </div>
+                ) : (
+                  <div className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                    Logged in as {user?.role || "User"}
+                  </div>
+                )}
 
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1 bg-blue-50 border border-blue-200 text-blue-900 px-2.5 py-1 rounded-full text-[11px] font-black">
                     <Eye className="w-3.5 h-3.5 text-blue-600 animate-pulse shrink-0" />
                     <span>{formatCount(visitorCount || 1285)} Views</span>
                   </div>
-                 
                 </div>
               </div>
             </div>
@@ -437,3 +450,4 @@ export const Navbar = ({
     </nav>
   );
 };
+

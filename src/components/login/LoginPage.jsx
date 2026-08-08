@@ -10,10 +10,12 @@ import {
   ArrowRight,
   ArrowLeft,
   AlertCircle,
-  Shield,
   User,
   Wrench,
-  Zap,
+  HardHat,
+  MapPin,
+  Cable,
+  CheckCircle2,
   LifeBuoy,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -27,24 +29,17 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ROLE_TABS = [
   {
     key: 'USER',
-    label: 'Customer',
+    label: 'Customer Account',
     icon: User,
-    active: 'bg-white text-[#16A34A] shadow-md font-black',
-    inactive: 'text-slate-500 hover:text-slate-800',
+    active: 'bg-emerald-600 text-white shadow-md font-black',
+    inactive: 'text-slate-500 hover:text-slate-800 font-semibold',
   },
   {
     key: 'TECHNICIAN',
-    label: 'Technician',
+    label: 'Technician Portal',
     icon: Wrench,
     active: 'bg-slate-900 text-emerald-400 shadow-md font-black',
-    inactive: 'text-slate-500 hover:text-slate-800',
-  },
-  {
-    key: 'ADMIN',
-    label: 'Admin',
-    icon: Shield,
-    active: 'bg-emerald-950 text-amber-400 shadow-md font-black',
-    inactive: 'text-slate-500 hover:text-slate-800',
+    inactive: 'text-slate-500 hover:text-slate-800 font-semibold',
   },
 ];
 
@@ -72,21 +67,39 @@ function GoogleIcon({ className }) {
 }
 
 export default function LoginPage() {
-  const { user, isAuthenticated, login, loginWithGoogle } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const router = useRouter();
-  const [role, setRole] = useState('USER'); // 'USER' | 'TECHNICIAN' | 'ADMIN'
+
+  const [role, setRole] = useState('USER'); // 'USER' | 'TECHNICIAN'
+  const [techMode, setTechMode] = useState('LOGIN'); // 'LOGIN' | 'REGISTER'
+
+  // Standard Customer fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Technician fields
+  const [techIdOrPhone, setTechIdOrPhone] = useState('');
+  const [techPassword, setTechPassword] = useState('');
+  const [techFullName, setTechFullName] = useState('');
+  const [techWard, setTechWard] = useState('Phidim Ward 1 (Main Bazar)');
+  const [techSpecialty, setTechSpecialty] = useState('LAN Networking & Fiber Splicing');
+
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [fieldErrors, setFieldErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Surface Google OAuth failures passed back via ?error= in the callback redirect.
+  // Read initial role tab from URL params (?role=TECHNICIAN) & surface OAuth errors
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
+
+    const queryRole = params.get('role') || params.get('tab') || params.get('type');
+    if (queryRole && queryRole.toUpperCase() === 'TECHNICIAN') {
+      setRole('TECHNICIAN');
+    }
+
     const oauthError = params.get('error');
     if (!oauthError) return;
     const messages = {
@@ -102,45 +115,96 @@ export default function LoginPage() {
     window.history.replaceState({}, '', window.location.pathname);
   }, []);
 
-  const validate = () => {
+  const validateUserForm = () => {
     const errors = {};
     const trimmed = email.trim().toLowerCase();
     if (!trimmed) {
       errors.email = 'Email / phone is required.';
-    } else if (!trimmed.includes('@') && !/^[+]?[\d\s-]{7,15}$/.test(trimmed)) {
-      errors.email = 'Enter a valid email address or phone number.';
-    } else if (trimmed.includes('@') && !EMAIL_RE.test(trimmed)) {
-      errors.email = 'Please enter a valid email address.';
     }
     if (!password) {
       errors.password = 'Password is required.';
-    } else if (password.length < 8) {
-      errors.password = 'Password must be at least 8 characters.';
-    } else if (password.length > 100) {
-      errors.password = 'Password must be at most 100 characters.';
+    } else if (password.length < 6) {
+      errors.password = 'Password must be at least 6 characters.';
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const validateTechForm = () => {
+    const errors = {};
+    if (!techIdOrPhone.trim()) {
+      errors.techIdOrPhone = 'Technician ID or phone is required.';
+    }
+    if (!techPassword) {
+      errors.techPassword = 'Password is required.';
+    } else if (techPassword.length < 6) {
+      errors.techPassword = 'Password must be at least 6 characters.';
+    }
+    if (techMode === 'REGISTER' && !techFullName.trim()) {
+      errors.techFullName = 'Full name is required for registration.';
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleUserSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
-    if (!validate()) {
-      toast.error('Please fix the highlighted fields.');
-      return;
-    }
+    if (!validateUserForm()) return;
     setIsSubmitting(true);
     try {
       const account = await login({
         emailOrPhone: email.trim().toLowerCase(),
         password,
         rememberMe,
-        role,
+        role: 'USER',
       });
-      toast.success(`Welcome back, ${account.name}! Redirecting to dashboard...`);
+      toast.success(`Welcome back, ${account.name}! Redirecting to customer dashboard...`);
+      router.push('/user/dashboard');
     } catch (err) {
-      const msg = err?.message || 'Login failed. Please check your credentials.';
+      const msg = err?.message || 'Customer login failed. Please check your credentials.';
+      setServerError(msg);
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTechSubmit = async (e) => {
+    e.preventDefault();
+    setServerError('');
+    if (!validateTechForm()) return;
+    setIsSubmitting(true);
+    try {
+      const idOrPhone = techIdOrPhone.trim();
+      let account;
+
+      if (techMode === 'LOGIN') {
+        account = await login({
+          emailOrPhone: idOrPhone,
+          password: techPassword,
+          rememberMe,
+          role: 'TECHNICIAN',
+        });
+      } else {
+        const cleanEmail = idOrPhone.includes('@')
+          ? idOrPhone
+          : `${idOrPhone.toLowerCase().replace(/[^a-z0-9]/g, '')}@phidim.np`;
+        account = await register({
+          name: techFullName || 'Field Technician',
+          email: cleanEmail,
+          phone: idOrPhone,
+          password: techPassword,
+          role: 'TECHNICIAN',
+        });
+      }
+
+      toast.success(`Welcome Technician ${account.name}! Launching Technician Command Dashboard...`);
+      if (typeof window !== 'undefined') {
+        window.location.href = '/technician/dashboard';
+      }
+    } catch (err) {
+      const msg = err?.message || 'Technician authentication failed. Please check your details.';
       setServerError(msg);
       toast.error(msg);
     } finally {
@@ -149,62 +213,46 @@ export default function LoginPage() {
   };
 
   const handleDemoLogin = async (selectedRole) => {
-    setRole(selectedRole);
-    const demo = DEMO_ACCOUNTS[selectedRole];
-    setEmail(demo.email);
-    setPassword('password123');
+    const roleToUse = selectedRole === 'ADMIN' ? 'USER' : selectedRole;
+    setRole(roleToUse);
+    const demo = DEMO_ACCOUNTS[roleToUse] || DEMO_ACCOUNTS.USER;
     setServerError('');
-    setFieldErrors({});
     setIsSubmitting(true);
     try {
-      const account = await login({ emailOrPhone: demo.email, password: 'password123', rememberMe, role: selectedRole });
-      toast.success(`Signed in as ${account.name} (${selectedRole}). Redirecting to ${account.dashboardPath}...`);
+      const account = await login({ emailOrPhone: demo.email, password: 'password123', rememberMe, role: roleToUse });
+      toast.success(`Signed in as ${account.name}. Redirecting to ${account.dashboardPath}...`);
+      if (typeof window !== 'undefined' && account.dashboardPath) {
+        window.location.href = account.dashboardPath;
+      }
     } catch (err) {
       const msg = err?.message || 'Demo login error';
       setServerError(msg);
-      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleRoleChange = useCallback(
-    (nextRole) => {
-      setRole(nextRole);
-      // Clean role tab switch — do NOT auto-fill fields
-    },
-    []
-  );
-
-  const emailValid = useMemo(() => {
-    const trimmed = email.trim().toLowerCase();
-    if (!trimmed) return false;
-    return trimmed.includes('@') ? EMAIL_RE.test(trimmed) : /^[+]?[\d\s-]{7,15}$/.test(trimmed);
-  }, [email]);
-
-  const passwordValid = useMemo(() => password.length >= 8 && password.length <= 100, [password]);
-
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row font-sans bg-white">
+    <div className="min-h-screen flex flex-col lg:flex-row font-sans bg-slate-50">
       {/* LEFT: Brand showcase (desktop only) */}
       <BrandPanel isLoading={isSubmitting} onDemoLogin={handleDemoLogin} />
 
       {/* RIGHT: Centered authentication card */}
       <main className="w-full lg:flex-1 min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-12 py-10 bg-gradient-to-br from-white via-[#F8FAF9] to-[#EFFAF3] relative overflow-hidden">
-        {/* Ambient light background (mobile + right panel) */}
+        {/* Ambient light background */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#22C55E]/10 blur-[120px]" />
           <div className="absolute bottom-0 -left-24 w-80 h-80 rounded-full bg-[#14B8A6]/10 blur-[110px]" />
         </div>
 
         {/* Top navigation */}
-        <div className="relative w-full max-w-[460px] flex items-center justify-between mb-6 sm:mb-8">
+        <div className="relative w-full max-w-[480px] flex items-center justify-between mb-6 sm:mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-[#16A34A] transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/40 rounded-lg"
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-[#16A34A] transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/40 rounded-lg"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Back to Home</span>
+            <span>Back to Main Website</span>
           </Link>
 
           <div className="lg:hidden flex items-center gap-2">
@@ -220,31 +268,31 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Auth card */}
-        <div className="relative w-full max-w-[460px] bg-white/80 backdrop-blur-xl rounded-[26px] p-6 sm:p-8 border border-white/70 shadow-2xl shadow-emerald-900/[0.06] animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
-          {/* Card header */}
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#16A34A]/10 to-[#22C55E]/10 border border-[#16A34A]/20 mb-4 shadow-xs">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden p-0.5 bg-slate-900 ring-2 ring-[#16A34A]/50">
-                <img
-                  src="/logo.png"
-                  alt="Phidim Service logo"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
+        {/* Main Auth Card */}
+        <div className="relative w-full max-w-[480px] bg-white/90 backdrop-blur-xl rounded-[28px] p-6 sm:p-8 border border-white/70 shadow-2xl shadow-emerald-900/[0.06] animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+          {/* Card Header */}
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#16A34A]/10 to-[#22C55E]/10 border border-[#16A34A]/20 shadow-xs mx-auto">
+              {role === 'USER' ? (
+                <User className="w-7 h-7 text-emerald-600" />
+              ) : (
+                <HardHat className="w-7 h-7 text-slate-900" />
+              )}
             </div>
-            <h2 className="text-[26px] sm:text-3xl font-black text-[#111827] tracking-tight">
-              Welcome back
+
+            <h2 className="text-2xl sm:text-3xl font-black text-[#111827] tracking-tight">
+              {role === 'USER' ? 'Customer Account Sign In' : 'Field Technician Portal'}
             </h2>
-            <p className="text-[13px] text-[#6B7280] mt-1.5 font-medium">
-              Sign in to continue to your {role.toLowerCase()} dashboard
+            <p className="text-xs text-[#6B7280] font-medium max-w-sm mx-auto">
+              {role === 'USER'
+                ? 'Sign in to request home services, manage orders & track technicians in Panchthar.'
+                : 'Fill out your technician identity & assigned ward details to launch your Technician Command Interface.'}
             </p>
           </div>
 
-          {/* Role selector tabs */}
+          {/* Role Selector Tabs (Customer vs Technician ONLY) */}
           <div
-            className="grid grid-cols-3 gap-1.5 p-1.5 rounded-2xl bg-slate-100 text-xs font-bold border border-slate-200"
+            className="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-slate-100 text-xs font-bold border border-slate-200"
             role="tablist"
             aria-label="Account type"
           >
@@ -254,19 +302,22 @@ export default function LoginPage() {
                 type="button"
                 role="tab"
                 aria-selected={role === tab.key}
-                onClick={() => handleRoleChange(tab.key)}
-                className={`py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/50 ${
+                onClick={() => {
+                  setRole(tab.key);
+                  setServerError('');
+                  setFieldErrors({});
+                }}
+                className={`py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   role === tab.key ? tab.active : tab.inactive
                 }`}
               >
-                <tab.icon className="w-3.5 h-3.5" />
+                <tab.icon className="w-4 h-4" />
                 <span>{tab.label}</span>
               </button>
             ))}
           </div>
 
-
-          {/* Server error alert */}
+          {/* Server Error Alert */}
           {serverError && (
             <div
               className="flex items-start gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold animate-in fade-in slide-in-from-top-1 duration-200"
@@ -277,135 +328,252 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-            <FloatingField
-              id="login-email"
-              label="Email / Phone"
-              name="email"
-              icon={Mail}
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (fieldErrors.email) setFieldErrors((f) => ({ ...f, email: undefined }));
-              }}
-              error={fieldErrors.email}
-              valid={emailValid}
-              disabled={isSubmitting}
-              autoComplete="username"
-              inputMode="email"
-            />
+          {/* ================= FORM 1: CUSTOMER (USER) ================= */}
+          {role === 'USER' && (
+            <form onSubmit={handleUserSubmit} className="space-y-5" noValidate>
+              <FloatingField
+                id="customer-email"
+                label="Mobile Phone or Email Address"
+                name="email"
+                icon={Mail}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email) setFieldErrors((f) => ({ ...f, email: undefined }));
+                }}
+                error={fieldErrors.email}
+                disabled={isSubmitting}
+                autoComplete="username"
+              />
 
-            <FloatingField
-              id="login-password"
-              label="Password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              icon={Lock}
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (fieldErrors.password) setFieldErrors((f) => ({ ...f, password: undefined }));
-              }}
-              error={fieldErrors.password}
-              valid={passwordValid}
-              disabled={isSubmitting}
-              autoComplete="current-password"
-              right={
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  disabled={isSubmitting}
-                  className="p-2 rounded-xl text-[#6B7280] hover:text-[#111827] hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/40 transition-colors cursor-pointer"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
-                </button>
-              }
-            />
+              <FloatingField
+                id="customer-password"
+                label="Password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                icon={Lock}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors((f) => ({ ...f, password: undefined }));
+                }}
+                error={fieldErrors.password}
+                disabled={isSubmitting}
+                autoComplete="current-password"
+                right={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                }
+              />
 
-            {/* Remember me + forgot password */}
-            <div className="flex items-center justify-between pt-0.5">
-              <label className="flex items-center gap-2 cursor-pointer select-none group">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  disabled={isSubmitting}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#E5E7EB] accent-[#16A34A] focus:ring-[#16A34A] cursor-pointer"
-                />
-                <span className="text-xs text-[#6B7280] font-medium group-hover:text-[#111827] transition-colors">
-                  Remember me on this device
-                </span>
-              </label>
-              <Link
-                href="/forgot-password"
-                className="text-xs font-bold text-[#16A34A] hover:text-[#22C55E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/40 rounded-lg"
+              <div className="flex items-center justify-between pt-0.5">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    disabled={isSubmitting}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 accent-[#16A34A]"
+                  />
+                  <span className="text-xs text-slate-600 font-medium">Remember me</span>
+                </label>
+                <Link href="/forgot-password" className="text-xs font-bold text-[#16A34A] hover:underline">
+                  Forgot Password?
+                </Link>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-[54px] rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
               >
-                Forgot Password?
-              </Link>
-            </div>
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Signing into Customer Portal...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <span>LOG IN TO CUSTOMER ACCOUNT</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                )}
+              </button>
+            </form>
+          )}
 
-            {/* Primary submit button */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="relative w-full h-[54px] rounded-2xl overflow-hidden bg-gradient-to-r from-[#16A34A] to-[#15803D] text-white font-black text-[15px] uppercase tracking-wider shadow-lg shadow-[#16A34A]/25 hover:shadow-xl hover:shadow-[#16A34A]/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#16A34A]/40 disabled:opacity-70 disabled:pointer-events-none group"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-[#22C55E] to-[#16A34A] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              {isSubmitting ? (
-                <span className="relative flex items-center gap-2">
-                  <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  Signing in...
+          {/* ================= FORM 2: FIELD TECHNICIAN ================= */}
+          {role === 'TECHNICIAN' && (
+            <form onSubmit={handleTechSubmit} className="space-y-4" noValidate>
+              {/* Tech Login / Register Mode Switch */}
+              <div className="flex items-center justify-between bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5 pl-1">
+                  <HardHat className="w-4 h-4 text-emerald-600" />
+                  <span>{techMode === 'LOGIN' ? 'Technician Sign In' : 'Register Field Installer'}</span>
                 </span>
-              ) : (
-                <span className="relative flex items-center gap-2">
-                  <span>Sign In</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                </span>
+                <div className="flex items-center gap-1 text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setTechMode('LOGIN')}
+                    className={`px-3 py-1 rounded-lg transition-all ${
+                      techMode === 'LOGIN' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Tech Login
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTechMode('REGISTER')}
+                    className={`px-3 py-1 rounded-lg transition-all ${
+                      techMode === 'REGISTER' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Tech Register
+                  </button>
+                </div>
+              </div>
+
+              {/* Technician Register Fields */}
+              {techMode === 'REGISTER' && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Technician Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Ramesh Rai"
+                    value={techFullName}
+                    onChange={(e) => setTechFullName(e.target.value)}
+                    className="w-full px-4 py-3 text-xs border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600 font-semibold"
+                  />
+                  {fieldErrors.techFullName && <p className="text-[11px] text-rose-600 font-bold mt-1">{fieldErrors.techFullName}</p>}
+                </div>
               )}
-            </button>
-          </form>
 
-          {/* Divider */}
-          <div className="relative flex py-1 items-center" aria-hidden="true">
-            <div className="flex-grow border-t border-slate-200" />
-            <span className="flex-shrink mx-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-              Or continue with
-            </span>
-            <div className="flex-grow border-t border-slate-200" />
-          </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Technician ID / Mobile Phone Number
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. TECH-402 or 9842109842"
+                  value={techIdOrPhone}
+                  onChange={(e) => {
+                    setTechIdOrPhone(e.target.value);
+                    if (fieldErrors.techIdOrPhone) setFieldErrors((f) => ({ ...f, techIdOrPhone: undefined }));
+                  }}
+                  className="w-full px-4 py-3 text-xs border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600 font-semibold"
+                />
+                {fieldErrors.techIdOrPhone && <p className="text-[11px] text-rose-600 font-bold mt-1">{fieldErrors.techIdOrPhone}</p>}
+              </div>
 
-          {/* Google OAuth */}
-          <button
-            type="button"
-            onClick={() => loginWithGoogle(role)}
-            disabled={isSubmitting}
-            className="w-full h-[54px] rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-[#111827] text-sm font-bold flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/5 active:translate-y-0 active:scale-[0.99] shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#16A34A]/30 disabled:opacity-50 disabled:pointer-events-none"
-          >
-            <GoogleIcon className="w-5 h-5" />
-            <span>Continue with Google</span>
-          </button>
+              {techMode === 'REGISTER' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Primary Service Area Ward</label>
+                    <select
+                      value={techWard}
+                      onChange={(e) => setTechWard(e.target.value)}
+                      className="w-full px-4 py-3 text-xs border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600 font-semibold bg-white"
+                    >
+                      <option value="Phidim Ward 1 (Main Bazar)">Phidim Ward 1 (Main Bazar)</option>
+                      <option value="Phidim Ward 2 (Buspark Area)">Phidim Ward 2 (Buspark Area)</option>
+                      <option value="Phidim Ward 3 (Bharapa Area)">Phidim Ward 3 (Bharapa Area)</option>
+                      <option value="Phidim Ward 4 (Chokmagu Area)">Phidim Ward 4 (Chokmagu Area)</option>
+                      <option value="Panchthar Rural District Coverage">Panchthar Rural District Coverage</option>
+                    </select>
+                  </div>
 
-          {/* Register + support */}
-          <div className="text-center text-xs text-[#6B7280] pt-1 space-y-2.5">
-            <p>
-              Don&apos;t have an account?{' '}
-              <Link
-                href="/register"
-                className="font-bold text-[#16A34A] hover:text-[#22C55E] transition-colors ml-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/40 rounded-lg"
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Technical Specialization</label>
+                    <select
+                      value={techSpecialty}
+                      onChange={(e) => setTechSpecialty(e.target.value)}
+                      className="w-full px-4 py-3 text-xs border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600 font-semibold bg-white"
+                    >
+                      <option value="LAN Networking & Fiber Splicing">LAN Networking & Fiber Splicing</option>
+                      <option value="CCTV Security Camera Setup">CCTV Security Camera Setup</option>
+                      <option value="DishHome DTH Technician">DishHome DTH Technician</option>
+                      <option value="Electrical & Smart Home Wiring">Electrical & Smart Home Wiring</option>
+                    </select>
+                  </div>
+                </>
+              )}
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  value={techPassword}
+                  onChange={(e) => {
+                    setTechPassword(e.target.value);
+                    if (fieldErrors.techPassword) setFieldErrors((f) => ({ ...f, techPassword: undefined }));
+                  }}
+                  className="w-full px-4 py-3 text-xs border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600 font-semibold"
+                />
+                {fieldErrors.techPassword && <p className="text-[11px] text-rose-600 font-bold mt-1">{fieldErrors.techPassword}</p>}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-[54px] rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 mt-2"
               >
-                Create Account
-              </Link>
-            </p>
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Connecting Technician Interface...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Wrench className="w-4 h-4 text-emerald-400" />
+                    <span>{techMode === 'LOGIN' ? 'CONTINUE TO TECHNICIAN DASHBOARD' : 'REGISTER NEW TECHNICIAN'}</span>
+                  </span>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* Social Google OAuth (Customer tab) */}
+          {role === 'USER' && (
+            <>
+              <div className="relative flex py-1 items-center" aria-hidden="true">
+                <div className="flex-grow border-t border-slate-200" />
+                <span className="flex-shrink mx-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                  Or continue with
+                </span>
+                <div className="flex-grow border-t border-[#E5E7EB]" />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => loginWithGoogle('USER')}
+                disabled={isSubmitting}
+                className="w-full h-[50px] rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 text-xs font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+              >
+                <GoogleIcon className="w-5 h-5" />
+                <span>Continue with Google</span>
+              </button>
+            </>
+          )}
+
+          {/* Support Link */}
+          <div className="text-center text-xs text-slate-500 pt-1 space-y-2">
             <a
               href="https://wa.me/9779862772457"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-slate-400 hover:text-[#16A34A] font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 text-slate-400 hover:text-emerald-600 font-semibold transition-colors"
             >
               <LifeBuoy className="w-3.5 h-3.5" />
-              Having trouble signing in? Contact support
+              Need Help? Phidim Service 24/7 Support
             </a>
           </div>
         </div>

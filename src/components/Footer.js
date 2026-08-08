@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, ShieldCheck, Facebook, Youtube, Linkedin } from "lucide-react";
+import { Phone, Mail, MapPin, ShieldCheck, Facebook, Youtube, Linkedin, ExternalLink } from "lucide-react";
 export const Footer = ({
   onSelectCategory,
   onOpenAbout,
@@ -148,8 +148,18 @@ export const Footer = ({
     /* Payment Gateways & Bottom Bar */
   }
         <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <div>
-            © {(/* @__PURE__ */ new Date()).getFullYear()} <span className="text-white font-bold">Phidim Service</span>. All Rights Reserved. Panchthar, Nepal.
+          <div className="flex flex-wrap items-center gap-2">
+            <span>© {(/* @__PURE__ */ new Date()).getFullYear()} <span className="text-white font-bold">Phidim Service</span>. All Rights Reserved.</span>
+            <span className="text-gray-700 hidden sm:inline">•</span>
+            <a
+              href="https://portfolio.phidimservice.com.np"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sky-400 hover:text-sky-300 font-bold transition-colors inline-flex items-center gap-1"
+            >
+              <span>Developed by Semik Serma</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
           </div>
 
           <div className="flex items-center gap-2">

@@ -11,15 +11,23 @@ export default function NotFound() {
       </div>
       <h1 className="text-4xl font-extrabold tracking-tight mb-2">404 - Page Not Found</h1>
       <p className="text-slate-400 text-sm max-w-md mb-6">
-        The requested admin dashboard page or resource could not be found on Phidim Service.
+        The page or resource you are looking for does not exist on Phidim Service, or the URL is incorrect.
       </p>
-      <Link
-        href="/dashboard"
-        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all shadow-lg shadow-emerald-600/30"
-      >
-        <ArrowLeft size={16} />
-        Back to Admin Dashboard
-      </Link>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href="/"
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all shadow-lg shadow-emerald-600/30"
+        >
+          <ArrowLeft size={16} />
+          Back to Home
+        </Link>
+        <Link
+          href="/login"
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all"
+        >
+          Sign In
+        </Link>
+      </div>
     </div>
   );
 }

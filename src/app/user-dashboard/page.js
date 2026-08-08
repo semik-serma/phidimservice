@@ -18,9 +18,9 @@ import { UserCommandPalette } from "../../components/user-dashboard/UserCommandP
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
-export default function UserDashboardPage() {
+export default function UserDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);

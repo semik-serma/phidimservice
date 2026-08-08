@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import {
   LayoutDashboard,
@@ -24,24 +25,25 @@ import {
 } from "lucide-react";
 
 export const TECHNICIAN_NAV_ITEMS = [
-  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null },
-  { id: "new-jobs", name: "New Jobs", icon: Sparkles, badge: "3 New", badgeColor: "bg-emerald-500 text-white animate-pulse" },
-  { id: "my-jobs", name: "My Jobs", icon: Briefcase, badge: "2 Active", badgeColor: "bg-blue-500 text-white" },
-  { id: "schedule", name: "Schedule", icon: Calendar, badge: "Today" },
-  { id: "earnings", name: "Earnings", icon: Wallet, badge: "Rs 4.8k" },
+  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null, path: "/technician/dashboard" },
+  { id: "new-jobs", name: "New Jobs", icon: Sparkles, badge: "3 New", badgeColor: "bg-emerald-500 text-white animate-pulse", path: "/technician/pending-jobs" },
+  { id: "my-jobs", name: "My Jobs", icon: Briefcase, badge: "2 Active", badgeColor: "bg-blue-500 text-white", path: "/technician/jobs" },
+  { id: "schedule", name: "Schedule", icon: Calendar, badge: "Today", path: "/technician/calendar" },
+  { id: "earnings", name: "Earnings", icon: Wallet, badge: "Rs 4.8k", path: "/technician/earnings" },
   { id: "customers", name: "Customers", icon: Users, badge: null },
   { id: "reviews", name: "Reviews", icon: Star, badge: "4.95 ★" },
-  { id: "performance", name: "Performance", icon: TrendingUp, badge: "Top 1%" },
+  { id: "performance", name: "Performance", icon: TrendingUp, badge: "Top 1%", path: "/technician/reports" },
   { id: "live-location", name: "Live Location", icon: MapPin, badge: "Live", badgeColor: "bg-teal-500 text-white" },
-  { id: "wallet", name: "Wallet", icon: CreditCard, badge: "Payout Ready" },
-  { id: "documents", name: "Documents", icon: FileCheck, badge: "Verified", badgeColor: "bg-emerald-600 text-white" },
+  { id: "wallet", name: "Wallet", icon: CreditCard, badge: "Payout Ready", path: "/technician/earnings" },
+  { id: "documents", name: "Documents", icon: FileCheck, badge: "Verified", badgeColor: "bg-emerald-600 text-white", path: "/technician/profile" },
   { id: "equipment", name: "Equipment", icon: Wrench, badge: null },
-  { id: "notifications", name: "Notifications", icon: Bell, badge: "5", badgeColor: "bg-amber-500 text-white" },
-  { id: "settings", name: "Settings", icon: Settings, badge: null },
+  { id: "notifications", name: "Notifications", icon: Bell, badge: "5", badgeColor: "bg-amber-500 text-white", path: "/technician/notifications" },
+  { id: "settings", name: "Settings", icon: Settings, badge: null, path: "/technician/settings" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
 export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
+  const router = useRouter();
   return (
     <>
       {/* Mobile Backdrop */}
@@ -112,6 +114,9 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
                     onLogout();
                   } else {
                     setActiveTab(item.id);
+                    if (item.path && window.location.pathname !== item.path) {
+                      router.push(item.path);
+                    }
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}

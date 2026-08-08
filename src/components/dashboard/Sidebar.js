@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import {
   LayoutDashboard,
@@ -23,23 +24,24 @@ import {
 } from "lucide-react";
 
 export const NAV_ITEMS = [
-  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null },
-  { id: "users", name: "Users", icon: Users, badge: "14.8k" },
-  { id: "technicians", name: "Technicians", icon: UserCheck, badge: "164" },
-  { id: "services", name: "Services", icon: Wrench, badge: null },
-  { id: "bookings", name: "Bookings", icon: Calendar, badge: "12", badgeColor: "bg-emerald-500 text-white" },
-  { id: "payments", name: "Payments", icon: CreditCard, badge: null },
-  { id: "reviews", name: "Reviews", icon: Star, badge: "4.9 ★" },
-  { id: "analytics", name: "Analytics", icon: TrendingUp, badge: "Hot" },
-  { id: "categories", name: "Categories", icon: Boxes, badge: null },
+  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null, path: "/admin/dashboard" },
+  { id: "users", name: "Users", icon: Users, badge: "14.8k", path: "/admin/users" },
+  { id: "technicians", name: "Technicians", icon: UserCheck, badge: "164", path: "/admin/technicians" },
+  { id: "services", name: "Services", icon: Wrench, badge: null, path: "/admin/services" },
+  { id: "bookings", name: "Bookings", icon: Calendar, badge: "12", badgeColor: "bg-emerald-500 text-white", path: "/admin/jobs" },
+  { id: "payments", name: "Payments", icon: CreditCard, badge: null, path: "/admin/payments" },
+  { id: "reviews", name: "Reviews", icon: Star, badge: "4.9 ★", path: "/admin/reviews" },
+  { id: "analytics", name: "Analytics", icon: TrendingUp, badge: "Hot", path: "/admin/analytics" },
+  { id: "categories", name: "Categories", icon: Boxes, badge: null, path: "/admin/categories" },
   { id: "coupons", name: "Coupons", icon: Ticket, badge: "New" },
-  { id: "messages", name: "Messages", icon: MessageSquare, badge: "5", badgeColor: "bg-blue-500 text-white" },
-  { id: "notifications", name: "Notifications", icon: Bell, badge: "3", badgeColor: "bg-amber-500 text-white" },
-  { id: "settings", name: "Settings", icon: Settings, badge: null },
+  { id: "messages", name: "Messages", icon: MessageSquare, badge: "5", badgeColor: "bg-blue-500 text-white", path: "/admin/support" },
+  { id: "notifications", name: "Notifications", icon: Bell, badge: "3", badgeColor: "bg-amber-500 text-white", path: "/admin/notifications" },
+  { id: "settings", name: "Settings", icon: Settings, badge: null, path: "/admin/settings" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
 export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
+  const router = useRouter();
   return (
     <>
       {/* Mobile Backdrop */}
@@ -110,6 +112,9 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                     onLogout();
                   } else {
                     setActiveTab(item.id);
+                    if (item.path && window.location.pathname !== item.path) {
+                      router.push(item.path);
+                    }
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}

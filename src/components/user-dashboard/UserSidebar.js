@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import {
   LayoutDashboard,
@@ -24,24 +25,25 @@ import {
 } from "lucide-react";
 
 export const USER_NAV_ITEMS = [
-  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null },
-  { id: "book", name: "Book Service", icon: CalendarPlus, badge: "Quick", badgeColor: "bg-emerald-500 text-white" },
-  { id: "my-bookings", name: "My Bookings", icon: BookOpen, badge: "3 Active", badgeColor: "bg-blue-500 text-white" },
+  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null, path: "/user/dashboard" },
+  { id: "book", name: "Book Service", icon: CalendarPlus, badge: "Quick", badgeColor: "bg-emerald-500 text-white", path: "/user/book-service" },
+  { id: "my-bookings", name: "My Bookings", icon: BookOpen, badge: "3 Active", badgeColor: "bg-blue-500 text-white", path: "/user/requests" },
   { id: "track", name: "Track Technician", icon: Navigation, badge: "Live", badgeColor: "bg-amber-500 text-white animate-pulse" },
   { id: "payments", name: "Payments & Wallet", icon: CreditCard, badge: "NPR 4.5k" },
   { id: "messages", name: "Messages", icon: MessageSquare, badge: "2" },
   { id: "reviews", name: "My Reviews", icon: Star, badge: null },
   { id: "offers", name: "Offers & Coupons", icon: Gift, badge: "20% OFF", badgeColor: "bg-rose-500 text-white" },
   { id: "favorites", name: "Favorites", icon: Heart, badge: null },
-  { id: "history", name: "Booking History", icon: History, badge: null },
-  { id: "notifications", name: "Notifications", icon: Bell, badge: "4" },
-  { id: "profile", name: "My Profile", icon: User, badge: "Gold" },
-  { id: "settings", name: "Settings", icon: Settings, badge: null },
+  { id: "history", name: "Booking History", icon: History, badge: null, path: "/user/history" },
+  { id: "notifications", name: "Notifications", icon: Bell, badge: "4", path: "/user/notifications" },
+  { id: "profile", name: "My Profile", icon: User, badge: "Gold", path: "/user/profile" },
+  { id: "settings", name: "Settings", icon: Settings, badge: null, path: "/user/settings" },
   { id: "help", name: "Help Center", icon: HelpCircle, badge: "24/7" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
 export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout }) {
+  const router = useRouter();
   return (
     <>
       {/* Mobile Backdrop */}
@@ -111,6 +113,9 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
                     onLogout();
                   } else {
                     setActiveTab(item.id);
+                    if (item.path && window.location.pathname !== item.path) {
+                      router.push(item.path);
+                    }
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}

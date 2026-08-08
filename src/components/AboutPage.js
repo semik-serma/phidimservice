@@ -148,15 +148,8 @@ export const AboutPage = ({
         <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 md:p-10 shadow-xl relative overflow-hidden border border-slate-800">
           <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
           
-          <div className="relative z-10 max-w-3xl space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-black text-green-400 uppercase tracking-widest bg-green-500/20 border border-green-500/30 px-3 py-1 rounded-full">
-                OFFICIAL COMPANY PROFILE
-              </span>
-              <span className="text-[11px] font-black text-blue-300 uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full">
-                PHIDIM, PANCHTHAR, NEPAL
-              </span>
-            </div>
+          <div className="relative z-10 max-w-3xl space-y-4 pl-70">
+            
 
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
               🔧 Welcome to Phidim Service

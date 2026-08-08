@@ -18,6 +18,8 @@ import {
   Search,
   User,
   Eye,
+  Globe,
+  ExternalLink,
   Facebook,
   Youtube,
   Linkedin,
@@ -103,11 +105,11 @@ export const Navbar = ({
           <div className="relative">
             <button
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              className="bg-[#8cc63f] hover:bg-[#7db333] text-white font-bold py-2.5 px-3 sm:px-5 md:py-3.5 md:px-6 flex items-center gap-2 sm:gap-3 transition-colors text-[11px] sm:text-xs uppercase tracking-wider cursor-pointer shadow-xs rounded-sm"
+              className="bg-[#8cc63f] hover:bg-[#7db333] text-white font-extrabold py-3 px-4 sm:px-6 md:py-3.5 md:px-7 flex items-center gap-2.5 sm:gap-3 transition-colors text-xs sm:text-sm uppercase tracking-wider cursor-pointer shadow-sm rounded-sm"
             >
               <Menu className="w-4 h-4 hidden sm:block" />
               <span>CATEGORIES</span>
-              <ChevronDown className={`w-3.5 h-3.5 ml-1 transition-transform duration-200 ${isCategoryOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-4 h-4 ml-1 transition-transform duration-200 ${isCategoryOpen ? "rotate-180" : ""}`} />
             </button>
 
             {/* Categories Dropdown Menu */}
@@ -137,8 +139,8 @@ export const Navbar = ({
           </div>
         </div>
 
-        {/* Center Nav Links (Desktop) */}
-        <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-xs font-bold tracking-wider">
+        {/* Center Nav Links (Desktop & Tablet) */}
+        <div className="hidden md:flex items-center gap-2 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8 text-xs sm:text-sm font-extrabold tracking-wider">
           {navItems.map((item) => {
             const isActive = activeTab === item;
             return (
@@ -150,10 +152,10 @@ export const Navbar = ({
                     onSelectCategory("ALL");
                   }
                 }}
-                className={`py-4 transition-colors relative cursor-pointer uppercase ${
+                className={`py-3.5 px-3 sm:px-4 md:px-4 lg:px-5 rounded-lg transition-all relative cursor-pointer uppercase whitespace-nowrap ${
                   isActive
-                    ? 'text-gray-900 font-extrabold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-green-600'
-                    : "text-gray-600 hover:text-green-600"
+                    ? 'text-green-700 font-black bg-green-50/80 after:content-[""] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-green-600'
+                    : "text-gray-700 hover:text-green-600 hover:bg-gray-50"
                 }`}
               >
                 {item}
@@ -207,11 +209,14 @@ export const Navbar = ({
             <span>{formatCount(likeCount)}</span>
           </button>
 
+          {/* Developer Portfolio Link */}
+          
+
           {/* Authentication Actions */}
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2">
               <Link
-                href={user.dashboardPath || "/user-dashboard"}
+                href={user.dashboardPath || "/dashboard/user"}
                 className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
                 title="Go to Dashboard"
               >
@@ -231,16 +236,10 @@ export const Navbar = ({
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Link
-                href="/login"
-                className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
-              >
-                <User className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Sign In</span>
-              </Link>
+              
 
               <Link
-                href="/technician-dashboard"
+                href="/dashboard/technician"
                 className="hidden sm:flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[11px] shadow-xs transition-colors tracking-tight"
                 title="Open Technician Dashboard"
               >
@@ -314,16 +313,27 @@ export const Navbar = ({
               </div>
             </div>
 
-            {/* Quick Action Buttons Grid (Login, Wishlist, Cart) */}
+            {/* Quick Action Buttons Grid (Login/Dashboard, Wishlist, Cart) */}
             <div className="p-3.5 border-b border-gray-100 grid grid-cols-3 gap-2">
-              <Link
-                href="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex flex-col items-center justify-center p-2.5 bg-gray-50 hover:bg-green-50 rounded-xl border border-gray-200 hover:border-green-300 transition-all font-bold text-gray-700 hover:text-green-700 cursor-pointer"
-              >
-                <User className="w-4 h-4 text-green-600 mb-1" />
-                <span className="text-[10px]">Login</span>
-              </Link>
+              {isAuthenticated && user ? (
+                <Link
+                  href={user.dashboardPath || "/dashboard/user"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex flex-col items-center justify-center p-2.5 bg-emerald-50 hover:bg-emerald-100 rounded-xl border border-emerald-200 transition-all font-bold text-emerald-700 cursor-pointer"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-emerald-600 mb-1" />
+                  <span className="text-[10px]">Dashboard</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex flex-col items-center justify-center p-2.5 bg-gray-50 hover:bg-green-50 rounded-xl border border-gray-200 hover:border-green-300 transition-all font-bold text-gray-700 hover:text-green-700 cursor-pointer"
+                >
+                  <User className="w-4 h-4 text-green-600 mb-1" />
+                  <span className="text-[10px]">Login</span>
+                </Link>
+              )}
 
               <button
                 onClick={() => {
@@ -411,9 +421,12 @@ export const Navbar = ({
                   </a>
                 </div>
 
-                <div className="flex items-center gap-1 bg-blue-50 border border-blue-200 text-blue-900 px-2.5 py-1 rounded-full text-[11px] font-black">
-                  <Eye className="w-3.5 h-3.5 text-blue-600 animate-pulse shrink-0" />
-                  <span>{formatCount(visitorCount || 1285)} Views</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 bg-blue-50 border border-blue-200 text-blue-900 px-2.5 py-1 rounded-full text-[11px] font-black">
+                    <Eye className="w-3.5 h-3.5 text-blue-600 animate-pulse shrink-0" />
+                    <span>{formatCount(visitorCount || 1285)} Views</span>
+                  </div>
+                 
                 </div>
               </div>
             </div>

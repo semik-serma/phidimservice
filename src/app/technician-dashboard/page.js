@@ -20,10 +20,12 @@ import { TechnicianCommandPalette } from "../../components/technician-dashboard/
 import { MobileTechnicianBottomNav } from "../../components/technician-dashboard/MobileTechnicianBottomNav";
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import RoleGuard from "../../components/RoleGuard";
+import { LogoutConfirmModal } from "../../components/LogoutConfirmModal";
 
-export default function TechnicianDashboardPage() {
+export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -32,6 +34,8 @@ export default function TechnicianDashboardPage() {
   const [activeModal, setActiveModal] = useState(null); // 'signature' | 'chat' | 'sos' | 'qr' | 'photo'
   const [modalData, setModalData] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Sync dark mode class with root html element
   useEffect(() => {
@@ -45,6 +49,11 @@ export default function TechnicianDashboardPage() {
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
+    await logout();
   };
 
   // Mock New Job Requests State
@@ -127,6 +136,7 @@ export default function TechnicianDashboardPage() {
   };
 
   return (
+    <RoleGuard roles={["TECHNICIAN"]}>
     <div className="min-h-screen bg-slate-50/70 dark:bg-[#070f0d] text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white transition-colors duration-300 pb-20 lg:pb-8">
       {/* Toast Notification Banner */}
       <AnimatePresence>
@@ -151,7 +161,7 @@ export default function TechnicianDashboardPage() {
         setCollapsed={setCollapsed}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
-        onLogout={logout}
+        onLogout={() => setIsLogoutOpen(true)}
       />
 
       {/* Main Layout Container */}
@@ -170,7 +180,7 @@ export default function TechnicianDashboardPage() {
           isOnline={isOnline}
           setIsOnline={setIsOnline}
           showToast={showToast}
-          onLogout={logout}
+          onLogout={() => setIsLogoutOpen(true)}
         />
 
         {/* Main Body */}
@@ -320,6 +330,15 @@ export default function TechnicianDashboardPage() {
         onClose={() => setActiveModal(null)}
         showToast={showToast}
       />
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmModal
+        open={isLogoutOpen}
+        onCancel={() => setIsLogoutOpen(false)}
+        onConfirm={handleLogoutConfirm}
+        isLoggingOut={isLoggingOut}
+      />
     </div>
+    </RoleGuard>
   );
 }

@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ArrowLeft, CheckCircle2, Sparkles, Wrench } from 'lucide-react';
+import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ArrowLeft, CheckCircle2, Sparkles, Wrench, AlertCircle } from 'lucide-react';
 import { toast } from '@/components/ui/toast';
 
 import { useAuth } from '@/context/AuthContext';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function RegisterPage() {
-  const { register, isLoading: authLoading } = useAuth();
+  const { register, loginWithGoogle, isLoading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -19,6 +21,8 @@ export default function RegisterPage() {
     agreeTerms: false,
   });
 
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [serverError, setServerError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,29 +33,81 @@ export default function RegisterPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+    if (fieldErrors[name]) {
+      setFieldErrors((f) => ({ ...f, [name]: undefined }));
+    }
+  };
+
+  const validate = () => {
+    const errors = {};
+    const name = formData.fullName.trim();
+    const email = formData.email.trim().toLowerCase();
+    const phone = formData.phoneNumber.trim();
+
+    if (!name) {
+      errors.fullName = 'Full name is required.';
+    } else if (name.length < 3) {
+      errors.fullName = 'Full name must be at least 3 characters.';
+    }
+
+    if (!email) {
+      errors.email = 'Email is required.';
+    } else if (!EMAIL_RE.test(email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+
+    if (!phone) {
+      errors.phoneNumber = 'Phone number is required.';
+    } else if (!/^[+]?[\d\s-]{7,15}$/.test(phone)) {
+      errors.phoneNumber = 'Please enter a valid phone number.';
+    }
+
+    if (!formData.password) {
+      errors.password = 'Password is required.';
+    } else if (formData.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters.';
+    } else if (formData.password.length > 100) {
+      errors.password = 'Password must be at most 100 characters.';
+    }
+
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = 'Please confirm your password.';
+    } else if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match.';
+    }
+
+    if (!formData.agreeTerms) {
+      errors.agreeTerms = 'Please agree to the Terms of Service & Privacy Policy.';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+    setServerError('');
+
+    if (!validate()) {
+      toast.error('Please fix the highlighted fields.');
       return;
     }
-    if (!formData.agreeTerms) {
-      toast.warning('Please agree to the Terms of Service & Privacy Policy');
-      return;
-    }
+
+    setIsLoading(true);
     try {
       const account = await register({
-        name: formData.fullName,
-        email: formData.email,
-        phone: formData.phoneNumber,
+        name: formData.fullName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phoneNumber.trim(),
         password: formData.password,
         role: formData.role,
       });
       toast.success(`Account created successfully for ${account.name}! Redirecting...`);
     } catch (err) {
-      toast.error('Registration failed.');
+      const msg = err?.message || 'Registration failed. Please try again.';
+      setServerError(msg);
+      toast.error(msg);
+      setIsLoading(false);
     }
   };
 
@@ -188,10 +244,21 @@ export default function RegisterPage() {
             <h2 className="text-2xl sm:text-3xl font-black text-[#111827] tracking-tight">
               Create Account
             </h2>
-            <p className="text-sm text-[#6B7280] mt-1">
+<p className="text-sm text-[#6B7280] mt-1">
               Join Phidim Service to access all features &amp; services
             </p>
           </div>
+
+          {/* Server Error Alert */}
+          {serverError && (
+            <div
+              className="flex items-start gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold mb-5 animate-in fade-in slide-in-from-top-1 duration-200"
+              role="alert"
+            >
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+              <span>{serverError}</span>
+            </div>
+          )}
 
           {/* Role Selection Tabs */}
           <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-6 border border-slate-200">
@@ -229,18 +296,25 @@ export default function RegisterPage() {
               <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
                 Full Name
               </label>
-              <div className="relative group">
-                <User className="w-5 h-5 text-[#6B7280] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-[#16A34A] transition-colors" />
+              <div className={`relative group ${fieldErrors.fullName ? 'ring-2 ring-rose-400/60 rounded-[14px]' : ''}`}>
+                <User className={`w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${fieldErrors.fullName ? 'text-rose-500' : 'text-[#6B7280] group-focus-within:text-[#16A34A]'}`} />
                 <input
                   type="text"
                   name="fullName"
                   required
                   placeholder="Enter your full name"
                   value={formData.fullName}
+                  disabled={isLoading}
                   onChange={handleChange}
-                  className="w-full h-[56px] pl-12 pr-4 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200"
+                  className="w-full h-[56px] pl-12 pr-4 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200 disabled:opacity-60"
                 />
               </div>
+              {fieldErrors.fullName && (
+                <p className="mt-1.5 text-[11px] font-bold text-rose-600 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {fieldErrors.fullName}
+                </p>
+              )}
             </div>
 
             {/* Email Input */}
@@ -248,18 +322,25 @@ export default function RegisterPage() {
               <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
                 Email Address
               </label>
-              <div className="relative group">
-                <Mail className="w-5 h-5 text-[#6B7280] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-[#16A34A] transition-colors" />
+              <div className={`relative group ${fieldErrors.email ? 'ring-2 ring-rose-400/60 rounded-[14px]' : ''}`}>
+                <Mail className={`w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${fieldErrors.email ? 'text-rose-500' : 'text-[#6B7280] group-focus-within:text-[#16A34A]'}`} />
                 <input
                   type="email"
                   name="email"
                   required
                   placeholder="name@example.com"
                   value={formData.email}
+                  disabled={isLoading}
                   onChange={handleChange}
-                  className="w-full h-[56px] pl-12 pr-4 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200"
+                  className="w-full h-[56px] pl-12 pr-4 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200 disabled:opacity-60"
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="mt-1.5 text-[11px] font-bold text-rose-600 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {fieldErrors.email}
+                </p>
+              )}
             </div>
 
             {/* Phone Number Input */}
@@ -267,18 +348,25 @@ export default function RegisterPage() {
               <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
                 Phone Number
               </label>
-              <div className="relative group">
-                <Phone className="w-5 h-5 text-[#6B7280] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-[#16A34A] transition-colors" />
+              <div className={`relative group ${fieldErrors.phoneNumber ? 'ring-2 ring-rose-400/60 rounded-[14px]' : ''}`}>
+                <Phone className={`w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${fieldErrors.phoneNumber ? 'text-rose-500' : 'text-[#6B7280] group-focus-within:text-[#16A34A]'}`} />
                 <input
                   type="tel"
                   name="phoneNumber"
                   required
                   placeholder="+977 9800000000"
                   value={formData.phoneNumber}
+                  disabled={isLoading}
                   onChange={handleChange}
-                  className="w-full h-[56px] pl-12 pr-4 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200"
+                  className="w-full h-[56px] pl-12 pr-4 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200 disabled:opacity-60"
                 />
               </div>
+              {fieldErrors.phoneNumber && (
+                <p className="mt-1.5 text-[11px] font-bold text-rose-600 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {fieldErrors.phoneNumber}
+                </p>
+              )}
             </div>
 
             {/* Password Input */}
@@ -286,26 +374,34 @@ export default function RegisterPage() {
               <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
                 Password
               </label>
-              <div className="relative group">
-                <Lock className="w-5 h-5 text-[#6B7280] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-[#16A34A] transition-colors" />
+              <div className={`relative group ${fieldErrors.password ? 'ring-2 ring-rose-400/60 rounded-[14px]' : ''}`}>
+                <Lock className={`w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${fieldErrors.password ? 'text-rose-500' : 'text-[#6B7280] group-focus-within:text-[#16A34A]'}`} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   required
-                  placeholder="Create a password"
+                  placeholder="Minimum 8 characters"
                   value={formData.password}
+                  disabled={isLoading}
                   onChange={handleChange}
-                  className="w-full h-[56px] pl-12 pr-12 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200"
+                  className="w-full h-[56px] pl-12 pr-12 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200 disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#111827] p-1 focus:outline-none transition-colors cursor-pointer"
                   title={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className="mt-1.5 text-[11px] font-bold text-rose-600 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             {/* Confirm Password Input */}
@@ -313,26 +409,34 @@ export default function RegisterPage() {
               <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
                 Confirm Password
               </label>
-              <div className="relative group">
-                <Lock className="w-5 h-5 text-[#6B7280] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-[#16A34A] transition-colors" />
+              <div className={`relative group ${fieldErrors.confirmPassword ? 'ring-2 ring-rose-400/60 rounded-[14px]' : ''}`}>
+                <Lock className={`w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${fieldErrors.confirmPassword ? 'text-rose-500' : 'text-[#6B7280] group-focus-within:text-[#16A34A]'}`} />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   required
                   placeholder="Re-enter your password"
                   value={formData.confirmPassword}
+                  disabled={isLoading}
                   onChange={handleChange}
-                  className="w-full h-[56px] pl-12 pr-12 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200"
+                  className="w-full h-[56px] pl-12 pr-12 rounded-[14px] border border-[#E5E7EB] bg-white text-sm text-[#111827] placeholder-[#6B7280]/50 focus:border-[#16A34A] focus:ring-4 focus:ring-[#16A34A]/15 focus:outline-none transition-all duration-200 disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  disabled={isLoading}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#111827] p-1 focus:outline-none transition-colors cursor-pointer"
                   title={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {fieldErrors.confirmPassword && (
+                <p className="mt-1.5 text-[11px] font-bold text-rose-600 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {fieldErrors.confirmPassword}
+                </p>
+              )}
             </div>
 
             {/* Terms Checkbox */}
@@ -343,10 +447,11 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={formData.agreeTerms}
                 onChange={handleChange}
+                disabled={isLoading}
                 required
                 className="w-4 h-4 mt-0.5 rounded border-[#E5E7EB] text-[#16A34A] focus:ring-[#16A34A] accent-[#16A34A] cursor-pointer"
               />
-              <label htmlFor="agreeTerms" className="ml-2.5 text-xs text-[#6B7280] font-medium leading-normal cursor-pointer select-none">
+              <label htmlFor="agreeTerms" className={`ml-2.5 text-xs font-medium leading-normal ${fieldErrors.agreeTerms ? 'text-rose-600' : 'text-[#6B7280]'} cursor-pointer select-none`}>
                 I agree to the{' '}
                 <a href="#" className="font-bold text-[#16A34A] hover:underline">
                   Terms of Service
@@ -357,6 +462,12 @@ export default function RegisterPage() {
                 </a>
               </label>
             </div>
+            {fieldErrors.agreeTerms && (
+              <p className="mt-1 -mt-2 text-[11px] font-bold text-rose-600 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.agreeTerms}
+              </p>
+            )}
 
             {/* Green Create Account Button */}
             <button
@@ -387,7 +498,7 @@ export default function RegisterPage() {
             {/* Google Button */}
             <button
               type="button"
-              onClick={() => toast.info('Google registration integration')}
+              onClick={() => loginWithGoogle(formData.role)}
               className="w-full h-[56px] rounded-[14px] border border-[#E5E7EB] bg-white hover:bg-gray-50/80 text-[#111827] text-sm font-semibold flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 shadow-2xs cursor-pointer"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">

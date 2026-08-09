@@ -165,6 +165,9 @@ export default function App() {
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const cartTotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const wishlistCount = wishlist.length;
+
+  if (!isMounted) return null;
+
   return <div className="min-h-screen bg-slate-50 text-gray-900 font-sans flex flex-col selection:bg-green-500 selection:text-white">
       
       {

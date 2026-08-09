@@ -7,24 +7,32 @@ import { dashboardPathFor } from "@/lib/auth/roles.js";
 
 let dbAvailable = false;
 let dbCheckDone = false;
+let dbCheckPromise = null;
 
 // Lightweight reachability probe. Failure switches to the in-memory store.
 async function ensureBackend() {
   if (dbCheckDone) return dbAvailable;
-  try {
-    dbAvailable = await connectDB();
-  } catch (e) {
-    dbAvailable = false;
-  } finally {
-    dbCheckDone = true;
+  if (!dbCheckPromise) {
+    dbCheckPromise = connectDB()
+      .then((res) => {
+        dbAvailable = res;
+        dbCheckDone = true;
+        return res;
+      })
+      .catch(() => {
+        dbAvailable = false;
+        dbCheckDone = true;
+        return false;
+      });
   }
-  return dbAvailable;
+  return dbCheckPromise;
 }
 
 function toPublicUser(u) {
   return {
     id: u._id?.toString ? u._id.toString() : u._id,
     name: u.name,
+    displayName: u.displayName || u.name || "",
     email: u.email,
     phone: u.phone || "",
     role: u.role,

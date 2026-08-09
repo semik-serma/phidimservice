@@ -325,7 +325,7 @@ export const Navbar = ({
             <div className="p-3.5 border-b border-gray-100 grid grid-cols-3 gap-2">
               {isAuthenticated && user ? (
                 <Link
-                  href={user.dashboardPath || "/dashboard/user"}
+                  href={user.dashboardPath || "/user/dashboard"}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex flex-col items-center justify-center p-2.5 bg-emerald-50 hover:bg-emerald-100 rounded-xl border border-emerald-200 transition-all font-bold text-emerald-700 cursor-pointer"
                 >

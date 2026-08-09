@@ -18,7 +18,11 @@ import { UserCommandPalette } from "../../components/user-dashboard/UserCommandP
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+import { DirectChatSection } from "../../components/chat/DirectChatSection";
+import { CreateArticleModal } from "../../components/articles/CreateArticleModal";
+import { VideoVoiceCallModal } from "../../components/calls/VideoVoiceCallModal";
 import { AccountSettings } from "../../components/AccountSettings";
+import { FriendsManager } from "../../components/community/FriendsManager";
 
 export default function UserDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
@@ -28,6 +32,18 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
   const [darkMode, setDarkMode] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+
+  // Community Articles & Call Modal States
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [callTargetPerson, setCallTargetPerson] = useState(null);
+  const [callType, setCallType] = useState("video");
+
+  const handleStartCall = (person, type = "video") => {
+    setCallTargetPerson(person);
+    setCallType(type);
+    setIsCallModalOpen(true);
+  };
 
   // Sync dark mode
   useEffect(() => {
@@ -101,31 +117,118 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
           {activeTab === "account-settings" || activeTab === "settings" ? (
             <AccountSettings onShowToast={showToast} />
+          ) : activeTab === "book" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <h2 className="text-2xl font-black">Book On-Demand Doorstep Service</h2>
+                <p className="text-xs sm:text-sm text-emerald-100 mt-1">Select your service, choose preferred date & time, and get instant 30-minute technician dispatch.</p>
+              </div>
+              <QuickBookingCard onConfirmBooking={handleConfirmBooking} />
+              <PopularServicesGrid onSelectService={handleSelectService} />
+            </div>
+          ) : activeTab === "my-bookings" || activeTab === "history" || activeTab === "requests" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <h2 className="text-2xl font-black">My Active & Past Service Bookings</h2>
+                <p className="text-xs sm:text-sm text-blue-100 mt-1">Track ongoing technician assignments, view service history, download PDF invoices, and request calls.</p>
+              </div>
+              <MyBookingsList
+                onTrackLive={() => setActiveTab("track")}
+                onChat={(b) => showToast(`Opening chat with technician ${b.technician.name}...`)}
+                onCall={(b) => showToast(`Calling ${b.technician.name} at ${b.technician.phone}...`)}
+                onInvoice={(b) => showToast(`Downloading PDF Invoice for ${b.id}...`)}
+              />
+            </div>
+          ) : activeTab === "track" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-amber-600 to-orange-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <h2 className="text-2xl font-black">Live Technician GPS Tracker</h2>
+                <p className="text-xs sm:text-sm text-amber-100 mt-1">Real-time live map tracking of your assigned Phidim technician moving towards your doorstep.</p>
+              </div>
+              <LiveTechnicianTracker />
+            </div>
+          ) : activeTab === "payments" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-teal-600 to-emerald-800 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <h2 className="text-2xl font-black">Payments & Phidim Digital Wallet</h2>
+                <p className="text-xs sm:text-sm text-teal-100 mt-1">Manage your wallet balance, Esewa/Khalti links, saved cards, and transaction history.</p>
+              </div>
+              <PaymentsAndWallet />
+            </div>
+          ) : activeTab === "offers" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-rose-600 to-pink-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <h2 className="text-2xl font-black">Offers, Coupons & AI Recommendations</h2>
+                <p className="text-xs sm:text-sm text-rose-100 mt-1">Claim exclusive Panchthar service discount coupons and explore personalized maintenance tips.</p>
+              </div>
+              <OffersAndAIRecommend
+                onClaimCoupon={(code) => showToast(`Coupon code ${code} claimed!`)}
+                onBookRecommended={(rec) => showToast(`Added ${rec.title} to your bookings!`)}
+              />
+            </div>
+          ) : activeTab === "profile" ? (
+            <div className="space-y-8">
+              <UserProfileAndTimeline />
+            </div>
+          ) : activeTab === "help" ? (
+            <div className="space-y-8">
+              <HelpCenterWidget />
+            </div>
+          ) : activeTab === "friends" ? (
+            <FriendsManager
+              onStartChat={(friend) => setActiveTab("messages")}
+              onStartCall={handleStartCall}
+              onShowToast={showToast}
+            />
+          ) : activeTab === "messages" || activeTab === "articles" ? (
+            <DirectChatSection
+              onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
+              onStartCall={handleStartCall}
+            />
+          ) : activeTab === "reviews" ? (
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">My Service Reviews & Ratings</h2>
+              <p className="text-xs text-slate-500">Ratings and reviews you submitted for completed Phidim services.</p>
+              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-extrabold flex items-center justify-between">
+                <span>⭐ DishHome Fiber Splicing: 5.0 ★ — "Very fast service in Ward 4!"</span>
+                <span className="text-[10px] text-amber-600 dark:text-amber-400">Verified</span>
+              </div>
+            </div>
+          ) : activeTab === "notifications" ? (
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">Notifications Center</h2>
+              <div className="space-y-3">
+                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center justify-between">
+                  <span>✅ Booking #PS-9842 confirmed. Technician Rajesh Tamang dispatched.</span>
+                  <span className="text-[10px] text-slate-400">5 mins ago</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/40 text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center justify-between">
+                  <span>🎉 You received 200 Reward Points for your completed AC service.</span>
+                  <span className="text-[10px] text-slate-400">2 hours ago</span>
+                </div>
+              </div>
+            </div>
           ) : (
             <>
-              {/* Welcome Banner */}
+              {/* Default Overview Dashboard */}
               <WelcomeBanner
                 userName={user?.displayName || user?.name || "Ram Shrestha"}
                 onBookNow={() => setActiveTab("book")}
                 onSearch={() => setIsSearchOpen(true)}
               />
 
-              {/* Quick 1-Click Booking Form */}
               <section id="quick-booking">
                 <QuickBookingCard onConfirmBooking={handleConfirmBooking} />
               </section>
 
-              {/* Live Technician Tracking (Uber / Urban Company style) */}
               <section id="live-tracking">
                 <LiveTechnicianTracker />
               </section>
 
-              {/* Popular 16 Service Categories */}
               <section id="services-grid">
                 <PopularServicesGrid onSelectService={handleSelectService} />
               </section>
 
-              {/* My Active & Past Bookings */}
               <section id="my-bookings">
                 <MyBookingsList
                   onTrackLive={() => setActiveTab("track")}
@@ -135,12 +238,10 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
                 />
               </section>
 
-              {/* Payments & Phidim Wallet */}
               <section id="payments">
                 <PaymentsAndWallet />
               </section>
 
-              {/* Coupons & AI Recommendations */}
               <section id="offers">
                 <OffersAndAIRecommend
                   onClaimCoupon={(code) => showToast(`Coupon code ${code} claimed!`)}
@@ -148,12 +249,10 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
                 />
               </section>
 
-              {/* Profile Card & Activity Stream */}
               <section id="profile">
                 <UserProfileAndTimeline />
               </section>
 
-              {/* Help & Support Center */}
               <section id="help">
                 <HelpCenterWidget />
               </section>
@@ -175,6 +274,23 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectTab={setActiveTab}
+      />
+
+      {/* Create Article Modal */}
+      <CreateArticleModal
+        isOpen={isArticleModalOpen}
+        onClose={() => setIsArticleModalOpen(false)}
+        onPublish={(newArticle) => {
+          showToast(`Article "${newArticle.title}" published successfully!`);
+        }}
+      />
+
+      {/* Video / Voice Call Modal */}
+      <VideoVoiceCallModal
+        isOpen={isCallModalOpen}
+        onClose={() => setIsCallModalOpen(false)}
+        targetPerson={callTargetPerson}
+        callType={callType}
       />
     </div>
   );

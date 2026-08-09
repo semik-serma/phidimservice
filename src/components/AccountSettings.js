@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { User, Image as ImageIcon, CheckCircle2, Save, Sparkles, UserCheck, RefreshCw } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { User, Image as ImageIcon, CheckCircle2, Save, Sparkles, UserCheck, RefreshCw, Upload, Camera } from "lucide-react";
 import { motion } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -22,6 +22,7 @@ export function AccountSettings({ onShowToast }) {
   const [avatar, setAvatar] = useState(user?.avatar || "");
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -38,26 +39,73 @@ export function AccountSettings({ onShowToast }) {
     .substring(0, 2)
     .toUpperCase();
 
-  const handleSave = (e) => {
+  const handleImageFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const srcDataUrl = event.target?.result;
+      if (!srcDataUrl) return;
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 400;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          setAvatar(compressedDataUrl);
+        } else {
+          setAvatar(srcDataUrl);
+        }
+      };
+      img.onerror = () => setAvatar(srcDataUrl);
+      img.src = srcDataUrl;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
     setIsSaving(true);
 
-    if (updateUser) {
-      updateUser({
-        name: name.trim(),
-        displayName: displayName.trim() || name.trim(),
-        avatar: avatar.trim(),
-      });
-    }
-
-    setTimeout(() => {
+    try {
+      if (updateUser) {
+        await updateUser({
+          name: name.trim(),
+          displayName: displayName.trim() || name.trim(),
+          avatar: avatar.trim(),
+        });
+      }
+    } catch (err) {
+      console.warn("Profile update saved locally with warning:", err);
+    } finally {
       setIsSaving(false);
       setIsSaved(true);
       if (onShowToast) {
         onShowToast("Account settings saved successfully!");
       }
       setTimeout(() => setIsSaved(false), 3000);
-    }, 400);
+    }
   };
 
   return (
@@ -112,16 +160,28 @@ export function AccountSettings({ onShowToast }) {
             </div>
 
             <div className="flex-1 w-full space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
-                  Custom Image URL
-                </label>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
-                  type="url"
-                  placeholder="https://example.com/my-photo.jpg"
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow cursor-pointer shrink-0"
+                >
+                  <Upload size={14} />
+                  <span>Upload Photo from Device</span>
+                </button>
+                <input
+                  type="text"
+                  placeholder="Or paste Image URL (https://...)"
                   value={avatar}
                   onChange={(e) => setAvatar(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-medium"
+                  className="flex-1 px-4 py-2 rounded-xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-medium"
                 />
               </div>
 

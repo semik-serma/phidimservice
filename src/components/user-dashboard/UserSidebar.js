@@ -31,6 +31,7 @@ export const USER_NAV_ITEMS = [
   { id: "my-bookings", name: "My Bookings", icon: BookOpen, badge: "3 Active", badgeColor: "bg-blue-500 text-white", path: "/user/requests" },
   { id: "track", name: "Track Technician", icon: Navigation, badge: "Live", badgeColor: "bg-amber-500 text-white animate-pulse" },
   { id: "payments", name: "Payments & Wallet", icon: CreditCard, badge: "NPR 4.5k" },
+  { id: "friends", name: "Find Friends", icon: UserPlus, badge: "Community", badgeColor: "bg-emerald-500 text-white" },
   { id: "messages", name: "Messages", icon: MessageSquare, badge: "2" },
   { id: "reviews", name: "My Reviews", icon: Star, badge: null },
   { id: "offers", name: "Offers & Coupons", icon: Gift, badge: "20% OFF", badgeColor: "bg-rose-500 text-white" },
@@ -127,9 +128,6 @@ export function UserSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, 
                     router.push("/");
                   } else {
                     setActiveTab(item.id);
-                    if (item.path && window.location.pathname !== item.path) {
-                      router.push(item.path);
-                    }
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}

@@ -14,6 +14,7 @@ import {
   Ticket,
   MessageSquare,
   Bell,
+  Megaphone,
   Settings,
   LogOut,
   ShieldCheck,
@@ -36,7 +37,9 @@ export const NAV_ITEMS = [
   { id: "analytics", name: "Analytics", icon: TrendingUp, badge: "Hot", path: "/admin/analytics" },
   { id: "categories", name: "Categories", icon: Boxes, badge: null, path: "/admin/categories" },
   { id: "coupons", name: "Coupons", icon: Ticket, badge: "New" },
+  { id: "friends", name: "Find Friends", icon: UserCheck, badge: "Community", badgeColor: "bg-emerald-500 text-white" },
   { id: "messages", name: "Messages", icon: MessageSquare, badge: "5", badgeColor: "bg-blue-500 text-white", path: "/admin/support" },
+  { id: "announcements", name: "Announcements", icon: Megaphone, badge: "Live", badgeColor: "bg-emerald-600 text-white font-extrabold" },
   { id: "account-settings", name: "Account Settings", icon: UserCheck, badge: "Edit", badgeColor: "bg-emerald-600 text-white" },
   { id: "settings", name: "System Settings", icon: Settings, badge: null, path: "/admin/settings" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
@@ -126,9 +129,6 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                     router.push("/");
                   } else {
                     setActiveTab(item.id);
-                    if (item.path && window.location.pathname !== item.path) {
-                      router.push(item.path);
-                    }
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}

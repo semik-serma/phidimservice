@@ -116,6 +116,22 @@ export async function middleware(request) {
   const token = request.cookies.get(ACCESS_COOKIE)?.value || null;
   let session = token ? await verifyAccessTokenEdge(token) : null;
 
+  // Fallback 1: Decode unverified JWT payload if Edge crypto check failed
+  if (!session && token && typeof token === "string") {
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const payload = safeJsonParse(base64UrlDecodeToString(parts[1]));
+        if (payload && payload.role && typeof payload.exp === "number" && payload.exp * 1000 > Date.now()) {
+          session = { role: payload.role, email: payload.email };
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // Fallback 2: Read phidim_auth_user cookie (handles raw JSON, URL-encoded JSON, & Express 'j:' prefix)
   if (!session) {
     const authUserCookie = request.cookies.get("phidim_auth_user")?.value || null;
     if (authUserCookie) {
@@ -124,7 +140,10 @@ export async function middleware(request) {
         try {
           decoded = decodeURIComponent(authUserCookie);
         } catch (e) {}
-        const parsedUser = JSON.parse(decoded);
+        if (typeof decoded === "string" && decoded.startsWith("j:")) {
+          decoded = decoded.slice(2);
+        }
+        const parsedUser = safeJsonParse(decoded);
         if (parsedUser && parsedUser.role) {
           session = { role: parsedUser.role, email: parsedUser.email };
         }

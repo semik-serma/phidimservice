@@ -45,7 +45,7 @@ export function TopNavbar({
   const [showMessages, setShowMessages] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const displayName = user?.name || "Phidim Admin";
+  const displayName = user?.displayName || user?.name || "Phidim Admin";
   const displayEmail = user?.email || "admin@phidim.np";
   const userInitials = displayName
     .split(" ")

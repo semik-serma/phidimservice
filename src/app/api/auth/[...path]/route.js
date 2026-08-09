@@ -124,12 +124,17 @@ async function handleAuthRoute(request, { params }) {
   // (unlike Response.redirect(), whose headers cannot be modified).
   function applyCookies(nextRes, cookies) {
     for (const { name, value, options } of cookies) {
+      // Express options.maxAge is in milliseconds; Next.js cookies.set expects seconds.
+      let maxAgeInSeconds;
+      if (options.maxAge !== undefined && options.maxAge !== null) {
+        maxAgeInSeconds = options.maxAge > 100000 ? Math.floor(options.maxAge / 1000) : options.maxAge;
+      }
       nextRes.cookies.set(name, value, {
         path: options.path || "/",
         httpOnly: options.httpOnly || undefined,
         secure: options.secure || undefined,
         sameSite: options.sameSite || undefined,
-        maxAge: options.maxAge !== undefined ? options.maxAge : undefined,
+        maxAge: maxAgeInSeconds,
       });
     }
   }

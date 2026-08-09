@@ -23,7 +23,11 @@ import { useAuth } from "@/context/AuthContext";
 import RoleGuard from "../../components/RoleGuard";
 import { LogoutConfirmModal } from "../../components/LogoutConfirmModal";
 
+import { DirectChatSection } from "../../components/chat/DirectChatSection";
+import { CreateArticleModal } from "../../components/articles/CreateArticleModal";
+import { VideoVoiceCallModal } from "../../components/calls/VideoVoiceCallModal";
 import { AccountSettings } from "../../components/AccountSettings";
+import { FriendsManager } from "../../components/community/FriendsManager";
 
 export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
@@ -38,6 +42,18 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
   const [toastMessage, setToastMessage] = useState(null);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Article & Call Modal States
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [callTargetPerson, setCallTargetPerson] = useState(null);
+  const [callType, setCallType] = useState("video");
+
+  const handleStartCall = (person, type = "video") => {
+    setCallTargetPerson(person);
+    setCallType(type);
+    setIsCallModalOpen(true);
+  };
 
   // Sync dark mode class with root html element
   useEffect(() => {
@@ -190,73 +206,46 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
           {activeTab === "account-settings" || activeTab === "settings" ? (
             <AccountSettings onShowToast={showToast} />
-          ) : (
-            <>
-              {/* Section 1: Welcome Hero Banner */}
-          <section id="welcome-banner">
-            <TechnicianWelcomeCard
-              isOnline={isOnline}
-              setIsOnline={setIsOnline}
-              showToast={showToast}
-              onUpdateLocation={() => showToast("Updated GPS Location to Phidim Bazar Sector 4!")}
-            />
-          </section>
-
-          {/* Section 2: 6 Top Statistics Cards */}
-          <section id="top-stats">
-            <TechnicianTopStats />
-          </section>
-
-          {/* Section 3: New Job Requests */}
-          <section id="new-jobs-section">
-            <NewJobRequests
-              jobRequests={jobRequests}
-              onAcceptJob={handleAcceptJob}
-              onRejectJob={handleRejectJob}
-              onCallCustomer={(job) => {
-                setModalData(job);
+          ) : activeTab === "friends" ? (
+            <FriendsManager
+              onStartChat={(friend) => {
+                setModalData(friend);
                 setActiveModal("chat");
               }}
-              onViewDetails={(job) => {
-                showToast(`Viewing details for Job ${job.id}`);
-              }}
-              showToast={showToast}
+              onStartCall={handleStartCall}
+              onShowToast={showToast}
             />
-          </section>
-
-          {/* Section 4: Active Job Control & Checklist */}
-          <section id="active-job-section">
-            <ActiveJobAndChecklist
-              activeJob={activeJob}
-              onCompleteJob={handleCompleteJob}
-              onCancelJob={handleCancelJob}
-              onOpenSignatureModal={() => setActiveModal("signature")}
-              onOpenPhotoModal={() => setActiveModal("photo")}
-              onCallCustomer={(job) => {
-                setModalData(job);
-                setActiveModal("chat");
-              }}
-              showToast={showToast}
-            />
-          </section>
-
-          {/* Section 5: Live GPS Radar & Map */}
-          <section id="live-map-section">
-            <LiveGpsMap
-              activeJob={activeJob}
-              onCallCustomer={(c) => {
-                setModalData(c);
-                setActiveModal("chat");
-              }}
-              showToast={showToast}
-            />
-          </section>
-
-          {/* Section 6: Main Split Grid (LEFT 65% / RIGHT 35%) */}
-          <section className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-            {/* LEFT COLUMN */}
-            <div className="xl:col-span-8 space-y-8">
-              {/* Today's Schedule Timeline */}
+          ) : activeTab === "new-jobs" ? (
+            <div className="space-y-8">
+              <NewJobRequests
+                jobRequests={jobRequests}
+                onAcceptJob={handleAcceptJob}
+                onRejectJob={handleRejectJob}
+                onCallCustomer={(job) => {
+                  setModalData(job);
+                  setActiveModal("chat");
+                }}
+                onViewDetails={(job) => showToast(`Viewing details for Job ${job.id}`)}
+                showToast={showToast}
+              />
+            </div>
+          ) : activeTab === "my-jobs" ? (
+            <div className="space-y-8">
+              <ActiveJobAndChecklist
+                activeJob={activeJob}
+                onCompleteJob={handleCompleteJob}
+                onCancelJob={handleCancelJob}
+                onOpenSignatureModal={() => setActiveModal("signature")}
+                onOpenPhotoModal={() => setActiveModal("photo")}
+                onCallCustomer={(job) => {
+                  setModalData(job);
+                  setActiveModal("chat");
+                }}
+                showToast={showToast}
+              />
+            </div>
+          ) : activeTab === "schedule" ? (
+            <div className="space-y-8">
               <TodayScheduleTimeline
                 onCallCustomer={(c) => {
                   setModalData(c);
@@ -265,8 +254,16 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
                 onNavigateToJob={() => showToast("Opening GPS Navigation for appointment...")}
                 showToast={showToast}
               />
-
-              {/* Customer Profile Widget */}
+            </div>
+          ) : activeTab === "earnings" || activeTab === "wallet" ? (
+            <div className="space-y-8">
+              <EarningsAndWallet
+                onWithdraw={() => showToast("Payout Request of Rs. 18,450 sent to Esewa Wallet!")}
+                showToast={showToast}
+              />
+            </div>
+          ) : activeTab === "customers" ? (
+            <div className="space-y-8">
               <CustomerInfoWidget
                 onCall={(c) => showToast(`Calling ${c.name} at ${c.phone}...`)}
                 onChat={(c) => {
@@ -276,20 +273,27 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
                 onVideoCall={(c) => showToast(`Launching HD Video Call with ${c.name}...`)}
                 showToast={showToast}
               />
-
-              {/* Earnings Overview & Wallet */}
-              <EarningsAndWallet
-                onWithdraw={() => showToast("Payout Request of Rs. 18,450 sent to Esewa Wallet!")}
-                showToast={showToast}
-              />
-
-              {/* Performance & Customer Reviews */}
+            </div>
+          ) : activeTab === "reviews" || activeTab === "performance" ? (
+            <div className="space-y-8">
               <PerformanceAndReviews
                 onOpenReplyModal={(rev) => showToast(`Replying to review by ${rev.customerName}...`)}
                 showToast={showToast}
               />
-
-              {/* KYC Documents & Tools Inventory */}
+            </div>
+          ) : activeTab === "live-location" ? (
+            <div className="space-y-8">
+              <LiveGpsMap
+                activeJob={activeJob}
+                onCallCustomer={(c) => {
+                  setModalData(c);
+                  setActiveModal("chat");
+                }}
+                showToast={showToast}
+              />
+            </div>
+          ) : activeTab === "documents" || activeTab === "equipment" ? (
+            <div className="space-y-8">
               <DocumentsAndEquipment
                 onUploadDocument={(docName) => {
                   setModalData({ docName });
@@ -298,21 +302,120 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
                 showToast={showToast}
               />
             </div>
+          ) : activeTab === "messages" || activeTab === "articles" ? (
+            <DirectChatSection
+              onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
+              onStartCall={handleStartCall}
+            />
+          ) : (
+            <>
+              {/* Overview Full Command Console */}
+              <section id="welcome-banner">
+                <TechnicianWelcomeCard
+                  isOnline={isOnline}
+                  setIsOnline={setIsOnline}
+                  showToast={showToast}
+                  onUpdateLocation={() => showToast("Updated GPS Location to Phidim Bazar Sector 4!")}
+                />
+              </section>
 
-            {/* RIGHT COLUMN */}
-            <div className="xl:col-span-4 space-y-8">
-              <QuickActionsAndRightPanel
-                isOnline={isOnline}
-                setIsOnline={setIsOnline}
-                onOpenSos={() => setActiveModal("sos")}
-                onNavigateToJob={() => showToast("Opening Turn-by-Turn GPS Navigation...")}
-                onViewWallet={() => setActiveTab("earnings")}
-                onUploadDocs={() => setActiveTab("documents")}
-                showToast={showToast}
-              />
-            </div>
-          </section>
-          </>
+              <section id="top-stats">
+                <TechnicianTopStats />
+              </section>
+
+              <section id="new-jobs-section">
+                <NewJobRequests
+                  jobRequests={jobRequests}
+                  onAcceptJob={handleAcceptJob}
+                  onRejectJob={handleRejectJob}
+                  onCallCustomer={(job) => {
+                    setModalData(job);
+                    setActiveModal("chat");
+                  }}
+                  onViewDetails={(job) => showToast(`Viewing details for Job ${job.id}`)}
+                  showToast={showToast}
+                />
+              </section>
+
+              <section id="active-job-section">
+                <ActiveJobAndChecklist
+                  activeJob={activeJob}
+                  onCompleteJob={handleCompleteJob}
+                  onCancelJob={handleCancelJob}
+                  onOpenSignatureModal={() => setActiveModal("signature")}
+                  onOpenPhotoModal={() => setActiveModal("photo")}
+                  onCallCustomer={(job) => {
+                    setModalData(job);
+                    setActiveModal("chat");
+                  }}
+                  showToast={showToast}
+                />
+              </section>
+
+              <section id="live-map-section">
+                <LiveGpsMap
+                  activeJob={activeJob}
+                  onCallCustomer={(c) => {
+                    setModalData(c);
+                    setActiveModal("chat");
+                  }}
+                  showToast={showToast}
+                />
+              </section>
+
+              <section className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+                <div className="xl:col-span-8 space-y-8">
+                  <TodayScheduleTimeline
+                    onCallCustomer={(c) => {
+                      setModalData(c);
+                      setActiveModal("chat");
+                    }}
+                    onNavigateToJob={() => showToast("Opening GPS Navigation for appointment...")}
+                    showToast={showToast}
+                  />
+
+                  <CustomerInfoWidget
+                    onCall={(c) => showToast(`Calling ${c.name} at ${c.phone}...`)}
+                    onChat={(c) => {
+                      setModalData(c);
+                      setActiveModal("chat");
+                    }}
+                    onVideoCall={(c) => showToast(`Launching HD Video Call with ${c.name}...`)}
+                    showToast={showToast}
+                  />
+
+                  <EarningsAndWallet
+                    onWithdraw={() => showToast("Payout Request of Rs. 18,450 sent to Esewa Wallet!")}
+                    showToast={showToast}
+                  />
+
+                  <PerformanceAndReviews
+                    onOpenReplyModal={(rev) => showToast(`Replying to review by ${rev.customerName}...`)}
+                    showToast={showToast}
+                  />
+
+                  <DocumentsAndEquipment
+                    onUploadDocument={(docName) => {
+                      setModalData({ docName });
+                      setActiveModal("photo");
+                    }}
+                    showToast={showToast}
+                  />
+                </div>
+
+                <div className="xl:col-span-4 space-y-8">
+                  <QuickActionsAndRightPanel
+                    isOnline={isOnline}
+                    setIsOnline={setIsOnline}
+                    onOpenSos={() => setActiveModal("sos")}
+                    onNavigateToJob={() => showToast("Opening Turn-by-Turn GPS Navigation...")}
+                    onViewWallet={() => setActiveTab("earnings")}
+                    onUploadDocs={() => setActiveTab("documents")}
+                    showToast={showToast}
+                  />
+                </div>
+              </section>
+            </>
           )}
         </main>
 
@@ -346,6 +449,23 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
         onCancel={() => setIsLogoutOpen(false)}
         onConfirm={handleLogoutConfirm}
         isLoggingOut={isLoggingOut}
+      />
+
+      {/* Create Article Modal */}
+      <CreateArticleModal
+        isOpen={isArticleModalOpen}
+        onClose={() => setIsArticleModalOpen(false)}
+        onPublish={(newArticle) => {
+          showToast(`Article "${newArticle.title}" published successfully!`);
+        }}
+      />
+
+      {/* Video / Voice Call Modal */}
+      <VideoVoiceCallModal
+        isOpen={isCallModalOpen}
+        onClose={() => setIsCallModalOpen(false)}
+        targetPerson={callTargetPerson}
+        callType={callType}
       />
     </div>
     </RoleGuard>

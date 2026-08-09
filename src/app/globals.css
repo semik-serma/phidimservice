@@ -175,8 +175,11 @@
 }
 
 @layer base {
-  *, body, html, button, input, select, textarea {
-    font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+  :root, body, html, *, button, input, select, textarea, div, p, h1, h2, h3, h4, h5, h6, span, a, label {
+    font-family: 'Poppins', var(--font-poppins), system-ui, -apple-system, sans-serif !important;
+  }
+  .font-sans {
+    font-family: 'Poppins', var(--font-poppins), system-ui, -apple-system, sans-serif !important;
   }
   * {
     @apply border-border outline-ring/50;

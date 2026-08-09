@@ -32,7 +32,7 @@ export function UserTopNavbar({
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const displayName = user?.name || "Customer User";
+  const displayName = user?.displayName || user?.name || "Customer User";
   const displayEmail = user?.email || "user@phidim.np";
   const userInitials = displayName
     .split(" ")

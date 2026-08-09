@@ -101,11 +101,20 @@ export function AuthProvider({ children }) {
           const cookieMatch = document.cookie.match(/phidim_auth_user=([^;]+)/);
           if (cookieMatch) {
             try {
-              const googleUser = JSON.parse(decodeURIComponent(cookieMatch[1]));
-              setUser(googleUser);
-              localStorage.setItem(SESSION_KEY, JSON.stringify(googleUser));
-              setIsLoading(false);
-              return;
+              let rawVal = cookieMatch[1];
+              try {
+                rawVal = decodeURIComponent(rawVal);
+              } catch (e) {}
+              if (typeof rawVal === "string" && rawVal.startsWith("j:")) {
+                rawVal = rawVal.slice(2);
+              }
+              const googleUser = JSON.parse(rawVal);
+              if (googleUser && googleUser.role) {
+                setUser(googleUser);
+                localStorage.setItem(SESSION_KEY, JSON.stringify(googleUser));
+                setIsLoading(false);
+                return;
+              }
             } catch (e) {
               // ignore
             }
@@ -205,7 +214,12 @@ export function AuthProvider({ children }) {
           body: JSON.stringify({ emailOrPhone, password, rememberMe, role }),
         });
 
-        const data = await res.json();
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (e) {
+          data = { error: "Authentication server error. Please try again." };
+        }
         if (!res.ok) {
           const err = new Error(data.error || "Login failed");
           err.status = res.status;
@@ -289,16 +303,42 @@ export function AuthProvider({ children }) {
     return roles.length === 0 || roles.includes(role);
   }, [user]);
 
-  const updateUser = useCallback((updatedFields) => {
+  const updateUser = useCallback(async (updatedFields) => {
     setUser((prev) => {
       const next = { ...(prev || {}), ...updatedFields };
       if (typeof window !== "undefined") {
         try {
           localStorage.setItem(SESSION_KEY, JSON.stringify(next));
+          const cookieVal = encodeURIComponent(JSON.stringify(next));
+          document.cookie = `phidim_auth_user=${cookieVal}; path=/; max-age=2592000; SameSite=Lax`;
         } catch (e) {}
       }
       return next;
     });
+
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFields),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.user) {
+          setUser(data.user);
+          if (typeof window !== "undefined") {
+            try {
+              localStorage.setItem(SESSION_KEY, JSON.stringify(data.user));
+              const cookieVal = encodeURIComponent(JSON.stringify(data.user));
+              document.cookie = `phidim_auth_user=${cookieVal}; path=/; max-age=2592000; SameSite=Lax`;
+            } catch (e) {}
+          }
+          return data.user;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to persist profile update to server API:", e);
+    }
   }, []);
 
   const value = useMemo(

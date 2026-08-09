@@ -35,7 +35,7 @@ export function TechnicianTopNavbar({
   const { user } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const displayName = user?.name || "Field Technician";
+  const displayName = user?.displayName || user?.name || "Field Technician";
   const displayEmail = user?.email || "tech@phidim.np";
   const displayId = user?.id || "#TECH-8842";
   const userInitials = displayName

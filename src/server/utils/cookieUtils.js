@@ -16,6 +16,7 @@ export function setAuthCookies(res, user, { rememberMe = false } = {}) {
   const userPayload = {
     id: user.id || user._id || user.email,
     name: user.name || user.email?.split("@")[0] || "User",
+    displayName: user.displayName || user.name || "",
     email: user.email,
     role: user.role || "USER",
     avatar: user.avatar || "",
@@ -38,7 +39,7 @@ export function setAuthCookies(res, user, { rememberMe = false } = {}) {
     path: "/",
   });
 
-  res.cookie("phidim_auth_user", encodeURIComponent(JSON.stringify(userPayload)), {
+  res.cookie("phidim_auth_user", JSON.stringify(userPayload), {
     httpOnly: false,
     secure: isProduction(),
     sameSite: "lax",

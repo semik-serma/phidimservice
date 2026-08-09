@@ -29,6 +29,7 @@ export function toClientUser(user) {
   return {
     id: user._id?.toString ? user._id.toString() : user._id,
     name: user.name || "",
+    displayName: user.displayName || user.name || "",
     email: user.email || "",
     phone: user.phone || "",
     role,
@@ -112,7 +113,19 @@ export async function getSessionUser({ request } = {}) {
     const store = await nextCookies();
     const authCookie = store.get("phidim_auth_user")?.value || null;
     if (authCookie) {
-      const parsed = JSON.parse(decodeURIComponent(authCookie));
+      let decoded = authCookie;
+      try {
+        decoded = decodeURIComponent(authCookie);
+        if (decoded.includes("%")) {
+          try {
+            decoded = decodeURIComponent(decoded);
+          } catch (e) {}
+        }
+      } catch (e) {}
+      if (typeof decoded === "string" && decoded.startsWith("j:")) {
+        decoded = decoded.slice(2);
+      }
+      const parsed = JSON.parse(decoded);
       if (parsed && parsed.email && parsed.role) {
         return {
           user: toClientUser(parsed),

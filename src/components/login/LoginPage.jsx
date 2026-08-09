@@ -17,6 +17,11 @@ import {
   Cable,
   CheckCircle2,
   LifeBuoy,
+  MoreVertical,
+  ShieldCheck,
+  ShieldAlert,
+  KeyRound,
+  X,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/toast';
@@ -42,6 +47,14 @@ const ROLE_TABS = [
     inactive: 'text-slate-500 hover:text-slate-800 font-semibold',
   },
 ];
+
+const ADMIN_TAB = {
+  key: 'ADMIN',
+  label: 'Admin Portal',
+  icon: ShieldCheck,
+  active: 'bg-slate-900 text-rose-400 shadow-md font-black border border-rose-500/30',
+  inactive: 'text-slate-500 hover:text-slate-800 font-semibold',
+};
 
 function GoogleIcon({ className }) {
   return (
@@ -70,12 +83,17 @@ export default function LoginPage() {
   const { login, register, loginWithGoogle } = useAuth();
   const router = useRouter();
 
-  const [role, setRole] = useState('USER'); // 'USER' | 'TECHNICIAN'
+  const [role, setRole] = useState('USER'); // 'USER' | 'TECHNICIAN' | 'ADMIN'
   const [techMode, setTechMode] = useState('LOGIN'); // 'LOGIN' | 'REGISTER'
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
 
   // Standard Customer fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Admin fields
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
 
   // Technician fields
   const [techIdOrPhone, setTechIdOrPhone] = useState('');
@@ -90,13 +108,27 @@ export default function LoginPage() {
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Read initial role tab from URL params (?role=TECHNICIAN) & surface OAuth errors
+  // Dynamic role tabs (shows ADMIN tab only when unlocked/selected)
+  const tabsToRender = useMemo(() => {
+    if (role === 'ADMIN') {
+      return [...ROLE_TABS, ADMIN_TAB];
+    }
+    return ROLE_TABS;
+  }, [role]);
+
+  // Read initial role tab from URL params (?role=TECHNICIAN or ?role=ADMIN) & surface OAuth errors
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
 
     const queryRole = params.get('role') || params.get('tab') || params.get('type');
-    if (queryRole && queryRole.toUpperCase() === 'TECHNICIAN') {
+    const isAdmin = params.get('admin') === 'true' || params.get('callbackUrl')?.includes('/admin');
+
+    if (isAdmin || (queryRole && queryRole.toUpperCase() === 'ADMIN')) {
+      setRole('ADMIN');
+      setAdminEmail('admin@phidim.np');
+      setAdminPassword('password123');
+    } else if (queryRole && queryRole.toUpperCase() === 'TECHNICIAN') {
       setRole('TECHNICIAN');
     }
 
@@ -142,6 +174,21 @@ export default function LoginPage() {
     }
     if (techMode === 'REGISTER' && !techFullName.trim()) {
       errors.techFullName = 'Full name is required for registration.';
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateAdminForm = () => {
+    const errors = {};
+    const trimmed = adminEmail.trim().toLowerCase();
+    if (!trimmed) {
+      errors.adminEmail = 'Admin email or username is required.';
+    }
+    if (!adminPassword) {
+      errors.adminPassword = 'Password is required.';
+    } else if (adminPassword.length < 6) {
+      errors.adminPassword = 'Password must be at least 6 characters.';
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -212,8 +259,41 @@ export default function LoginPage() {
     }
   };
 
+  const handleAdminSubmit = async (e) => {
+    e.preventDefault();
+    setServerError('');
+    if (!validateAdminForm()) return;
+    setIsSubmitting(true);
+    try {
+      const account = await login({
+        emailOrPhone: adminEmail.trim().toLowerCase(),
+        password: adminPassword,
+        rememberMe,
+        role: 'ADMIN',
+      });
+      toast.success(`Welcome System Admin ${account.name}! Redirecting to Admin Dashboard...`);
+      if (typeof window !== 'undefined') {
+        window.location.href = account.dashboardPath || '/admin/dashboard';
+      }
+    } catch (err) {
+      const msg = err?.message || 'Admin authentication failed. Please check your credentials.';
+      setServerError(msg);
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleQuickFillAdmin = () => {
+    setAdminEmail('admin@phidim.np');
+    setAdminPassword('password123');
+    setServerError('');
+    setFieldErrors({});
+    toast.info('Loaded demo admin credentials (admin@phidim.np)');
+  };
+
   const handleDemoLogin = async (selectedRole) => {
-    const roleToUse = selectedRole === 'ADMIN' ? 'USER' : selectedRole;
+    const roleToUse = selectedRole;
     setRole(roleToUse);
     const demo = DEMO_ACCOUNTS[roleToUse] || DEMO_ACCOUNTS.USER;
     setServerError('');
@@ -270,33 +350,102 @@ export default function LoginPage() {
 
         {/* Main Auth Card */}
         <div className="relative w-full max-w-[480px] bg-white/90 backdrop-blur-xl rounded-[28px] p-6 sm:p-8 border border-white/70 shadow-2xl shadow-emerald-900/[0.06] animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+          
+          {/* Top Right 3-Dot Hidden Options Menu */}
+          <div className="absolute top-5 right-5 z-20">
+            <button
+              type="button"
+              onClick={() => setShowAdminMenu((v) => !v)}
+              className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              title="More Options"
+              aria-label="More Options"
+            >
+              <MoreVertical className="w-5 h-5" />
+            </button>
+
+            {showAdminMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setShowAdminMenu(false)}
+                />
+                <div className="absolute right-0 top-full mt-1.5 w-60 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-800 p-2 z-40 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1.5 border-b border-slate-800/80 flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">System Options</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminMenu(false)}
+                      className="text-slate-400 hover:text-white p-0.5 rounded-md hover:bg-slate-800"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRole('ADMIN');
+                      setShowAdminMenu(false);
+                      setAdminEmail('admin@phidim.np');
+                      setAdminPassword('password123');
+                      setServerError('');
+                      setFieldErrors({});
+                      toast.success('Admin portal sign-in mode activated');
+                    }}
+                    className="w-full mt-1 text-left px-3 py-2.5 rounded-xl hover:bg-slate-800/90 flex items-center gap-3 transition-colors cursor-pointer group"
+                  >
+                    <div className="p-2 rounded-xl bg-rose-500/15 text-rose-400 group-hover:bg-rose-500 group-hover:text-white transition-colors shrink-0">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-black text-white group-hover:text-rose-400 transition-colors flex items-center justify-between">
+                        <span>Admin Login</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-bold uppercase tracking-wider">Hidden</span>
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                        Access system dashboard &amp; control panel
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
           {/* Card Header */}
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 pr-8">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#16A34A]/10 to-[#22C55E]/10 border border-[#16A34A]/20 shadow-xs mx-auto">
               {role === 'USER' ? (
                 <User className="w-7 h-7 text-emerald-600" />
-              ) : (
+              ) : role === 'TECHNICIAN' ? (
                 <HardHat className="w-7 h-7 text-slate-900" />
+              ) : (
+                <ShieldCheck className="w-7 h-7 text-rose-600" />
               )}
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-black text-[#111827] tracking-tight">
-              {role === 'USER' ? 'Customer Account Sign In' : 'Field Technician Portal'}
+              {role === 'USER'
+                ? 'Customer Account Sign In'
+                : role === 'TECHNICIAN'
+                ? 'Field Technician Portal'
+                : 'System Administrator Access'}
             </h2>
             <p className="text-xs text-[#6B7280] font-medium max-w-sm mx-auto">
               {role === 'USER'
                 ? 'Sign in to request home services, manage orders & track technicians in Panchthar.'
-                : 'Fill out your technician identity & assigned ward details to launch your Technician Command Interface.'}
+                : role === 'TECHNICIAN'
+                ? 'Fill out your technician identity & assigned ward details to launch your Technician Command Interface.'
+                : 'Authenticate with master admin credentials to manage Phidim Service operations & users.'}
             </p>
           </div>
 
-          {/* Role Selector Tabs (Customer vs Technician ONLY) */}
+          {/* Role Selector Tabs */}
           <div
-            className="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-slate-100 text-xs font-bold border border-slate-200"
+            className={`grid ${tabsToRender.length === 3 ? 'grid-cols-3' : 'grid-cols-2'} gap-1.5 p-1.5 rounded-2xl bg-slate-100 text-xs font-bold border border-slate-200`}
             role="tablist"
             aria-label="Account type"
           >
-            {ROLE_TABS.map((tab) => (
+            {tabsToRender.map((tab) => (
               <button
                 key={tab.key}
                 type="button"
@@ -307,12 +456,12 @@ export default function LoginPage() {
                   setServerError('');
                   setFieldErrors({});
                 }}
-                className={`py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                   role === tab.key ? tab.active : tab.inactive
                 }`}
               >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <tab.icon className="w-4 h-4 shrink-0" />
+                <span className="truncate">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -535,6 +684,109 @@ export default function LoginPage() {
                   <span className="flex items-center gap-2">
                     <Wrench className="w-4 h-4 text-emerald-400" />
                     <span>{techMode === 'LOGIN' ? 'CONTINUE TO TECHNICIAN DASHBOARD' : 'REGISTER NEW TECHNICIAN'}</span>
+                  </span>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* ================= FORM 3: SYSTEM ADMIN ================= */}
+          {role === 'ADMIN' && (
+            <form onSubmit={handleAdminSubmit} className="space-y-5 animate-in fade-in duration-300" noValidate>
+              <div className="bg-slate-950 text-white p-3.5 rounded-2xl border border-rose-500/30 flex items-center justify-between shadow-inner">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-rose-500/20 text-rose-400 shrink-0">
+                    <ShieldAlert className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-extrabold text-white block">System Admin Security Mode</span>
+                    <span className="text-[10px] text-slate-400 font-medium block">Authorized personnel only</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleQuickFillAdmin}
+                  className="px-2.5 py-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg transition-all cursor-pointer shrink-0"
+                >
+                  Quick Fill Demo Admin
+                </button>
+              </div>
+
+              <FloatingField
+                id="admin-email"
+                label="Admin Email or Username"
+                name="adminEmail"
+                icon={Mail}
+                value={adminEmail}
+                onChange={(e) => {
+                  setAdminEmail(e.target.value);
+                  if (fieldErrors.adminEmail) setFieldErrors((f) => ({ ...f, adminEmail: undefined }));
+                }}
+                error={fieldErrors.adminEmail}
+                disabled={isSubmitting}
+                autoComplete="username"
+              />
+
+              <FloatingField
+                id="admin-password"
+                label="Admin Master Password"
+                name="adminPassword"
+                type={showPassword ? 'text' : 'password'}
+                icon={Lock}
+                value={adminPassword}
+                onChange={(e) => {
+                  setAdminPassword(e.target.value);
+                  if (fieldErrors.adminPassword) setFieldErrors((f) => ({ ...f, adminPassword: undefined }));
+                }}
+                error={fieldErrors.adminPassword}
+                disabled={isSubmitting}
+                autoComplete="current-password"
+                right={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                }
+              />
+
+              <div className="flex items-center justify-between pt-0.5">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    disabled={isSubmitting}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 accent-slate-900"
+                  />
+                  <span className="text-xs text-slate-600 font-medium">Remember admin session</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setRole('USER')}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                >
+                  Exit Admin Mode
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-[54px] rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 hover:from-slate-800 hover:to-slate-700 text-rose-400 font-black text-xs uppercase tracking-wider shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 border border-rose-500/30"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-rose-400/40 border-t-rose-400 rounded-full animate-spin" />
+                    Authenticating Admin Session...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-rose-400" />
+                    <span>SIGN IN TO ADMIN CONTROL CENTER</span>
+                    <ArrowRight className="w-4 h-4 text-rose-400" />
                   </span>
                 )}
               </button>

@@ -67,7 +67,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/logo.png" type="image/png" sizes="any" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <body className="antialiased font-sans">
+      <body className={`antialiased font-sans ${poppins.variable}`}>
         <AuthProvider>
           {children}
           <Toaster />

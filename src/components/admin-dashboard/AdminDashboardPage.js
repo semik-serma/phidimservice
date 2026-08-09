@@ -18,6 +18,13 @@ import { useAuth } from "@/context/AuthContext";
 import RoleGuard from "../RoleGuard";
 import { LogoutConfirmModal } from "../LogoutConfirmModal";
 import { AccountSettings } from "../AccountSettings";
+import { DirectChatSection } from "../chat/DirectChatSection";
+import { CreateArticleModal } from "../articles/CreateArticleModal";
+import { VideoVoiceCallModal } from "../calls/VideoVoiceCallModal";
+import { AnnouncementManager } from "./AnnouncementManager";
+import { FriendsManager } from "../community/FriendsManager";
+import { AdminCategoriesManager } from "../admin/AdminCategoriesManager";
+import { AddProductModal } from "../admin/AddProductModal";
 
 /**
  * Admin dashboard UI. This component renders inside a server guard
@@ -38,6 +45,18 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // 'add-service' | 'add-tech' | 'create-coupon' | 'send-notif'
   const [toastMessage, setToastMessage] = useState(null);
+
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [callTargetPerson, setCallTargetPerson] = useState(null);
+  const [callType, setCallType] = useState("video");
+
+  const handleStartCall = (person, type = "video") => {
+    setCallTargetPerson(person);
+    setCallType(type);
+    setIsCallModalOpen(true);
+  };
 
   // Sync dark mode class with root html element
   useEffect(() => {
@@ -113,51 +132,97 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
           {activeTab === "account-settings" || activeTab === "settings" ? (
             <AccountSettings onShowToast={showToast} />
+          ) : activeTab === "friends" ? (
+            <FriendsManager
+              onStartChat={(friend) => setActiveTab("support")}
+              onStartCall={handleStartCall}
+              onShowToast={showToast}
+            />
+          ) : activeTab === "users" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
+                <h2 className="text-2xl font-black">Registered Platform Users</h2>
+                <p className="text-xs sm:text-sm text-blue-100 mt-1">Manage 14,800+ customer accounts across Phidim Municipality and Panchthar district.</p>
+              </div>
+              <UsersAndActions
+                onAddService={() => setActiveModal("add-service")}
+                onAddTechnician={() => setActiveModal("add-tech")}
+                onCreateCoupon={() => setActiveModal("create-coupon")}
+                onSendNotification={() => setActiveModal("send-notif")}
+                onGenerateReport={handleGenerateReport}
+              />
+            </div>
+          ) : activeTab === "technicians" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
+                <h2 className="text-2xl font-black">Technicians & Field Engineers Directory</h2>
+                <p className="text-xs sm:text-sm text-emerald-100 mt-1">164 Certified Field Specialists (DishHome Fiber, CCTV, AC, Electrical, Plumbing).</p>
+              </div>
+              <RightSideWidgets />
+              <UsersAndActions
+                onAddService={() => setActiveModal("add-service")}
+                onAddTechnician={() => setActiveModal("add-tech")}
+                onCreateCoupon={() => setActiveModal("create-coupon")}
+                onSendNotification={() => setActiveModal("send-notif")}
+                onGenerateReport={handleGenerateReport}
+              />
+            </div>
+          ) : activeTab === "categories" || activeTab === "services" ? (
+            <AdminCategoriesManager
+              onOpenAddProductModal={() => setIsAddProductOpen(true)}
+              onShowToast={showToast}
+            />
+          ) : activeTab === "announcements" ? (
+            <AnnouncementManager />
+          ) : activeTab === "messages" || activeTab === "articles" ? (
+            <DirectChatSection
+              onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
+              onStartCall={handleStartCall}
+            />
+          ) : activeTab === "reviews" || activeTab === "notifications" ? (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-r from-rose-600 to-pink-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
+                <h2 className="text-2xl font-black">Customer Reviews & System Broadcast Feed</h2>
+                <p className="text-xs sm:text-sm text-rose-100 mt-1">Moderate customer reviews, inspect terminal logs, and broadcast SMS/Push notifications.</p>
+              </div>
+              <BottomSection />
+            </div>
           ) : (
             <>
-              {/* Top Section: 6 Stat Cards */}
+              {/* Full Admin Master Command Center */}
               <section>
-            <StatCards />
-          </section>
+                <StatCards />
+              </section>
 
-          {/* Main Grid: LEFT (70%) and RIGHT (30%) Split */}
-          <section className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-            {/* LEFT COLUMN (70% = 8 cols on xl) */}
-            <div className="xl:col-span-8 space-y-8">
-              {/* Booking & Revenue Area/Bar Analytics Chart */}
-              <AnalyticsCharts />
+              <section className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+                <div className="xl:col-span-8 space-y-8">
+                  <AnalyticsCharts />
+                  <MiddleRow />
+                </div>
 
-              {/* Service Performance, Recent Bookings, Top Technicians */}
-              <MiddleRow />
-            </div>
+                <div className="xl:col-span-4">
+                  <RightSideWidgets />
+                </div>
+              </section>
 
-            {/* RIGHT COLUMN (30% = 4 cols on xl) */}
-            <div className="xl:col-span-4">
-              <RightSideWidgets />
-            </div>
-          </section>
+              <section>
+                <UsersAndActions
+                  onAddService={() => setActiveModal("add-service")}
+                  onAddTechnician={() => setActiveModal("add-tech")}
+                  onCreateCoupon={() => setActiveModal("create-coupon")}
+                  onSendNotification={() => setActiveModal("send-notif")}
+                  onGenerateReport={handleGenerateReport}
+                />
+              </section>
 
-          {/* Second Row: Recent Users Table & Quick Actions */}
-          <section>
-            <UsersAndActions
-              onAddService={() => setActiveModal("add-service")}
-              onAddTechnician={() => setActiveModal("add-tech")}
-              onCreateCoupon={() => setActiveModal("create-coupon")}
-              onSendNotification={() => setActiveModal("send-notif")}
-              onGenerateReport={handleGenerateReport}
-            />
-          </section>
+              <section>
+                <ThirdRowAnalytics />
+              </section>
 
-          {/* Third Row: Analytics Breakdown (Revenue Pie, Status Ratio, Weekly Earnings, CSAT) */}
-          <section>
-            <ThirdRowAnalytics />
-          </section>
-
-          {/* Bottom Section: Reviews, Timeline, Terminal System Logs, Notifications Feed */}
-          <section>
-            <BottomSection />
-          </section>
-          </>
+              <section>
+                <BottomSection />
+              </section>
+            </>
           )}
         </main>
 
@@ -187,6 +252,35 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
         onCancel={() => setIsLogoutOpen(false)}
         onConfirm={handleLogoutConfirm}
         isLoggingOut={isLoggingOut}
+      />
+
+      {/* Create Article Modal */}
+      <CreateArticleModal
+        isOpen={isArticleModalOpen}
+        onClose={() => setIsArticleModalOpen(false)}
+        onPublish={(newArticle) => {
+          showToast(`Article "${newArticle.title}" published successfully!`);
+        }}
+      />
+
+      {/* Video / Voice Call Modal */}
+      <VideoVoiceCallModal
+        isOpen={isCallModalOpen}
+        onClose={() => setIsCallModalOpen(false)}
+        targetPerson={callTargetPerson}
+        callType={callType}
+      />
+
+      {/* Add Product / Service Modal */}
+      <AddProductModal
+        isOpen={isAddProductOpen || activeModal === "add-service"}
+        onClose={() => {
+          setIsAddProductOpen(false);
+          setActiveModal(null);
+        }}
+        onAddProduct={(prod) => {
+          showToast(`Product "${prod.name}" added successfully with SEO rank score ${prod.seo.seoScore}/100!`);
+        }}
       />
       </div>
     </RoleGuard>

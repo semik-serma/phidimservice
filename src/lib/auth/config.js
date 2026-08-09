@@ -22,6 +22,8 @@ export const PUBLIC_PREFIXES = [
   "/register",
   "/forgot-password",
   "/reset-password",
+  "/401",
+  "/403",
   "/api/auth", // the auth backend manages its own tokens/cookies
   "/api/health",
   "/_next",
@@ -78,6 +80,7 @@ export const PAGE_ROUTE_RULES = [
 export const API_ROUTE_RULES = [
   { pattern: /^\/api\/admin(?:\/|$)/, roles: [ROLES.ADMIN] },
   { pattern: /^\/api\/technician(?:\/|$)/, roles: [ROLES.TECHNICIAN] },
+  { pattern: /^\/api\/user\/profile(?:\/|$)/, roles: [ROLES.USER, ROLES.TECHNICIAN, ROLES.ADMIN] },
   { pattern: /^\/api\/user(?:\/|$)/, roles: [ROLES.USER] },
 ];
 

@@ -34,6 +34,7 @@ export const TECHNICIAN_NAV_ITEMS = [
   { id: "my-jobs", name: "My Jobs", icon: Briefcase, badge: "2 Active", badgeColor: "bg-blue-500 text-white", path: "/technician/jobs" },
   { id: "schedule", name: "Schedule", icon: Calendar, badge: "Today", path: "/technician/calendar" },
   { id: "earnings", name: "Earnings", icon: Wallet, badge: "Rs 4.8k", path: "/technician/earnings" },
+  { id: "friends", name: "Find Friends", icon: UserCheck, badge: "Community", badgeColor: "bg-emerald-500 text-white" },
   { id: "customers", name: "Customers", icon: Users, badge: null },
   { id: "reviews", name: "Reviews", icon: Star, badge: "4.95 ★" },
   { id: "performance", name: "Performance", icon: TrendingUp, badge: "Top 1%", path: "/technician/reports" },
@@ -130,9 +131,6 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
                     router.push("/");
                   } else {
                     setActiveTab(item.id);
-                    if (item.path && window.location.pathname !== item.path) {
-                      router.push(item.path);
-                    }
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}

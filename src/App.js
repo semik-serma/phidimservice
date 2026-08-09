@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { TopBar } from "./components/TopBar";
 import { Header } from "./components/Header";
 import { Navbar } from "./components/Navbar";
+import { AnnouncementBanner } from "./components/AnnouncementBanner";
 import { CartDrawer } from "./components/CartDrawer";
 import { WishlistDrawer } from "./components/WishlistDrawer";
 import { CheckoutModal } from "./components/CheckoutModal";
@@ -21,6 +22,8 @@ import { AboutModal } from "./components/AboutModal";
 import { WhatsAppWidget } from "./components/WhatsAppWidget";
 import { HomePageOverview } from "./components/HomePageOverview";
 import { HeroCarousel } from "./components/HeroCarousel";
+import { ProductGrid } from "./components/ProductGrid";
+import { PRODUCTS } from "./data/products";
 import { LanNetworkingPage } from "./components/LanNetworkingPage";
 import { ContactUsPage } from "./components/ContactUsPage";
 import { Footer } from "./components/Footer";
@@ -139,8 +142,8 @@ export default function App() {
   };
   const handleSelectCategory = (catName) => {
     setSelectedCategory(catName);
-    if (activeTab !== "ALL SERVICES" && activeTab !== "HOME") {
-      setActiveTab("ALL SERVICES");
+    if (activeTab !== "HOME") {
+      setActiveTab("HOME");
     }
   };
   const handleOrderFiberPackage = (pkg) => {
@@ -175,6 +178,9 @@ export default function App() {
       {
     /* Sticky Top Banner, Header & Navbar Stack */
   }
+      {/* Site-wide Announcement Banner — admin-controlled */}
+      <AnnouncementBanner />
+
       <header className="sticky top-0 z-50 bg-white shadow-md transition-all">
         <TopBar />
         
@@ -249,7 +255,23 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
-            <div className="max-w-[1536px] mx-auto px-4 md:px-8 lg:px-12 py-8">
+            <div className="max-w-[1536px] mx-auto px-4 md:px-8 lg:px-12 py-8 space-y-12">
+              {/* Searchable Products & Browse Categories Showcase */}
+              <ProductGrid
+                products={PRODUCTS}
+                selectedCategory={selectedCategory}
+                searchQuery={searchQuery}
+                onAddToCart={handleAddToCart}
+                onAddToWishlist={handleToggleWishlist}
+                onQuickView={(prod) => setQuickViewProduct(prod)}
+                wishlistIds={wishlist.map((item) => item.id)}
+                cartIds={cart.map((item) => item.product.id)}
+                onResetFilters={() => {
+                  setSelectedCategory("ALL");
+                  setSearchQuery("");
+                }}
+              />
+
               <HomePageOverview
                 onNavigateTab={(tab) => {
                   setActiveTab(tab);

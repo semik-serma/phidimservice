@@ -29,6 +29,7 @@ function toClientUser(user) {
   return {
     id: user._id?.toString ? user._id.toString() : user._id,
     name: user.name,
+    displayName: user.displayName || user.name || "",
     email: user.email,
     phone: user.phone || "",
     role: user.role,
@@ -47,8 +48,8 @@ export async function loginUser(req, res) {
   if (!emailOrPhone || !password) {
     return res.status(400).json({ error: "Please provide both email and password." });
   }
-  if (typeof password === "string" && password.length < 8) {
-    return res.status(400).json({ error: "Password must be at least 8 characters." });
+  if (typeof password === "string" && password.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters." });
   }
 
   // Brute force protection (per-IP rate limiter)

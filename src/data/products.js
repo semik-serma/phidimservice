@@ -165,6 +165,128 @@ export const PRODUCTS = [
     isHot: true,
     isNew: true,
     inStock: true
+  },
+  {
+    id: "p9",
+    name: "Voltas 1.5 Ton 3 Star Inverter Split Air Conditioner (AC)",
+    category: "AC & Cooling Services",
+    price: 64500,
+    originalPrice: 75000,
+    discountPercent: 14,
+    rating: 4.9,
+    reviewCount: 22,
+    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80",
+    description: "High-efficiency 5-in-1 convertible inverter AC with copper condenser coils and 100% turbo cooling for Phidim summers.",
+    brand: "Voltas",
+    isHot: true,
+    inStock: true,
+    specs: {
+      "Capacity": "1.5 Ton (18,000 BTU)",
+      "Energy Rating": "3 Star Inverter",
+      "Condenser": "100% Copper Coil",
+      "Warranty": "10 Years Compressor Warranty"
+    }
+  },
+  {
+    id: "p10",
+    name: "Schneider Electric 32A Double Pole MCB & Distribution Box",
+    category: "Electrical & House Wiring",
+    price: 1850,
+    originalPrice: 2400,
+    discountPercent: 23,
+    rating: 4.8,
+    reviewCount: 38,
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80",
+    description: "Heavy-duty electrical protection switch box with surge protection for residential and commercial wiring in Panchthar.",
+    brand: "Schneider",
+    inStock: true,
+    specs: {
+      "Current Rating": "32 Amperes",
+      "Voltage": "240V / 50Hz",
+      "Poles": "2 Pole (DP)",
+      "Warranty": "3 Years Replacement"
+    }
+  },
+  {
+    id: "p11",
+    name: "Crompton 1.0 HP Heavy Duty Automatic Water Pressure Pump",
+    category: "Plumbing & Water Systems",
+    price: 9200,
+    originalPrice: 11500,
+    discountPercent: 20,
+    rating: 4.7,
+    reviewCount: 19,
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    description: "High-lift self-priming automatic water pump for overhead tank filling and residential water pressure boosting.",
+    brand: "Crompton",
+    isHot: true,
+    inStock: true,
+    specs: {
+      "Power": "1.0 HP (750W)",
+      "Flow Rate": "35 Liters/min",
+      "Max Head": "36 Meters",
+      "Warranty": "2 Years"
+    }
+  },
+  {
+    id: "p12",
+    name: "Samsung Galaxy A55 5G (8GB RAM / 256GB Storage)",
+    category: "Mobiles & Accessories",
+    price: 49999,
+    originalPrice: 56999,
+    discountPercent: 12,
+    rating: 4.9,
+    reviewCount: 74,
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80",
+    description: "Super AMOLED 120Hz display, 50MP OIS Triple Camera, IP67 dust/water resistance, and 5000mAh long battery life.",
+    brand: "Samsung",
+    isHot: true,
+    isNew: true,
+    inStock: true
+  },
+  {
+    id: "p13",
+    name: "Sony Bravia 43 Inch 4K Ultra HD Smart Google TV",
+    category: "Consumer Electronics",
+    price: 68000,
+    originalPrice: 78000,
+    discountPercent: 13,
+    rating: 4.8,
+    reviewCount: 45,
+    image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=600&q=80",
+    description: "X1 4K Processor, Dolby Atmos sound, built-in Chromecast & DishHome iTV app compatibility.",
+    brand: "Sony",
+    isHot: true,
+    inStock: true
+  },
+  {
+    id: "p14",
+    name: "Organic Ilam Premium Orthodox Golden Black Tea (500g)",
+    category: "Groceries & Local Needs",
+    price: 850,
+    originalPrice: 1100,
+    discountPercent: 23,
+    rating: 5,
+    reviewCount: 88,
+    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80",
+    description: "100% pure organic high-altitude hand-picked orthodox tea leaves directly from Ilam & Panchthar tea gardens.",
+    brand: "Local Organic",
+    isHot: true,
+    inStock: true
+  },
+  {
+    id: "p15",
+    name: "Pure Himalayan Cow Ghee (1 Liter Bottle - Local Panchthar)",
+    category: "Groceries & Local Needs",
+    price: 1450,
+    originalPrice: 1800,
+    discountPercent: 19,
+    rating: 4.9,
+    reviewCount: 112,
+    image: "https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&w=600&q=80",
+    description: "Traditional Bilona method wood-churned pure cow ghee from local Panchthar dairy farmers.",
+    brand: "Panchthar Dairy",
+    inStock: true
   }
 ];
 export const FIBER_PACKAGES = [

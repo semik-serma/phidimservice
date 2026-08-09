@@ -237,7 +237,7 @@ export const Navbar = ({
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2">
               <Link
                 href="/login"
                 className="flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-green-600 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
@@ -321,28 +321,54 @@ export const Navbar = ({
               </div>
             </div>
 
-            {/* Quick Action Badges Grid */}
-            <div className="p-3.5 border-b border-gray-100 grid grid-cols-3 gap-2">
+            {/* Mobile Authentication & Portal Buttons inside Hamburger Menu */}
+            <div className="p-3.5 border-b border-gray-100 bg-emerald-50/50 space-y-2">
+              <h3 className="text-[10px] font-black uppercase text-emerald-800 tracking-wider">Account & Access</h3>
               {isAuthenticated && user ? (
-                <Link
-                  href={user.dashboardPath || "/user/dashboard"}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex flex-col items-center justify-center p-2.5 bg-emerald-50 hover:bg-emerald-100 rounded-xl border border-emerald-200 transition-all font-bold text-emerald-700 cursor-pointer"
-                >
-                  <LayoutDashboard className="w-4 h-4 text-emerald-600 mb-1" />
-                  <span className="text-[10px]">Dashboard</span>
-                </Link>
+                <div className="flex items-center justify-between gap-2">
+                  <Link
+                    href={user.dashboardPath || "/user/dashboard"}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black flex items-center justify-center gap-1.5 shadow-2xs"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5" />
+                    <span>Dashboard ({user.role})</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="py-2 px-3 bg-rose-100 text-rose-700 hover:bg-rose-200 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Logout</span>
+                  </button>
+                </div>
               ) : (
-                <Link
-                  href="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex flex-col items-center justify-center p-2.5 bg-gray-50 hover:bg-green-50 rounded-xl border border-gray-200 hover:border-green-300 transition-all font-bold text-gray-700 hover:text-green-700 cursor-pointer"
-                >
-                  <User className="w-4 h-4 text-green-600 mb-1" />
-                  <span className="text-[10px]">Login</span>
-                </Link>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="py-2.5 px-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-black flex items-center justify-center gap-1.5 shadow-2xs"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>LOGIN</span>
+                  </Link>
+                  <Link
+                    href="/login?role=TECHNICIAN"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-emerald-400 rounded-lg text-xs font-black flex items-center justify-center gap-1.5 shadow-2xs border border-slate-800"
+                  >
+                    <Wrench className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Tech Portal</span>
+                  </Link>
+                </div>
               )}
+            </div>
 
+            {/* Quick Action Badges Grid */}
+            <div className="p-3.5 border-b border-gray-100 grid grid-cols-2 gap-2">
               <button
                 onClick={() => {
                   if (onOpenWishlist) onOpenWishlist();

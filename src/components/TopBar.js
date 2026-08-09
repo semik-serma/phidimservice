@@ -60,8 +60,8 @@ export const TopBar = () => {
         </a>
       </div>
 
-      {/* Center Welcome Message */}
-      <div className="w-full md:w-auto text-center justify-center mx-auto font-black text-sm sm:text-base tracking-wide text-white drop-shadow-sm">
+      {/* Center Welcome Message - Centered on Mobile */}
+      <div className="w-full md:w-auto text-center flex items-center justify-center font-black text-xs sm:text-sm md:text-base tracking-wide text-white drop-shadow-xs order-first md:order-none py-0.5">
         Welcome to Phidim Service
       </div>
 

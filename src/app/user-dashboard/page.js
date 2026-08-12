@@ -20,12 +20,14 @@ import { useAuth } from "@/context/AuthContext";
 
 import { DirectChatSection } from "../../components/chat/DirectChatSection";
 import { CreateArticleModal } from "../../components/articles/CreateArticleModal";
-import { VideoVoiceCallModal } from "../../components/calls/VideoVoiceCallModal";
 import { AccountSettings } from "../../components/AccountSettings";
 import { FriendsManager } from "../../components/community/FriendsManager";
+import { CommunityUserDirectory } from "../../components/community/CommunityUserDirectory";
+import { useCall } from "@/components/calls/CallProvider";
 
 export default function UserDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
+  const { startCall } = useCall();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,16 +35,29 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
-  // Community Articles & Call Modal States
+  // Community Articles Modal State
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
-  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
-  const [callTargetPerson, setCallTargetPerson] = useState(null);
-  const [callType, setCallType] = useState("video");
+  const [activeChatPartner, setActiveChatPartner] = useState(null);
 
   const handleStartCall = (person, type = "video") => {
-    setCallTargetPerson(person);
-    setCallType(type);
-    setIsCallModalOpen(true);
+    startCall(person, type);
+  };
+
+  const handleCallTech = (tech, type = "voice") => {
+    const person = {
+      name: tech?.displayName || tech?.name || tech?.technician?.name || "Niraj Sunuwar",
+      role: tech?.role || tech?.specialty || tech?.technician?.specialty || "Senior Field Technician",
+      avatar: tech?.avatar || tech?.picture || tech?.technician?.avatar || "",
+      phone: tech?.phone || tech?.technician?.phone || "+977 9862772457",
+      email: tech?.email || "tech@phidim.np",
+    };
+    startCall(person, type);
+  };
+
+  const handleChatTech = (tech) => {
+    setActiveChatPartner(tech);
+    setActiveTab("messages");
+    showToast(`Opening live chat with ${tech?.displayName || tech?.name || tech?.technician?.name || "Technician"}...`);
   };
 
   // Sync dark mode
@@ -60,7 +75,8 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
   };
 
   const handleConfirmBooking = (details) => {
-    showToast(`Booking Confirmed for ${details.category} on ${details.date}!`);
+    const bookingId = details?.id ? `#${details.id}` : "";
+    showToast(`✅ Booking ${bookingId} confirmed for ${details.serviceName || details.category}! Technician dispatched.`);
     setActiveTab("my-bookings");
   };
 
@@ -134,8 +150,8 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
               </div>
               <MyBookingsList
                 onTrackLive={() => setActiveTab("track")}
-                onChat={(b) => showToast(`Opening chat with technician ${b.technician.name}...`)}
-                onCall={(b) => showToast(`Calling ${b.technician.name} at ${b.technician.phone}...`)}
+                onChat={(b) => handleChatTech(b.technician)}
+                onCall={(b) => handleCallTech(b.technician, "voice")}
                 onInvoice={(b) => showToast(`Downloading PDF Invoice for ${b.id}...`)}
               />
             </div>
@@ -145,7 +161,7 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
                 <h2 className="text-2xl font-black">Live Technician GPS Tracker</h2>
                 <p className="text-xs sm:text-sm text-amber-100 mt-1">Real-time live map tracking of your assigned Phidim technician moving towards your doorstep.</p>
               </div>
-              <LiveTechnicianTracker />
+              <LiveTechnicianTracker onCall={(tech) => handleCallTech(tech, "voice")} onChat={handleChatTech} />
             </div>
           ) : activeTab === "payments" ? (
             <div className="space-y-8">
@@ -174,17 +190,27 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
             <div className="space-y-8">
               <HelpCenterWidget />
             </div>
-          ) : activeTab === "friends" ? (
-            <FriendsManager
-              onStartChat={(friend) => setActiveTab("messages")}
-              onStartCall={handleStartCall}
-              onShowToast={showToast}
-            />
-          ) : activeTab === "messages" || activeTab === "articles" ? (
-            <DirectChatSection
-              onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
-              onStartCall={handleStartCall}
-            />
+          ) : activeTab === "messages" ? (
+            <div className="space-y-8">
+              <DirectChatSection
+                onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
+                onStartCall={handleStartCall}
+                activePartner={activeChatPartner}
+              />
+            </div>
+          ) : activeTab === "friends" || activeTab === "articles" ? (
+            <div className="space-y-8">
+              <CommunityUserDirectory
+                onStartChat={handleChatTech}
+                onStartCall={handleCallTech}
+                onShowToast={showToast}
+              />
+              <FriendsManager
+                onStartChat={handleChatTech}
+                onStartCall={handleStartCall}
+                onShowToast={showToast}
+              />
+            </div>
           ) : activeTab === "reviews" ? (
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <h2 className="text-xl font-black text-slate-900 dark:text-white">My Service Reviews & Ratings</h2>
@@ -212,17 +238,25 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
             <>
               {/* Default Overview Dashboard */}
               <WelcomeBanner
-                userName={user?.displayName || user?.name || "Ram Shrestha"}
+                userName={user?.displayName || user?.name || (user?.email ? user.email.split("@")[0] : "")}
                 onBookNow={() => setActiveTab("book")}
                 onSearch={() => setIsSearchOpen(true)}
               />
+
+              <section id="user-directory">
+                <CommunityUserDirectory
+                  onStartChat={handleChatTech}
+                  onStartCall={handleCallTech}
+                  onShowToast={showToast}
+                />
+              </section>
 
               <section id="quick-booking">
                 <QuickBookingCard onConfirmBooking={handleConfirmBooking} />
               </section>
 
               <section id="live-tracking">
-                <LiveTechnicianTracker />
+                <LiveTechnicianTracker onCall={(tech) => handleCallTech(tech, "voice")} onChat={handleChatTech} />
               </section>
 
               <section id="services-grid">
@@ -232,8 +266,8 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
               <section id="my-bookings">
                 <MyBookingsList
                   onTrackLive={() => setActiveTab("track")}
-                  onChat={(b) => showToast(`Opening chat with technician ${b.technician.name}...`)}
-                  onCall={(b) => showToast(`Calling ${b.technician.name} at ${b.technician.phone}...`)}
+                  onChat={(b) => handleChatTech(b.technician)}
+                  onCall={(b) => handleCallTech(b.technician, "voice")}
                   onInvoice={(b) => showToast(`Downloading PDF Invoice for ${b.id}...`)}
                 />
               </section>
@@ -283,14 +317,6 @@ export default function UserDashboardPage({ initialTab = "dashboard" }) {
         onPublish={(newArticle) => {
           showToast(`Article "${newArticle.title}" published successfully!`);
         }}
-      />
-
-      {/* Video / Voice Call Modal */}
-      <VideoVoiceCallModal
-        isOpen={isCallModalOpen}
-        onClose={() => setIsCallModalOpen(false)}
-        targetPerson={callTargetPerson}
-        callType={callType}
       />
     </div>
   );

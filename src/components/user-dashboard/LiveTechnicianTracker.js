@@ -14,7 +14,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-export function LiveTechnicianTracker({ booking }) {
+export function LiveTechnicianTracker({ booking, onCall, onChat }) {
   const tech = booking?.technician || {
     name: "Niraj Sunuwar",
     rating: 4.95,
@@ -133,12 +133,19 @@ export function LiveTechnicianTracker({ booking }) {
         </div>
 
         <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800 flex items-center gap-2">
-          <button className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all">
+          <button
+            onClick={() => onCall ? onCall(tech, "voice") : null}
+            className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+          >
             <Phone size={16} />
             <span>Call Technician</span>
           </button>
 
-          <button className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-500/20 hover:bg-blue-100 transition-colors">
+          <button
+            onClick={() => onChat ? onChat(tech) : null}
+            className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-500/20 hover:bg-blue-100 transition-colors cursor-pointer"
+            title="Chat with Technician"
+          >
             <MessageSquare size={18} />
           </button>
         </div>

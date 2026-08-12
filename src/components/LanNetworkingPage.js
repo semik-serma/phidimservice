@@ -50,7 +50,7 @@ export const LanNetworkingPage = ({
   const suitableFor = [
     { title: "Homes", icon: Home, text: "Smart home networking & entertainment" },
     { title: "Offices", icon: Building2, text: "Structured corporate & workstation cabling" },
-    { title: "Shops & Retail", icon: Store, text: "POS billing & local stock inventory sync" },
+    { title: "Shops & Retail", icon: Store, text: "POS billing & local workstation network sync" },
     { title: "Schools & Colleges", icon: School, text: "Computer labs & campus-wide connectivity" },
     { title: "Hospitals & Clinics", icon: Building, text: "Patient records & diagnostic machine network" },
     { title: "Banks & Financials", icon: Landmark, text: "Secure encrypted transaction network" },

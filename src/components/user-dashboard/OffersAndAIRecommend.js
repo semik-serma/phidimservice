@@ -2,16 +2,19 @@
 
 import { motion } from "motion/react";
 import { Ticket, Sparkles, Gift, ArrowRight, Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getCoupons, subscribeCoupons } from "@/lib/couponStore";
 
 export function OffersAndAIRecommend({ onClaimCoupon, onBookRecommended }) {
   const [copiedCode, setCopiedCode] = useState(null);
+  const [coupons, setCoupons] = useState(() => getCoupons().filter((c) => c.active));
 
-  const coupons = [
-    { code: "PHIDIM20", discount: "20% OFF", desc: "Valid on all CCTV & Network setups in Panchthar", exp: "Expires in 3 days", bg: "from-emerald-500 to-teal-600" },
-    { code: "DTHFREE", discount: "FREE TUNE", desc: "Complimentary DishHome signal alignment with wiring", exp: "Expires in 5 days", bg: "from-blue-500 to-indigo-600" },
-    { code: "ELEC500", discount: "NPR 500 OFF", desc: "Flat NPR 500 discount on house rewiring checks", exp: "Expires in 7 days", bg: "from-purple-500 to-violet-600" },
-  ];
+  useEffect(() => {
+    const unsub = subscribeCoupons((list) => {
+      setCoupons(list.filter((c) => c.active));
+    });
+    return unsub;
+  }, []);
 
   const aiRecommendations = [
     { title: "UPS Battery Backup for CCTV", reason: "Based on your 4K CCTV Setup in Ward 1", price: "NPR 4,500", icon: Sparkles },
@@ -20,7 +23,7 @@ export function OffersAndAIRecommend({ onClaimCoupon, onBookRecommended }) {
 
   const copyCode = (code) => {
     setCopiedCode(code);
-    onClaimCoupon(code);
+    if (onClaimCoupon) onClaimCoupon(code);
     setTimeout(() => setCopiedCode(null), 2500);
   };
 
@@ -46,7 +49,7 @@ export function OffersAndAIRecommend({ onClaimCoupon, onBookRecommended }) {
             </div>
           </div>
           <span className="px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 text-xs font-bold">
-            3 Promo Codes
+            {coupons.length} Promo Code{coupons.length !== 1 ? "s" : ""}
           </span>
         </div>
 

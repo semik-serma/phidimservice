@@ -19,6 +19,7 @@ export function AccountSettings({ onShowToast }) {
 
   const [name, setName] = useState(user?.name || "");
   const [displayName, setDisplayName] = useState(user?.displayName || user?.name || "");
+  const [username, setUsername] = useState(user?.username || "");
   const [avatar, setAvatar] = useState(user?.avatar || "");
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -28,6 +29,7 @@ export function AccountSettings({ onShowToast }) {
     if (user) {
       setName(user.name || "");
       setDisplayName(user.displayName || user.name || "");
+      setUsername(user.username || "");
       setAvatar(user.avatar || "");
     }
   }, [user]);
@@ -93,6 +95,7 @@ export function AccountSettings({ onShowToast }) {
         await updateUser({
           name: name.trim(),
           displayName: displayName.trim() || name.trim(),
+          username: username.trim().toLowerCase().replace(/[^a-z0-9_]/g, ""),
           avatar: avatar.trim(),
         });
       }
@@ -210,7 +213,7 @@ export function AccountSettings({ onShowToast }) {
         <hr className="border-slate-100 dark:border-emerald-900/30" />
 
         {/* Name Fields Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Account Name */}
           <div className="space-y-2">
             <label className="block text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
@@ -242,7 +245,26 @@ export function AccountSettings({ onShowToast }) {
               onChange={(e) => setDisplayName(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
             />
-            <p className="text-[11px] text-slate-400 font-medium">The public display name shown on top navigation & headers.</p>
+            <p className="text-[11px] text-slate-400 font-medium">Public display name shown on top navigation & headers.</p>
+          </div>
+
+          {/* Username */}
+          <div className="space-y-2">
+            <label className="block text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <User size={15} className="text-blue-600 dark:text-blue-400" />
+              <span>Username (@handle)</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">@</span>
+              <input
+                type="text"
+                placeholder="e.g. ram_shrestha"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+                className="w-full pl-8 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold font-mono text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
+              />
+            </div>
+            <p className="text-[11px] text-slate-400 font-medium">Unique handle used for direct messaging and community tags.</p>
           </div>
         </div>
 

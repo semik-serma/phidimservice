@@ -9,7 +9,6 @@ import {
   Tv,
   Wind,
   Droplet,
-  ShoppingBag,
   CheckCircle2,
   Phone,
   ExternalLink,
@@ -85,25 +84,25 @@ export const AboutPage = ({
     "Plumbing Maintenance",
     "Plumbing Trouble Shooting"
   ];
-  const productsList = [
-    "\u{1F4A1} LED Bulbs",
-    "\u{1F4F7} CCTV Cameras",
-    "\u{1F4BB} Computers & Accessories",
-    "\u{1F310} Networking Devices",
-    "\u{1F4FA} LED TVs",
-    "\u{1F50C} Switches & Sockets",
-    "\u{1F32C}\uFE0F Ceiling & Wall Fans",
-    "\u{1F50B} Inverters",
-    "\u26A1 Electrical Accessories",
-    "\u{1F5A8}\uFE0F Computer Accessories",
-    "\u{1F4E1} Networking Equipment",
-    "\u{1F3E0} Home Appliances"
+  const technicalEquipmentList = [
+    "⚡ Digital Insulation & Earth Testers",
+    "📹 IP & HD CCTV Cable Analyzers",
+    "💻 Hardware Diagnostic & OS Workbenches",
+    "📡 Fusion Splicers & Optical Power Meters",
+    "❄️ High-Pressure Jet Wash Pumps",
+    "🔌 Certified R32 / R410A Refrigerant Gauges",
+    "⚙️ Multi-Meter Circuit Probes",
+    "🚰 Hydrostatic Pipe Pressure Testers",
+    "🛡️ Genuine Certified Replacement Parts",
+    "🌐 Managed Switch & Router Terminals",
+    "🔩 Heavy Duty Copper Flaring Tools",
+    "🏠 On-Site Technician Emergency Kits"
   ];
   const whyChooseUsList = [
     { title: "Experienced Technicians", desc: "Skilled certified field experts for all home & IT jobs." },
     { title: "Affordable Price", desc: "Transparent & budget-friendly local pricing in Panchthar." },
     { title: "Fast Response", desc: "Quick on-site service dispatch across Phidim Municipality." },
-    { title: "Genuine Products", desc: "100% original electrical & electronics items with warranty." },
+    { title: "Genuine Replacement Parts", desc: "100% original electrical, refrigeration & CCTV parts with warranty." },
     { title: "Professional Service", desc: "Reliable, clean, and polite service guaranteed every time." },
     { title: "Home Service Available", desc: "Doorstep technical assistance for home, shop, or office." },
     { title: "Customer Satisfaction First", desc: "Your peace of mind and satisfaction is our top priority." }
@@ -142,44 +141,41 @@ export const AboutPage = ({
   }
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
         
-        {
-    /* Page Hero Header */
-  }
-        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 md:p-10 shadow-xl relative overflow-hidden border border-slate-800">
+        {/* Page Hero Header */}
+        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden border border-slate-800 text-center flex flex-col items-center justify-center">
           <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none" />
           
-          <div className="relative z-10 max-w-3xl space-y-4 pl-70">
-            
-
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+          <div className="relative z-10 max-w-3xl mx-auto space-y-4 flex flex-col items-center text-center">
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight text-center">
               🔧 Welcome to Phidim Service
             </h1>
 
-            <p className="text-sm sm:text-base text-green-300 font-bold">
+            <p className="text-sm sm:text-base text-green-300 font-bold text-center">
               &quot;One Stop Solution for Home, Office & Business Services!&quot; 🏠⚡💻
             </p>
 
-            <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal text-center max-w-2xl">
               Need a trusted technician? Don&apos;t worry! Phidim Service is always ready to help you with fast, reliable, and professional service across Panchthar district.
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
               <a
-    href="https://wa.me/9779862772457"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-green-600 hover:bg-green-700 text-white font-extrabold px-5 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer"
-  >
+                href="https://wa.me/9779862772457"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-green-600 hover:bg-green-700 text-white font-extrabold px-5 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer hover:scale-105"
+              >
                 <Phone className="w-4 h-4" />
                 <span>Call Hotline: +977 986-2772457</span>
               </a>
 
               <a
-    href="https://phidimservice.com.np"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 transition-all border border-white/20 cursor-pointer"
-  >
+                href="https://phidimservice.com.np"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 transition-all border border-white/20 cursor-pointer hover:scale-105"
+              >
                 <Globe className="w-4 h-4 text-green-400" />
                 <span>phidimservice.com.np</span>
                 <ExternalLink className="w-3.5 h-3.5 text-gray-300" />
@@ -205,10 +201,10 @@ export const AboutPage = ({
             ⚡ Technical Services
           </button>
           <button
-    onClick={() => setActiveTab("PRODUCTS")}
-    className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap cursor-pointer transition-all ${activeTab === "PRODUCTS" ? "bg-slate-900 text-white shadow-xs" : "bg-gray-50 text-gray-700 hover:bg-gray-100"}`}
-  >
-            🛒 Products We Sell
+            onClick={() => setActiveTab("CAPABILITIES")}
+            className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap cursor-pointer transition-all ${activeTab === "CAPABILITIES" ? "bg-slate-900 text-white shadow-xs" : "bg-gray-50 text-gray-700 hover:bg-gray-100"}`}
+          >
+            🛠️ Service Capabilities & Standards
           </button>
           <button
     onClick={() => setActiveTab("WHY_US")}
@@ -375,57 +371,46 @@ export const AboutPage = ({
           </div>}
 
         {
-    /* SECTION 2: PRODUCTS WE SELL */
+    /* SECTION 2: TECHNICAL CAPABILITIES & SPECIALIZED EQUIPMENT */
   }
-        {(activeTab === "ALL" || activeTab === "PRODUCTS") && <div className="bg-gradient-to-br from-green-50 via-white to-green-50/60 border border-green-200 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+        {(activeTab === "ALL" || activeTab === "CAPABILITIES") && <div className="bg-gradient-to-br from-green-50 via-white to-green-50/60 border border-green-200 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-green-200/80 pb-4">
               <div>
                 <h2 className="text-lg font-black text-gray-900 uppercase tracking-wider flex items-center gap-2.5">
-                  <ShoppingBag className="w-5 h-5 text-green-600" />
-                  <span>🛒 Products We Sell at Genuine Prices</span>
+                  <Wrench className="w-5 h-5 text-green-600" />
+                  <span>🛠️ Service Equipment & Genuine Repair Standards</span>
                 </h2>
                 <p className="text-xs text-gray-600 mt-1">
-                  We sell genuine electrical, electronic, and IT accessories with local warranty in Panchthar.
+                  Our certified field technicians use calibrated industrial diagnostics, optical fusion splicers, and 100% genuine replacement parts for all repair jobs.
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
-    onClick={onNavigateServices}
-    className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-colors cursor-pointer"
-  >
-                  Browse Store Catalog
+                  onClick={onNavigateServices}
+                  className="bg-green-600 hover:bg-green-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                >
+                  <Wrench className="w-4 h-4" />
+                  <span>Explore Services</span>
                 </button>
-                <a
-    href="https://phidimservice.com.np"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-green-600 hover:bg-green-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-  >
-                  <Globe className="w-4 h-4" />
-                  <span>Online Portal</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {productsList.map((prod, i) => <div key={i} className="bg-white border border-green-100 hover:border-green-300 rounded-xl p-3.5 font-bold text-gray-800 text-xs flex items-center justify-center text-center shadow-2xs hover:shadow-xs transition-all">
-                  <span>{prod}</span>
+              {technicalEquipmentList.map((item, i) => <div key={i} className="bg-white border border-green-100 hover:border-green-300 rounded-xl p-3.5 font-bold text-gray-800 text-xs flex items-center justify-center text-center shadow-2xs hover:shadow-xs transition-all">
+                  <span>{item}</span>
                 </div>)}
             </div>
 
             <div className="bg-white p-4 rounded-2xl border border-green-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <span className="font-extrabold text-green-950">🛍️ Visit Our Official Online Portal:</span>
-              <a
-    href="https://phidimservice.com.np"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-green-700 font-black hover:underline underline-offset-2 flex items-center gap-1 text-sm"
-  >
-                <span>https://phidimservice.com.np</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
+              <span className="font-extrabold text-green-950">🛡️ 100% Certified Workmanship Guarantee across Panchthar:</span>
+              <button
+                onClick={onNavigateContact}
+                className="text-green-700 font-black hover:underline underline-offset-2 flex items-center gap-1 text-sm cursor-pointer"
+              >
+                <span>Request On-Site Technician Inspection</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>}
 
@@ -530,7 +515,7 @@ export const AboutPage = ({
               Phidim Service for trusted home services, electrical repairs, CCTV installations, and fiber net support.
             </p>
             <p className="text-xs font-extrabold text-green-400">
-              &quot;Professional Service, Genuine Products, Happy Customers!&quot; 💙🙏
+              &quot;Professional Service, Genuine Parts & Workmanship, Happy Customers!&quot; 💙🙏
             </p>
           </div>
 

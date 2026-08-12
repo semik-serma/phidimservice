@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   Tv,
@@ -18,6 +19,7 @@ import {
   MoreVertical,
   Calendar,
 } from "lucide-react";
+import { getBookingsList, subscribeBookings } from "@/lib/bookingStore";
 
 export const STATUS_CLASSES = {
   Pending: {
@@ -30,10 +32,20 @@ export const STATUS_CLASSES = {
     dot: "bg-blue-500",
     icon: CheckCircle2,
   },
+  "Technician Assigned": {
+    badge: "bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800",
+    dot: "bg-purple-500",
+    icon: UserCheck,
+  },
   "On The Way": {
     badge: "bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800",
     dot: "bg-orange-500",
     icon: Navigation,
+  },
+  "In Progress": {
+    badge: "bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border-cyan-300 dark:border-cyan-800",
+    dot: "bg-cyan-500",
+    icon: Clock,
   },
   Completed: {
     badge: "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800",
@@ -56,94 +68,56 @@ const TOP_SERVICES = [
   { name: "AC Repair & Servicing", bookings: 140, icon: AirVent, percentage: 28, color: "from-pink-500 to-rose-600" },
 ];
 
-const RECENT_BOOKINGS = [
-  {
-    id: "#PS-9482",
-    customer: "Ram Shrestha",
-    service: "DishHome Alignment",
-    status: "Completed",
-    date: "Today, 10:45 AM",
-    amount: "NPR 1,500",
-    avatar: "RS",
-  },
-  {
-    id: "#PS-9481",
-    customer: "Saraswati Subedi",
-    service: "4-Cam CCTV Setup",
-    status: "On The Way",
-    date: "Today, 09:30 AM",
-    amount: "NPR 18,900",
-    avatar: "SS",
-  },
-  {
-    id: "#PS-9480",
-    customer: "Bikash Thapa",
-    service: "House Electrical Rewire",
-    status: "Accepted",
-    date: "Today, 08:15 AM",
-    amount: "NPR 4,200",
-    avatar: "BT",
-  },
-  {
-    id: "#PS-9479",
-    customer: "Anita Gurung",
-    service: "Laptop Repair",
-    status: "Pending",
-    date: "Yesterday",
-    amount: "NPR 1,200",
-    avatar: "AG",
-  },
-  {
-    id: "#PS-9478",
-    customer: "Deepak Khadka",
-    service: "AC Gas Refill",
-    status: "Cancelled",
-    date: "Aug 03, 2026",
-    amount: "NPR 3,500",
-    avatar: "DK",
-  },
-];
-
 const TOP_TECHNICIANS = [
   {
-    name: "Niraj Sunuwar",
+    name: "Rajesh Tamang",
     specialty: "CCTV & Fiber Network",
-    rating: 4.9,
-    jobs: 148,
+    rating: 4.98,
+    jobs: 192,
     online: true,
-    avatar: "NS",
+    avatar: "RT",
     color: "from-emerald-500 to-teal-600",
+  },
+  {
+    name: "Anita Gurung",
+    specialty: "AC & Cooling Specialist",
+    rating: 4.95,
+    jobs: 165,
+    online: true,
+    avatar: "AG",
+    color: "from-blue-500 to-indigo-600",
+  },
+  {
+    name: "Niraj Sunuwar",
+    specialty: "DishHome DTH Specialist",
+    rating: 4.88,
+    jobs: 148,
+    online: false,
+    avatar: "NS",
+    color: "from-purple-500 to-violet-600",
   },
   {
     name: "Subash Tamang",
     specialty: "Master Electrician",
-    rating: 4.95,
-    jobs: 192,
-    online: true,
-    avatar: "ST",
-    color: "from-blue-500 to-indigo-600",
-  },
-  {
-    name: "Prem Rai",
-    specialty: "DishHome DTH Specialist",
-    rating: 4.88,
-    jobs: 165,
-    online: false,
-    avatar: "PR",
-    color: "from-purple-500 to-violet-600",
-  },
-  {
-    name: "Komal Bhattarai",
-    specialty: "Computer Repair Tech",
     rating: 4.85,
     jobs: 112,
     online: true,
-    avatar: "KB",
+    avatar: "ST",
     color: "from-amber-500 to-orange-600",
   },
 ];
 
 export function MiddleRow() {
+  const [liveBookings, setLiveBookings] = useState([]);
+
+  useEffect(() => {
+    setLiveBookings(getBookingsList().slice(0, 5));
+    const unsub = subscribeBookings((list) => {
+      setLiveBookings(list.slice(0, 5));
+    });
+    return unsub;
+  }, []);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Top Services (1 Column) */}
@@ -226,9 +200,10 @@ export function MiddleRow() {
           </div>
 
           <div className="space-y-3">
-            {RECENT_BOOKINGS.map((b) => {
+            {liveBookings.map((b) => {
               const statusCfg = STATUS_CLASSES[b.status] || STATUS_CLASSES.Pending;
-              const StatusIcon = statusCfg.icon;
+              const StatusIcon = statusCfg.icon || Clock;
+              const avatarInitials = (b.customerName || b.customer || "User").substring(0, 2).toUpperCase();
 
               return (
                 <div
@@ -237,19 +212,19 @@ export function MiddleRow() {
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white font-extrabold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
-                      {b.avatar}
+                      {avatarInitials}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
-                          {b.customer}
+                          {b.customerName || b.customer || "Phidim Customer"}
                         </p>
                         <span className="text-[10px] text-slate-400 font-mono">
-                          {b.id}
+                          #{b.id}
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                        {b.service}
+                        {b.serviceName || b.service}
                       </p>
                     </div>
                   </div>

@@ -13,7 +13,11 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { useAuth } from "@/context/AuthContext";
+
 export function TechnicianWelcomeCard({ isOnline, setIsOnline, showToast, onUpdateLocation }) {
+  const { user } = useAuth();
+  const techName = user?.displayName || user?.name || "Field Technician";
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 text-white shadow-2xl p-6 sm:p-8 lg:p-10 border border-white/20">
       {/* Decorative Background Micro-Shapes */}
@@ -32,7 +36,7 @@ export function TechnicianWelcomeCard({ isOnline, setIsOnline, showToast, onUpda
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
               Good Morning, <br className="hidden sm:inline" />
-              <span className="text-amber-300 drop-shadow-md">Rajesh Tamang 👋</span>
+              <span className="text-amber-300 drop-shadow-md">{techName} 👋</span>
             </h2>
             <p className="text-emerald-100 text-xs sm:text-sm max-w-xl leading-relaxed font-medium">
               You have <strong className="text-white underline decoration-amber-400 underline-offset-4">3 new service requests</strong> waiting in Phidim-4 & Panchthar sector. Current earnings today: <strong className="text-white font-bold">Rs. 4,850</strong>.

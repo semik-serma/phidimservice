@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Wifi, ArrowRight, CheckCircle2, Wind, Wrench, ShieldCheck } from "lucide-react";
 
-export const HeroCarousel = ({ onShopNow, onFiberSelect }) => {
+export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
@@ -12,7 +12,17 @@ export const HeroCarousel = ({ onShopNow, onFiberSelect }) => {
       title: "Professional AC Installation & Outdoor Unit Mounting",
       description: "Complete split AC copper pipe fitting, outdoor bracket mounting, inverter AC wiring, and routine cooling maintenance by Phidim technicians.",
       buttonText: "BOOK AC SERVICE",
-      action: onFiberSelect,
+      action: () =>
+        onBookService
+          ? onBookService({
+              id: "srv-ac-service",
+              name: "Professional AC Installation & Mounting",
+              category: "AC & Refrigeration",
+              basePrice: 2500,
+              duration: "2-3 hours",
+              warranty: "1 Year Support",
+            })
+          : onFiberSelect(),
       type: "ac_install_graphic"
     },
     {
@@ -22,7 +32,17 @@ export const HeroCarousel = ({ onShopNow, onFiberSelect }) => {
       title: "Expert AC Gas Charging & Chemical Wash Service",
       description: "On-site gas pressure testing, R32/R410a gas refill, copper tube leak soldering, and deep indoor coil chemical wash across Panchthar.",
       buttonText: "BOOK GAS REFILL",
-      action: onFiberSelect,
+      action: () =>
+        onBookService
+          ? onBookService({
+              id: "srv-ac-gas",
+              name: "Expert AC Gas Charging & Deep Cleaning",
+              category: "AC & Refrigeration",
+              basePrice: 2200,
+              duration: "1.5 hours",
+              warranty: "90 Days Warranty",
+            })
+          : onFiberSelect(),
       type: "ac_gas_graphic"
     },
     {
@@ -32,7 +52,19 @@ export const HeroCarousel = ({ onShopNow, onFiberSelect }) => {
       title: "Doorstep Refrigerator Gas Charging & Repair",
       description: "Same-day technician visits for single & double door fridges, deep freezers, compressor replacement, thermostat fixes, and gas charging in Phidim.",
       buttonText: "BOOK FRIDGE REPAIR",
-      action: onShopNow,
+      action: () =>
+        onBookService
+          ? onBookService({
+              id: "srv-fridge-repair",
+              name: "Doorstep Refrigerator Gas Charging & Repair",
+              category: "AC & Refrigeration",
+              basePrice: 1800,
+              duration: "1-2 hours",
+              warranty: "6 Months Support",
+            })
+          : onExploreServices
+          ? onExploreServices()
+          : onFiberSelect(),
       type: "fridge_graphic"
     },
     {
@@ -42,7 +74,19 @@ export const HeroCarousel = ({ onShopNow, onFiberSelect }) => {
       title: "Ceiling Fan Winding & Appliance Maintenance",
       description: "Doorstep ceiling fan repair, capacitor replacement, motor winding, inverter servicing, and home electrical fittings across Phidim Wards 1 to 4.",
       buttonText: "BOOK APPLIANCE REPAIR",
-      action: onShopNow,
+      action: () =>
+        onBookService
+          ? onBookService({
+              id: "srv-fan-repair",
+              name: "Ceiling Fan Winding & Appliance Maintenance",
+              category: "Electrical & Inverter",
+              basePrice: 600,
+              duration: "1 hour",
+              warranty: "30 Days Guarantee",
+            })
+          : onExploreServices
+          ? onExploreServices()
+          : onFiberSelect(),
       type: "fan_graphic"
     },
     {
@@ -110,7 +154,7 @@ export const HeroCarousel = ({ onShopNow, onFiberSelect }) => {
             </div>
           </div>
 
-          {/* Right Product Graphic Column */}
+          {/* Right Service Graphic Column */}
           <div className="md:col-span-6 flex items-center justify-center relative min-h-[280px]">
 
             {/* 1. AC Installation Graphic (Ac1.jpg + Ac2.jpg) */}

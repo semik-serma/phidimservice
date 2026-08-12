@@ -27,7 +27,7 @@ export function AdminCategoriesManager({
   categories = INITIAL_CATEGORIES,
   onAddCategory,
   onAddSubCategory,
-  onOpenAddProductModal,
+  onOpenAddServiceModal,
   onShowToast,
 }) {
   const [categoriesList, setCategoriesList] = useState(categories);
@@ -122,7 +122,7 @@ export function AdminCategoriesManager({
             </div>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Categories & Sub-Categories</h2>
             <p className="text-xs sm:text-sm text-emerald-100 max-w-2xl font-medium leading-relaxed">
-              Create main categories and sub-categories. If a category doesn't have sub-categories, products can be added directly to the main category!
+              Create main technical service categories and sub-categories. Service packages can be mapped directly to each category.
             </p>
           </div>
 
@@ -159,13 +159,13 @@ export function AdminCategoriesManager({
           />
         </div>
 
-        {onOpenAddProductModal && (
+        {onOpenAddServiceModal && (
           <button
-            onClick={onOpenAddProductModal}
+            onClick={onOpenAddServiceModal}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow cursor-pointer transition-all hover:scale-105"
           >
-            <Package size={16} />
-            <span>Add Product / Service</span>
+            <Wrench size={16} />
+            <span>Add New Service Package</span>
           </button>
         )}
       </div>
@@ -190,7 +190,7 @@ export function AdminCategoriesManager({
                       {cat.name}
                     </h3>
                     <span className="text-[11px] font-bold text-slate-400">
-                      {cat.subCategories?.length || 0} Sub-categories • {cat.count || 0} Products
+                      {cat.subCategories?.length || 0} Sub-categories • {cat.count || 0} Service Offerings
                     </span>
                   </div>
                 </div>
@@ -205,17 +205,16 @@ export function AdminCategoriesManager({
               </div>
 
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium line-clamp-2">
-                {cat.description || "Main Category"}
+                {cat.description || "Main Service Category"}
               </p>
 
-              {/* Sub-categories List Pills */}
-              <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                  Sub-categories ({cat.subCategories?.length || 0}):
+              {/* Sub-categories Pills */}
+              <div className="space-y-2 pt-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  Sub-Categories:
                 </span>
-
                 {cat.subCategories && cat.subCategories.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {cat.subCategories.map((sub) => (
                       <span
                         key={sub.id}
@@ -228,7 +227,7 @@ export function AdminCategoriesManager({
                   </div>
                 ) : (
                   <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-[11px] text-slate-400 font-medium italic">
-                    No sub-categories (Products added directly to Main Category)
+                    Direct Main Service Category
                   </div>
                 )}
               </div>
@@ -247,12 +246,13 @@ export function AdminCategoriesManager({
                 <span>Add Sub-category</span>
               </button>
 
-              {onOpenAddProductModal && (
+              {onOpenAddServiceModal && (
                 <button
-                  onClick={onOpenAddProductModal}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-colors cursor-pointer"
+                  onClick={onOpenAddServiceModal}
+                  className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-colors cursor-pointer flex items-center gap-1"
                 >
-                  + Add Product
+                  <PlusCircle size={13} />
+                  <span>+ Add Service</span>
                 </button>
               )}
             </div>

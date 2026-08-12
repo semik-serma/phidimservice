@@ -20,11 +20,12 @@ import { LogoutConfirmModal } from "../LogoutConfirmModal";
 import { AccountSettings } from "../AccountSettings";
 import { DirectChatSection } from "../chat/DirectChatSection";
 import { CreateArticleModal } from "../articles/CreateArticleModal";
-import { VideoVoiceCallModal } from "../calls/VideoVoiceCallModal";
 import { AnnouncementManager } from "./AnnouncementManager";
+import { CouponManager } from "./CouponManager";
 import { FriendsManager } from "../community/FriendsManager";
 import { AdminCategoriesManager } from "../admin/AdminCategoriesManager";
-import { AddProductModal } from "../admin/AddProductModal";
+import { AddServiceModal } from "../admin/AddServiceModal";
+import { useCall } from "@/components/calls/CallProvider";
 
 /**
  * Admin dashboard UI. This component renders inside a server guard
@@ -36,6 +37,7 @@ import { AddProductModal } from "../admin/AddProductModal";
  */
 export default function AdminDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
+  const { startCall } = useCall();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,16 +48,12 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
   const [activeModal, setActiveModal] = useState(null); // 'add-service' | 'add-tech' | 'create-coupon' | 'send-notif'
   const [toastMessage, setToastMessage] = useState(null);
 
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
-  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
-  const [callTargetPerson, setCallTargetPerson] = useState(null);
-  const [callType, setCallType] = useState("video");
+  const [activeChatPartner, setActiveChatPartner] = useState(null);
 
   const handleStartCall = (person, type = "video") => {
-    setCallTargetPerson(person);
-    setCallType(type);
-    setIsCallModalOpen(true);
+    startCall(person, type);
   };
 
   // Sync dark mode class with root html element
@@ -134,7 +132,11 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
             <AccountSettings onShowToast={showToast} />
           ) : activeTab === "friends" ? (
             <FriendsManager
-              onStartChat={(friend) => setActiveTab("support")}
+              onStartChat={(friend) => {
+                setActiveChatPartner(friend);
+                setActiveTab("messages");
+                showToast(`Opening live chat with ${friend?.displayName || friend?.name || "User"}...`);
+              }}
               onStartCall={handleStartCall}
               onShowToast={showToast}
             />
@@ -169,15 +171,18 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
             </div>
           ) : activeTab === "categories" || activeTab === "services" ? (
             <AdminCategoriesManager
-              onOpenAddProductModal={() => setIsAddProductOpen(true)}
+              onOpenAddServiceModal={() => setIsAddServiceOpen(true)}
               onShowToast={showToast}
             />
           ) : activeTab === "announcements" ? (
             <AnnouncementManager />
+          ) : activeTab === "coupons" || activeTab === "offers" ? (
+            <CouponManager onShowToast={showToast} />
           ) : activeTab === "messages" || activeTab === "articles" ? (
             <DirectChatSection
               onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
               onStartCall={handleStartCall}
+              activePartner={activeChatPartner}
             />
           ) : activeTab === "reviews" || activeTab === "notifications" ? (
             <div className="space-y-8">
@@ -207,7 +212,7 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
 
               <section>
                 <UsersAndActions
-                  onAddService={() => setActiveModal("add-service")}
+                  onAddService={() => setIsAddServiceOpen(true)}
                   onAddTechnician={() => setActiveModal("add-tech")}
                   onCreateCoupon={() => setActiveModal("create-coupon")}
                   onSendNotification={() => setActiveModal("send-notif")}
@@ -263,23 +268,15 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
         }}
       />
 
-      {/* Video / Voice Call Modal */}
-      <VideoVoiceCallModal
-        isOpen={isCallModalOpen}
-        onClose={() => setIsCallModalOpen(false)}
-        targetPerson={callTargetPerson}
-        callType={callType}
-      />
-
-      {/* Add Product / Service Modal */}
-      <AddProductModal
-        isOpen={isAddProductOpen || activeModal === "add-service"}
+      {/* Add Service Modal */}
+      <AddServiceModal
+        isOpen={isAddServiceOpen || activeModal === "add-service"}
         onClose={() => {
-          setIsAddProductOpen(false);
+          setIsAddServiceOpen(false);
           setActiveModal(null);
         }}
-        onAddProduct={(prod) => {
-          showToast(`Product "${prod.name}" added successfully with SEO rank score ${prod.seo.seoScore}/100!`);
+        onAddService={(srv) => {
+          showToast(`Service "${srv.name}" published successfully at Rs. ${srv.basePrice}!`);
         }}
       />
       </div>

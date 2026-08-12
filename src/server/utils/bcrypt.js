@@ -1,4 +1,7 @@
-import bcrypt from "bcryptjs";
+import { createRequire } from "module";
+
+const req = createRequire(import.meta.url);
+const bcrypt = req("bcryptjs");
 
 const SALT_ROUNDS = 12;
 

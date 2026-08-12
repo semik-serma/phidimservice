@@ -11,7 +11,7 @@ export const WhatsAppWidget = () => {
   const [inputText, setInputText] = useState("");
   const whatsappNumber = "9779862772457";
   const openWhatsApp = (customText) => {
-    const text = encodeURIComponent(customText || "Hello Phidim Service! What kind of help do you need? I need assistance with your services/products.");
+    const text = encodeURIComponent(customText || "Hello Phidim Service! I need assistance with your technical doorstep repair services.");
     window.open(`https://wa.me/${whatsappNumber}?text=${text}`, "_blank");
   };
   const handleSendMessage = (e) => {

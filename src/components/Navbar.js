@@ -7,12 +7,12 @@ import {
   ChevronRight,
   ShieldCheck,
   Wifi,
-  Router,
+  Wind,
+  Zap,
   Camera,
   Tv,
-  Smartphone,
-  Home,
-  ShoppingBag,
+  Droplet,
+  Monitor,
   Wrench,
   Heart,
   Search,
@@ -24,28 +24,27 @@ import {
   Youtube,
   Linkedin,
   LogOut,
-  LayoutDashboard
+  LayoutDashboard,
+  PhoneCall,
+  CalendarCheck,
 } from "lucide-react";
-import { CATEGORIES } from "../data/products";
+import { SERVICE_CATEGORIES } from "../data/services";
 import { formatCount } from "../utils/formatCount";
 import { useAuth } from "@/context/AuthContext";
+import { RopePullingDevBadge } from "./RopePullingDevBadge";
 
 export const Navbar = ({
   activeTab,
   setActiveTab,
   onSelectCategory,
   onOpenTechnicianAuth,
+  onBookService,
   likeCount = 582,
   onIncrementLikes,
   searchQuery,
   setSearchQuery,
   selectedCategory,
-  cartCount = 0,
-  cartTotal = 0,
-  wishlistCount = 0,
   visitorCount = 1285,
-  onOpenCart,
-  onOpenWishlist,
   onOpenAuth,
   onSearchSubmit
 }) => {
@@ -64,22 +63,22 @@ export const Navbar = ({
 
   const getIcon = (iconName) => {
     switch (iconName) {
+      case "Zap":
+        return <Zap className="w-4 h-4 text-amber-500" />;
       case "ShieldCheck":
         return <ShieldCheck className="w-4 h-4 text-green-600" />;
       case "Wifi":
         return <Wifi className="w-4 h-4 text-blue-600" />;
-      case "Router":
-        return <Router className="w-4 h-4 text-purple-600" />;
-      case "Camera":
-        return <Camera className="w-4 h-4 text-indigo-600" />;
+      case "Wind":
+        return <Wind className="w-4 h-4 text-teal-600" />;
       case "Tv":
         return <Tv className="w-4 h-4 text-red-600" />;
-      case "Smartphone":
-        return <Smartphone className="w-4 h-4 text-yellow-600" />;
-      case "Home":
-        return <Home className="w-4 h-4 text-teal-600" />;
+      case "Droplet":
+        return <Droplet className="w-4 h-4 text-cyan-600" />;
+      case "Monitor":
+        return <Monitor className="w-4 h-4 text-purple-600" />;
       default:
-        return <ShoppingBag className="w-4 h-4 text-orange-600" />;
+        return <Wrench className="w-4 h-4 text-emerald-600" />;
     }
   };
 
@@ -107,15 +106,15 @@ export const Navbar = ({
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
               className="bg-[#8cc63f] hover:bg-[#7db333] text-white font-extrabold py-2.5 px-6 sm:px-8 flex items-center gap-2.5 transition-colors text-xs uppercase tracking-wider cursor-pointer shadow-xs rounded-sm"
             >
-              <Menu className="w-4 h-4 hidden sm:block shrink-0" />
-              <span>CATEGORIES</span>
+              <Wrench className="w-4 h-4 hidden sm:block shrink-0" />
+              <span>SERVICES</span>
               <ChevronDown className={`w-4 h-4 ml-1 transition-transform duration-200 shrink-0 ${isCategoryOpen ? "rotate-180" : ""}`} />
             </button>
 
             {/* Categories Dropdown Menu */}
             {isCategoryOpen && (
               <div className="absolute top-full left-0 w-64 bg-white border border-gray-200 shadow-xl py-2 z-50 rounded-b-lg animate-in fade-in slide-in-from-top-2 duration-150">
-                {CATEGORIES.map((cat) => (
+                {SERVICE_CATEGORIES.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => {
@@ -164,41 +163,17 @@ export const Navbar = ({
           })}
         </div>
 
-        {/* Right Side: Actions, Wishlist, Cart & Auth Links */}
+        {/* Right Side: Emergency Hotline, Like Button & Auth */}
         <div className="flex items-center gap-2.5 sm:gap-3.5 text-xs">
-          
-          {/* Wishlist Icon Badge */}
-          <button
-            onClick={onOpenWishlist}
-            className="relative flex items-center text-gray-700 hover:text-red-500 transition-colors cursor-pointer p-1.5 hover:bg-gray-100 rounded-lg"
-            title="Wishlist"
+          {/* 24/7 Emergency Hotline */}
+          <a
+            href="tel:+9779862772457"
+            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs transition-colors"
+            title="Call Phidim Service Emergency Hotline"
           >
-            <Heart className="w-4.5 h-4.5" />
-            {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
-                {wishlistCount}
-              </span>
-            )}
-          </button>
-
-          {/* Shopping Cart Pill */}
-          <button
-            onClick={onOpenCart}
-            className="flex items-center gap-1.5 text-gray-800 hover:text-green-600 transition-colors cursor-pointer p-1.5 hover:bg-gray-100 rounded-lg"
-            title="Shopping Cart"
-          >
-            <div className="relative">
-              <ShoppingBag className="w-4.5 h-4.5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
-                  {cartCount}
-                </span>
-              )}
-            </div>
-            <span className="hidden sm:inline text-xs font-bold text-gray-900 whitespace-nowrap">
-              Rs {cartTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          </button>
+            <PhoneCall size={13} className="text-emerald-600 animate-pulse" />
+            <span className="font-mono">+977 9862772457</span>
+          </a>
 
           {/* Navbar Like Button */}
           <button
@@ -297,7 +272,7 @@ export const Navbar = ({
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white focus-within:border-green-600 shadow-2xs">
                 <input
                   type="text"
-                  placeholder="Search products & services..."
+                  placeholder="Search technical services & repair specialists..."
                   value={searchQuery || ""}
                   onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
                   onKeyDown={(e) => {
@@ -371,25 +346,23 @@ export const Navbar = ({
             <div className="p-3.5 border-b border-gray-100 grid grid-cols-2 gap-2">
               <button
                 onClick={() => {
-                  if (onOpenWishlist) onOpenWishlist();
+                  if (onBookService) onBookService();
                   setIsMobileMenuOpen(false);
                 }}
-                className="relative flex flex-col items-center justify-center p-2.5 bg-gray-50 hover:bg-red-50 rounded-xl border border-gray-200 hover:border-red-300 transition-all font-bold text-gray-700 hover:text-red-600 cursor-pointer"
+                className="relative flex flex-col items-center justify-center p-2.5 bg-green-50 hover:bg-green-100 rounded-xl border border-green-200 hover:border-green-300 transition-all font-bold text-green-800 cursor-pointer"
               >
-                <Heart className="w-4 h-4 text-red-500 mb-1" />
-                <span className="text-[10px]">Wishlist ({wishlistCount || 0})</span>
+                <CalendarCheck className="w-4 h-4 text-green-600 mb-1" />
+                <span className="text-[10px]">Book Service</span>
               </button>
 
-              <button
-                onClick={() => {
-                  if (onOpenCart) onOpenCart();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="relative flex flex-col items-center justify-center p-2.5 bg-gray-50 hover:bg-green-50 rounded-xl border border-gray-200 hover:border-green-300 transition-all font-bold text-gray-700 hover:text-green-700 cursor-pointer"
+              <a
+                href="tel:9862772457"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="relative flex flex-col items-center justify-center p-2.5 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 hover:border-blue-300 transition-all font-bold text-blue-800 cursor-pointer"
               >
-                <ShoppingBag className="w-4 h-4 text-green-600 mb-1" />
-                <span className="text-[10px]">Cart ({cartCount || 0})</span>
-              </button>
+                <PhoneCall className="w-4 h-4 text-blue-600 mb-1" />
+                <span className="text-[10px]">Call Helpline</span>
+              </a>
             </div>
 
             {/* Mobile Navigation Links */}
@@ -423,7 +396,11 @@ export const Navbar = ({
             </div>
 
             {/* Mobile Drawer Footer */}
-            <div className="p-3.5 bg-gray-50 border-t border-gray-200">
+            <div className="p-3.5 bg-gray-50 border-t border-gray-200 space-y-2.5">
+              <div className="flex items-center justify-center py-1 bg-white rounded-lg border border-gray-200/80 shadow-2xs">
+                <RopePullingDevBadge />
+              </div>
+
               <div className="flex items-center justify-between">
                 {!isAuthenticated ? (
                   <div className="flex items-center gap-2">

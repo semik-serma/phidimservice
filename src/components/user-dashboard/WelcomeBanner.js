@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export function WelcomeBanner({ userName, onBookNow, onSearch }) {
   const { user } = useAuth();
-  const nameToDisplay = userName || user?.name || "Customer User";
+  const nameToDisplay = user?.displayName || user?.name || (user?.email ? user.email.split("@")[0] : userName || "User");
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

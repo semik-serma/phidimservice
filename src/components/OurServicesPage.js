@@ -15,9 +15,12 @@ import {
   ChevronRight,
   ShieldCheck,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  CalendarCheck
 } from "lucide-react";
-export const OurServicesPage = ({ onNavigateHome, onNavigateContact }) => {
+import { SERVICES } from "@/data/services";
+
+export const OurServicesPage = ({ onNavigateHome, onNavigateContact, onBookService }) => {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const servicesData = [
     {
@@ -301,19 +304,49 @@ export const OurServicesPage = ({ onNavigateHome, onNavigateContact }) => {
                     </li>)}
                 </ul>
 
-                <div className="pt-2 flex items-center justify-between gap-2 border-t border-black/10">
+                <div className="pt-3 flex flex-wrap items-center justify-between gap-2 border-t border-black/10">
                   <div className="flex items-center gap-1.5 text-[11px] text-gray-600 font-semibold">
                     <Clock className="w-3.5 h-3.5 text-gray-500" />
-                    <span>Quick 30-min Response</span>
+                    <span>Quick 30-min Dispatch</span>
                   </div>
 
-                  <button
-      onClick={() => handleBookService(service.title)}
-      className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-    >
-                    <MessageCircle className="w-3.5 h-3.5 text-green-400 fill-current" />
-                    <span>Book on WhatsApp</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        const matched = SERVICES.find(
+                          (s) =>
+                            s.category.toLowerCase().includes(service.id.toLowerCase()) ||
+                            s.name.toLowerCase().includes(service.id.toLowerCase())
+                        ) || {
+                          id: `srv-${service.id}`,
+                          name: service.title.replace(/[^\w\s-]/gi, "").trim(),
+                          category: service.summaryTitle.replace(/[^\w\s-]/gi, "").trim(),
+                          basePrice: 500,
+                          duration: "1-2 hours",
+                          warranty: "30 Days Service Guarantee",
+                        };
+                        if (onBookService) {
+                          onBookService(matched);
+                        } else {
+                          handleBookService(service.title);
+                        }
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs hover:scale-102 cursor-pointer"
+                      title="Book Certified Technician"
+                    >
+                      <CalendarCheck className="w-3.5 h-3.5" />
+                      <span>Book Service</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleBookService(service.title)}
+                      className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                      title="Quick WhatsApp Booking"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 text-green-400 fill-current" />
+                      <span className="hidden sm:inline">WhatsApp</span>
+                    </button>
+                  </div>
                 </div>
               </div>;
   })}

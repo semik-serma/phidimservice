@@ -177,7 +177,7 @@ export const AuthPage = ({ onNavigateHome, initialRole = "USER" }) => {
                   </div>
                   <h3 className="text-xl font-extrabold text-gray-900">Welcome to Phidim Service!</h3>
                   <p className="text-xs text-gray-600 max-w-sm mx-auto">
-                    You have successfully signed in. You can now place orders, request technician appointments, or browse products.
+                    You have successfully signed in. You can now book technician appointments, view repair jobs, and chat with technical specialists.
                   </p>
                   <button
     onClick={onNavigateHome}

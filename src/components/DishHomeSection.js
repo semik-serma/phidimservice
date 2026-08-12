@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FIBER_PACKAGES } from "../data/products";
+import { FIBER_PACKAGES } from "../data/services";
 import { Wifi, Tv, CheckCircle2, PhoneCall, ShieldCheck, Zap } from "lucide-react";
 export const DishHomeSection = ({ onOrderPackage }) => {
   const [billingCycle, setBillingCycle] = useState("YEARLY");

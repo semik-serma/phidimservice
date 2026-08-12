@@ -37,7 +37,7 @@ function toPublicUser(u) {
     phone: u.phone || "",
     role: u.role,
     status: u.status || "active",
-    avatar: u.avatar,
+    avatar: u.avatar || u.picture || "",
     dashboardPath: dashboardPathFor(u.role),
   };
 }
@@ -231,6 +231,7 @@ export async function getLoginLogs({ limit = 100 } = {}) {
 
 /** List users (admin). Never exposes password/refresh tokens. */
 export async function getAllUsers({ limit = 200 } = {}) {
+  await seedDemoUsers();
   if (!(await ensureBackend())) {
     return Array.from(getMemoryUsers().values())
       .slice(0, limit)
@@ -251,8 +252,12 @@ export async function getAllUsers({ limit = 200 } = {}) {
   }
 }
 
+let hasSeededMemory = false;
+
 export async function seedDemoUsers() {
+  if (hasSeededMemory) return;
   if (!(await ensureBackend())) {
-    await seedDemoUsersInMemory(getMemoryUsers());
+    seedDemoUsersInMemory(getMemoryUsers());
+    hasSeededMemory = true;
   }
 }

@@ -91,13 +91,13 @@ export const ContactModal = ({ isOpen, onClose }) => {
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">Inquiry / Message</label>
                 <textarea
-    required
-    rows={3}
-    placeholder="Ask about Fiber Net installation, CCTV camera quote, or product availability..."
-    value={msg.message}
-    onChange={(e) => setMsg({ ...msg, message: e.target.value })}
-    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-hidden focus:border-green-600"
-  />
+                  required
+                  rows={3}
+                  placeholder="Ask about Fiber Net setup, CCTV camera quote, AC repair, or doorstep technician service..."
+                  value={msg.message}
+                  onChange={(e) => setMsg({ ...msg, message: e.target.value })}
+                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-hidden focus:border-green-600"
+                />
               </div>
 
               <button

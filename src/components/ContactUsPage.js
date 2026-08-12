@@ -86,8 +86,8 @@ export const ContactUsPage = ({
       a: "Absolutely. We accept eSewa, Khalti, direct Fonepay QR code transfers, as well as Cash on Service after work completion."
     },
     {
-      q: "Do you offer warranty on installed products and repairs?",
-      a: "Yes, all new hardware installations (CCTV cameras, fiber routers, breakers) carry full manufacturer warranties (1 to 2 years), plus a 30-day service guarantee on repair labor."
+      q: "Do you offer warranty on installations and repair services?",
+      a: "Yes, all hardware installations (CCTV cameras, fiber routers, MCB breakers) carry official warranties (1 to 2 years), plus an official service guarantee on technician labor."
     },
     {
       q: "How do I book a technician immediately?",

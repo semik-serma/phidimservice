@@ -1,4 +1,5 @@
 import { Phone, Mail, MapPin, ShieldCheck, Facebook, Youtube, Linkedin, ExternalLink } from "lucide-react";
+import { RopePullingDevBadge } from "./RopePullingDevBadge";
 export const Footer = ({
   onSelectCategory,
   onOpenAbout,
@@ -92,30 +93,33 @@ export const Footer = ({
             </ul>
           </div>
 
-          {
-    /* Col 3: Categories */
-  }
+          {/* Col 3: Technical Service Categories */}
           <div className="space-y-3">
-            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Top Categories</h4>
+            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Service Categories</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => onSelectCategory("CCTV & Security Systems")} className="hover:text-green-400 transition-colors cursor-pointer">
-                  CCTV & HD Security Cameras
+                <button onClick={() => onSelectCategory("Electrical & Inverter")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Electrical & Inverter Repair
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("Smart Home Cameras")} className="hover:text-green-400 transition-colors cursor-pointer">
-                  Uniarch WiFi Cameras
+                <button onClick={() => onSelectCategory("CCTV & Security")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  CCTV & HD Security Setup
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("Networking & Routers")} className="hover:text-green-400 transition-colors cursor-pointer">
-                  Fiber ONU Routers
+                <button onClick={() => onSelectCategory("AC & Refrigeration")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  AC Servicing & Gas Refill
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("Consumer Electronics")} className="hover:text-green-400 transition-colors cursor-pointer">
-                  Consumer Electronics
+                <button onClick={() => onSelectCategory("Fiber & LAN Networking")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Fiber Splicing & LAN Networking
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectCategory("Plumbing & Sanitary")} className="hover:text-green-400 transition-colors cursor-pointer">
+                  Plumbing & Water Pump Overhaul
                 </button>
               </li>
             </ul>
@@ -148,18 +152,10 @@ export const Footer = ({
     /* Payment Gateways & Bottom Bar */
   }
         <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <span>© {(/* @__PURE__ */ new Date()).getFullYear()} <span className="text-white font-bold">Phidim Service</span>. All Rights Reserved.</span>
             <span className="text-gray-700 hidden sm:inline">•</span>
-            <a
-              href="https://portfolio.phidimservice.com.np"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sky-400 hover:text-sky-300 font-bold transition-colors inline-flex items-center gap-1"
-            >
-              <span>Developed by Semik Serma</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <RopePullingDevBadge />
           </div>
 
           <div className="flex items-center gap-2">

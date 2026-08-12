@@ -26,14 +26,18 @@ function resolveProtocol(req) {
 }
 
 function toClientUser(user) {
+  const emailPrefix = user.email ? user.email.split("@")[0] : "";
+  const derivedUsername = (user.username || emailPrefix).toLowerCase().replace(/[^a-z0-9_]/g, "");
+
   return {
     id: user._id?.toString ? user._id.toString() : user._id,
-    name: user.name,
-    displayName: user.displayName || user.name || "",
-    email: user.email,
+    name: user.name || emailPrefix || "User",
+    displayName: user.displayName || user.name || emailPrefix || "User",
+    username: derivedUsername,
+    email: user.email || "",
     phone: user.phone || "",
-    role: user.role,
-    avatar: user.avatar,
+    role: user.role || "USER",
+    avatar: user.avatar || user.picture || "",
     dashboardPath: dashboardPathFor(user.role),
   };
 }
@@ -591,9 +595,13 @@ export async function googleCallback(req, res) {
     await seedDemoUsers();
 
     let dbUser = await findUserByEmail(profile.email);
+    const googleUsername = profile.email ? profile.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "") : "";
+
     if (!dbUser) {
       const { created, user, error } = await createUser({
         name: profile.name || profile.email.split("@")[0],
+        displayName: profile.name || profile.email.split("@")[0],
+        username: googleUsername,
         email: profile.email,
         googleId: profile.id,
         avatar: profile.picture || "",
@@ -603,6 +611,19 @@ export async function googleCallback(req, res) {
       });
       if (!created && !user) return res.redirect(`${baseUrl}/login?error=${error || "SignupFailed"}`);
       dbUser = user;
+    } else {
+      // Sync latest Google profile picture, name, and username handle
+      const updates = {};
+      if (profile.picture) updates.avatar = profile.picture;
+      if (profile.name) {
+        updates.name = profile.name;
+        updates.displayName = profile.name;
+      }
+      if (googleUsername) updates.username = googleUsername;
+      if (Object.keys(updates).length > 0) {
+        await saveUser(dbUser, updates);
+        dbUser = { ...dbUser, ...updates };
+      }
     }
 
     setAuthCookies(res, dbUser, { rememberMe: true });

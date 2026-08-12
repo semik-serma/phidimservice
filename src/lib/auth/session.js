@@ -60,8 +60,12 @@ async function getAccessToken({ request } = {}) {
     return null;
   }
 
-  const store = await nextCookies();
-  return store.get(ACCESS_COOKIE)?.value || null;
+  try {
+    const store = await nextCookies();
+    return store.get(ACCESS_COOKIE)?.value || null;
+  } catch (e) {
+    return null;
+  }
 }
 
 /**
@@ -108,14 +112,29 @@ export async function getSessionUser({ request } = {}) {
     }
   }
 
-  // Fallback: Check phidim_auth_user cookie from Next.js cookies store
+  // Fallback: Check phidim_auth_user cookie
   try {
-    const store = await nextCookies();
-    const authCookie = store.get("phidim_auth_user")?.value || null;
-    if (authCookie) {
-      let decoded = authCookie;
+    let authCookieVal = null;
+    if (request) {
+      const cookieHeader = request.headers?.get?.("cookie") || "";
+      for (const part of cookieHeader.split(";")) {
+        const [k, ...rest] = part.trim().split("=");
+        if (k === "phidim_auth_user") {
+          authCookieVal = rest.join("=");
+          break;
+        }
+      }
+    } else {
       try {
-        decoded = decodeURIComponent(authCookie);
+        const store = await nextCookies();
+        authCookieVal = store.get("phidim_auth_user")?.value || null;
+      } catch (e) {}
+    }
+
+    if (authCookieVal) {
+      let decoded = authCookieVal;
+      try {
+        decoded = decodeURIComponent(authCookieVal);
         if (decoded.includes("%")) {
           try {
             decoded = decodeURIComponent(decoded);
@@ -134,9 +153,7 @@ export async function getSessionUser({ request } = {}) {
         };
       }
     }
-  } catch {
-    // ignore
-  }
+  } catch (e) {}
 
   return null;
 }

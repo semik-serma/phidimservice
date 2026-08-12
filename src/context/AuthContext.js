@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { saveRealUserToRegistry } from "@/lib/userRegistry.js";
 
 const AuthContext = createContext({
   user: null,
@@ -40,8 +41,8 @@ export const DEMO_ACCOUNTS = {
   },
   ADMIN: {
     id: "ADM-001",
-    name: "Phidim Service Admin",
-    email: "admin@phidim.np",
+    name: "Dhanraj Serma",
+    email: "dhanrajserma34@gmail.com",
     phone: "+977 9800000000",
     role: "ADMIN",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
@@ -51,9 +52,46 @@ export const DEMO_ACCOUNTS = {
 
 const SESSION_KEY = "phidim_auth_user";
 
+function normalizeUser(u) {
+  if (!u) return null;
+  const emailPrefix = u.email ? u.email.split("@")[0] : "";
+  const derivedUsername = (u.username || emailPrefix).toLowerCase().replace(/[^a-z0-9_]/g, "");
+  return {
+    ...u,
+    displayName: u.displayName || u.name || emailPrefix || "User",
+    username: derivedUsername,
+    avatar: u.avatar || u.picture || "",
+  };
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem(SESSION_KEY);
+        if (saved) return normalizeUser(JSON.parse(saved));
+        const cookieMatch = document.cookie.match(/phidim_auth_user=([^;]+)/);
+        if (cookieMatch) {
+          let rawVal = decodeURIComponent(cookieMatch[1]);
+          if (rawVal.startsWith("j:")) rawVal = rawVal.slice(2);
+          return normalizeUser(JSON.parse(rawVal));
+        }
+      } catch (e) {}
+    }
+    return null;
+  });
+
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        if (localStorage.getItem(SESSION_KEY) || document.cookie.includes("phidim_auth_user=")) {
+          return false;
+        }
+      } catch (e) {}
+    }
+    return true;
+  });
+
   const refreshTimer = useRef(null);
 
   // Silent authentication: attempt a token refresh on every page load.
@@ -69,16 +107,15 @@ export function AuthProvider({ children }) {
       if (!res.ok) throw new Error("Refresh failed");
       const data = await res.json();
       if (data.success && data.user) {
-        setUser(data.user);
+        const norm = normalizeUser(data.user);
+        setUser(norm);
         try {
-          localStorage.setItem(SESSION_KEY, JSON.stringify(data.user));
-        } catch (e) {
-          // ignore
-        }
-        return data.user;
+          localStorage.setItem(SESSION_KEY, JSON.stringify(norm));
+        } catch (e) {}
+        return norm;
       }
     } catch (e) {
-      // fall through to cookie/localStorage restore
+      // fall through to cookie/localStorage restore without resetting user
     }
     return null;
   }, []);
@@ -110,21 +147,20 @@ export function AuthProvider({ children }) {
               }
               const googleUser = JSON.parse(rawVal);
               if (googleUser && googleUser.role) {
-                setUser(googleUser);
-                localStorage.setItem(SESSION_KEY, JSON.stringify(googleUser));
+                const norm = normalizeUser(googleUser);
+                setUser(norm);
+                localStorage.setItem(SESSION_KEY, JSON.stringify(norm));
                 setIsLoading(false);
                 return;
               }
-            } catch (e) {
-              // ignore
-            }
+            } catch (e) {}
           }
 
           const savedUser = localStorage.getItem(SESSION_KEY);
           if (savedUser) {
             const parsed = JSON.parse(savedUser);
             if (parsed) {
-              // Try to re-validate with /me (best effort, access cookie may be expiring)
+              // Re-validate with /api/auth/me (best effort)
               try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 2000);
@@ -133,15 +169,14 @@ export function AuthProvider({ children }) {
                 if (meRes.ok) {
                   const meData = await meRes.json();
                   if (meData.success && meData.user) {
-                    setUser(meData.user);
+                    const norm = normalizeUser(meData.user);
+                    setUser(norm);
                     setIsLoading(false);
                     return;
                   }
                 }
-              } catch (e) {
-                // fall back to saved user
-              }
-              setUser(parsed);
+              } catch (e) {}
+              setUser(normalizeUser(parsed));
             }
           }
         }
@@ -172,11 +207,15 @@ export function AuthProvider({ children }) {
   }, [user, refreshSession]);
 
   const safeSetUser = useCallback((acc) => {
-    setUser(acc);
+    const normalized = normalizeUser(acc);
+    setUser(normalized);
+    if (normalized) {
+      saveRealUserToRegistry(normalized);
+    }
     try {
-      if (typeof window !== "undefined" && acc) {
-        localStorage.setItem(SESSION_KEY, JSON.stringify(acc));
-        const cookieVal = encodeURIComponent(JSON.stringify(acc));
+      if (typeof window !== "undefined" && normalized) {
+        localStorage.setItem(SESSION_KEY, JSON.stringify(normalized));
+        const cookieVal = encodeURIComponent(JSON.stringify(normalized));
         document.cookie = `phidim_auth_user=${cookieVal}; path=/; max-age=2592000; SameSite=Lax`;
       } else if (typeof window !== "undefined") {
         localStorage.removeItem(SESSION_KEY);

@@ -1,20 +1,16 @@
 import Link from "next/link";
-import { Search, Heart, ShoppingBag, User, Eye, Facebook, Youtube, Linkedin, Globe, ExternalLink, LayoutDashboard, LogOut } from "lucide-react";
-import { CATEGORIES } from "../data/products";
+import { Search, Heart, User, Eye, Facebook, Youtube, Linkedin, Globe, ExternalLink, LayoutDashboard, LogOut, Wrench } from "lucide-react";
+import { SERVICE_CATEGORIES } from "../data/services";
 import { formatCount } from "../utils/formatCount";
 import { useAuth } from "@/context/AuthContext";
+import { RopePullingDevBadge } from "./RopePullingDevBadge";
 
 export const Header = ({
   searchQuery,
   setSearchQuery,
   selectedCategory,
   setSelectedCategory,
-  cartCount,
-  cartTotal,
-  wishlistCount,
   visitorCount = 1285,
-  onOpenCart,
-  onOpenWishlist,
   onOpenAuth,
   onSearchSubmit
 }) => {
@@ -49,12 +45,12 @@ export const Header = ({
           </div>
         </div>
 
-        {/* Search Bar Container - Restored to normal full size */}
+        {/* Search Bar Container */}
         <div className="flex-1 w-full max-w-full md:max-w-xl lg:max-w-2xl">
           <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden focus-within:border-green-600 focus-within:ring-2 focus-within:ring-green-600/20 transition-all bg-white shadow-xs">
             <input
               type="text"
-              placeholder="Search products & services..."
+              placeholder="Search technical services & repair specialists..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -66,8 +62,8 @@ export const Header = ({
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="bg-transparent text-xs text-gray-700 font-bold focus:outline-hidden cursor-pointer py-0.5 uppercase"
               >
-                <option value="ALL">SELECT CATEGORY</option>
-                {CATEGORIES.map((cat) => (
+                <option value="ALL">ALL SERVICES</option>
+                {SERVICE_CATEGORIES.filter((c) => c.id !== "all").map((cat) => (
                   <option key={cat.id} value={cat.name}>
                     {cat.name}
                   </option>
@@ -126,20 +122,8 @@ export const Header = ({
               <span>{formatCount(visitorCount)} Views</span>
             </div>
 
-            {/* Developer Portfolio Link - Compact */}
-            <a
-              href="https://portfolio.phidimservice.com.np"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 font-black px-2.5 py-0.5 rounded-full text-[11px] shadow-2xs transition-all hover:scale-105 shrink-0"
-              title="Developed by Semik Serma - Visit Portfolio"
-            >
-              <Globe className="w-3 h-3 text-slate-950 shrink-0" />
-              <span className="hidden 2xl:inline">Developed by Semik Serma</span>
-              <span className="hidden xl:inline 2xl:hidden">By Semik Serma</span>
-              <span className="xl:hidden">Portfolio</span>
-              <ExternalLink className="w-2.5 h-2.5 text-slate-950 shrink-0" />
-            </a>
+            {/* Developer Portfolio with Animated Rope-Pulling Character */}
+            <RopePullingDevBadge />
           </div>
 
         </div>

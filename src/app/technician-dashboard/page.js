@@ -25,12 +25,14 @@ import { LogoutConfirmModal } from "../../components/LogoutConfirmModal";
 
 import { DirectChatSection } from "../../components/chat/DirectChatSection";
 import { CreateArticleModal } from "../../components/articles/CreateArticleModal";
-import { VideoVoiceCallModal } from "../../components/calls/VideoVoiceCallModal";
 import { AccountSettings } from "../../components/AccountSettings";
 import { FriendsManager } from "../../components/community/FriendsManager";
+import { CommunityUserDirectory } from "../../components/community/CommunityUserDirectory";
+import { useCall } from "@/components/calls/CallProvider";
 
 export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
   const { user, logout } = useAuth();
+  const { startCall } = useCall();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -43,16 +45,18 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Article & Call Modal States
+  // Article Modal State
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
-  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
-  const [callTargetPerson, setCallTargetPerson] = useState(null);
-  const [callType, setCallType] = useState("video");
+  const [activeChatPartner, setActiveChatPartner] = useState(null);
 
   const handleStartCall = (person, type = "video") => {
-    setCallTargetPerson(person);
-    setCallType(type);
-    setIsCallModalOpen(true);
+    startCall(person, type);
+  };
+
+  const handleChatPerson = (person) => {
+    setActiveChatPartner(person);
+    setActiveTab("messages");
+    showToast(`Opening live chat with ${person?.displayName || person?.name || person?.customerName || "Customer"}...`);
   };
 
   // Sync dark mode class with root html element
@@ -206,25 +210,34 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
           {activeTab === "account-settings" || activeTab === "settings" ? (
             <AccountSettings onShowToast={showToast} />
-          ) : activeTab === "friends" ? (
-            <FriendsManager
-              onStartChat={(friend) => {
-                setModalData(friend);
-                setActiveModal("chat");
-              }}
-              onStartCall={handleStartCall}
-              onShowToast={showToast}
-            />
+          ) : activeTab === "messages" ? (
+            <div className="space-y-8">
+              <DirectChatSection
+                onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
+                onStartCall={handleStartCall}
+                activePartner={activeChatPartner}
+              />
+            </div>
+          ) : activeTab === "friends" || activeTab === "articles" ? (
+            <div className="space-y-8">
+              <CommunityUserDirectory
+                onStartChat={handleChatPerson}
+                onStartCall={handleStartCall}
+                onShowToast={showToast}
+              />
+              <FriendsManager
+                onStartChat={handleChatPerson}
+                onStartCall={handleStartCall}
+                onShowToast={showToast}
+              />
+            </div>
           ) : activeTab === "new-jobs" ? (
             <div className="space-y-8">
               <NewJobRequests
                 jobRequests={jobRequests}
                 onAcceptJob={handleAcceptJob}
                 onRejectJob={handleRejectJob}
-                onCallCustomer={(job) => {
-                  setModalData(job);
-                  setActiveModal("chat");
-                }}
+                onCallCustomer={handleChatPerson}
                 onViewDetails={(job) => showToast(`Viewing details for Job ${job.id}`)}
                 showToast={showToast}
               />
@@ -237,20 +250,14 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
                 onCancelJob={handleCancelJob}
                 onOpenSignatureModal={() => setActiveModal("signature")}
                 onOpenPhotoModal={() => setActiveModal("photo")}
-                onCallCustomer={(job) => {
-                  setModalData(job);
-                  setActiveModal("chat");
-                }}
+                onCallCustomer={handleChatPerson}
                 showToast={showToast}
               />
             </div>
           ) : activeTab === "schedule" ? (
             <div className="space-y-8">
               <TodayScheduleTimeline
-                onCallCustomer={(c) => {
-                  setModalData(c);
-                  setActiveModal("chat");
-                }}
+                onCallCustomer={handleChatPerson}
                 onNavigateToJob={() => showToast("Opening GPS Navigation for appointment...")}
                 showToast={showToast}
               />
@@ -265,12 +272,9 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
           ) : activeTab === "customers" ? (
             <div className="space-y-8">
               <CustomerInfoWidget
-                onCall={(c) => showToast(`Calling ${c.name} at ${c.phone}...`)}
-                onChat={(c) => {
-                  setModalData(c);
-                  setActiveModal("chat");
-                }}
-                onVideoCall={(c) => showToast(`Launching HD Video Call with ${c.name}...`)}
+                onCall={(c) => handleStartCall(c, "voice")}
+                onChat={handleChatPerson}
+                onVideoCall={(c) => handleStartCall(c, "video")}
                 showToast={showToast}
               />
             </div>
@@ -285,10 +289,7 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
             <div className="space-y-8">
               <LiveGpsMap
                 activeJob={activeJob}
-                onCallCustomer={(c) => {
-                  setModalData(c);
-                  setActiveModal("chat");
-                }}
+                onCallCustomer={handleChatPerson}
                 showToast={showToast}
               />
             </div>
@@ -302,20 +303,22 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
                 showToast={showToast}
               />
             </div>
-          ) : activeTab === "messages" || activeTab === "articles" ? (
-            <DirectChatSection
-              onOpenCreateArticleModal={() => setIsArticleModalOpen(true)}
-              onStartCall={handleStartCall}
-            />
           ) : (
             <>
               {/* Overview Full Command Console */}
               <section id="welcome-banner">
                 <TechnicianWelcomeCard
+                  techName={user?.displayName || user?.name || (user?.email ? user.email.split("@")[0] : "Technician")}
                   isOnline={isOnline}
-                  setIsOnline={setIsOnline}
-                  showToast={showToast}
-                  onUpdateLocation={() => showToast("Updated GPS Location to Phidim Bazar Sector 4!")}
+                  onToggleOnline={() => setIsOnline(!isOnline)}
+                />
+              </section>
+
+              <section id="user-directory">
+                <CommunityUserDirectory
+                  onStartChat={handleChatPerson}
+                  onStartCall={handleStartCall}
+                  onShowToast={showToast}
                 />
               </section>
 
@@ -458,14 +461,6 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
         onPublish={(newArticle) => {
           showToast(`Article "${newArticle.title}" published successfully!`);
         }}
-      />
-
-      {/* Video / Voice Call Modal */}
-      <VideoVoiceCallModal
-        isOpen={isCallModalOpen}
-        onClose={() => setIsCallModalOpen(false)}
-        targetPerson={callTargetPerson}
-        callType={callType}
       />
     </div>
     </RoleGuard>

@@ -2,6 +2,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toast";
 import { AuthProvider } from "@/context/AuthContext";
+import { CallProvider } from "@/components/calls/CallProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -18,17 +19,7 @@ export const metadata = {
   },
   description:
     "Professional on-site technical services in Phidim, Panchthar — DTH, CCTV, electrical, computer repair, plumbing and more.",
-  // icons: {
-  //   icon: [
-  //     { url: "/logo.png", type: "image/png" },
-  //     { url: "/icon.png", type: "image/png" }
-  //   ],
-  //   shortcut: ["/logo.png"],
-  //   apple: [
-  //     { url: "/apple-icon.png", type: "image/png" }
-  //   ]
-  // },
-   icons: {
+  icons: {
     icon: [
       { url: "/favicon.ico" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -62,15 +53,74 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${poppins.variable} font-sans`}>
+    <html lang="en" className={`${poppins.variable} font-sans`} suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var origError = console.error;
+                var origWarn = console.warn;
+                function shouldIgnore(args) {
+                  var str = '';
+                  for (var i = 0; i < args.length; i++) {
+                    var item = args[i];
+                    if (typeof item === 'string') str += ' ' + item;
+                    else if (item && item.message) str += ' ' + item.message;
+                    else if (item && item.stack) str += ' ' + item.stack;
+                    else {
+                      try { str += ' ' + JSON.stringify(item); } catch (e) {}
+                    }
+                  }
+                  return (
+                    str.indexOf('bis_skin_checked') !== -1 ||
+                    str.indexOf('bis_register') !== -1 ||
+                    str.indexOf('__processed_') !== -1 ||
+                    str.indexOf('chrome-extension://') !== -1 ||
+                    str.indexOf('moz-extension://') !== -1 ||
+                    str.indexOf('safari-extension://') !== -1 ||
+                    str.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1
+                  );
+                }
+                console.error = function() {
+                  if (shouldIgnore(arguments)) return;
+                  return origError.apply(console, arguments);
+                };
+                console.warn = function() {
+                  if (shouldIgnore(arguments)) return;
+                  return origWarn.apply(console, arguments);
+                };
+                function handleErr(event) {
+                  var src = (event && event.filename) || (event && event.error && event.error.stack) || (event && event.reason && event.reason.stack) || (event && event.message) || '';
+                  if (
+                    typeof src === 'string' && (
+                      src.indexOf('chrome-extension://') !== -1 ||
+                      src.indexOf('moz-extension://') !== -1 ||
+                      src.indexOf('safari-extension://') !== -1 ||
+                      src.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1 ||
+                      src.indexOf('bis_skin_checked') !== -1
+                    )
+                  ) {
+                    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+                    if (event.preventDefault) event.preventDefault();
+                    return true;
+                  }
+                }
+                window.addEventListener('error', handleErr, true);
+                window.addEventListener('unhandledrejection', handleErr, true);
+              })();
+            `,
+          }}
+        />
         <link rel="icon" href="/logo.png" type="image/png" sizes="any" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <body className={`antialiased font-sans ${poppins.variable}`}>
+      <body className={`antialiased font-sans ${poppins.variable}`} suppressHydrationWarning>
         <AuthProvider>
-          {children}
-          <Toaster />
+          <CallProvider>
+            {children}
+            <Toaster />
+          </CallProvider>
         </AuthProvider>
       </body>
     </html>

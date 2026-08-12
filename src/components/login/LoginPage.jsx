@@ -126,8 +126,8 @@ export default function LoginPage() {
 
     if (isAdmin || (queryRole && queryRole.toUpperCase() === 'ADMIN')) {
       setRole('ADMIN');
-      setAdminEmail('admin@phidim.np');
-      setAdminPassword('password123');
+      setAdminEmail('');
+      setAdminPassword('');
     } else if (queryRole && queryRole.toUpperCase() === 'TECHNICIAN') {
       setRole('TECHNICIAN');
     }
@@ -284,14 +284,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleQuickFillAdmin = () => {
-    setAdminEmail('admin@phidim.np');
-    setAdminPassword('password123');
-    setServerError('');
-    setFieldErrors({});
-    toast.info('Loaded demo admin credentials (admin@phidim.np)');
-  };
-
   const handleDemoLogin = async (selectedRole) => {
     const roleToUse = selectedRole;
     setRole(roleToUse);
@@ -385,8 +377,8 @@ export default function LoginPage() {
                     onClick={() => {
                       setRole('ADMIN');
                       setShowAdminMenu(false);
-                      setAdminEmail('admin@phidim.np');
-                      setAdminPassword('password123');
+                      setAdminEmail('');
+                      setAdminPassword('');
                       setServerError('');
                       setFieldErrors({});
                       toast.success('Admin portal sign-in mode activated');
@@ -703,13 +695,6 @@ export default function LoginPage() {
                     <span className="text-[10px] text-slate-400 font-medium block">Authorized personnel only</span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleQuickFillAdmin}
-                  className="px-2.5 py-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg transition-all cursor-pointer shrink-0"
-                >
-                  Quick Fill Demo Admin
-                </button>
               </div>
 
               <FloatingField

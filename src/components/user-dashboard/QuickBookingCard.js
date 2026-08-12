@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { motion } from "motion/react";
 import {
@@ -12,10 +10,13 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { createBooking } from "@/lib/bookingStore";
 
 export function QuickBookingCard({ onConfirmBooking }) {
-  const [category, setCategory] = useState("DishHome & TV Repair");
-  const [date, setDate] = useState("2026-08-05");
+  const { user } = useAuth();
+  const [category, setCategory] = useState("CCTV & Security Systems");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [timeSlot, setTimeSlot] = useState("10:00 AM - 12:00 PM");
   const [location, setLocation] = useState("Phidim Ward 1 (Bazaar)");
   const [technician, setTechnician] = useState("Any Available Technician");
@@ -23,14 +24,33 @@ export function QuickBookingCard({ onConfirmBooking }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onConfirmBooking({
+
+    const techName = technician === "Any Available Technician" ? "Rajesh Tamang" : technician.split(" (")[0];
+
+    const saved = createBooking({
+      serviceName: `${category} Service & Inspection`,
       category,
+      customerName: user?.name || "Semik Serma",
+      customerEmail: user?.email || "",
+      customerPhone: user?.phone || "+977 9862772400",
+      address: location,
       date,
-      timeSlot,
-      location,
-      technician,
+      timeSlot: isEmergency ? "⚡ Emergency (Immediate 30m Dispatch)" : timeSlot,
       isEmergency,
+      basePrice: isEmergency ? 2500 : 1500,
+      technician: {
+        name: techName,
+        specialty: category,
+        phone: "+977 9842109842",
+        email: "tech@phidim.np",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+        rating: 4.95,
+      },
     });
+
+    if (onConfirmBooking) {
+      onConfirmBooking(saved || { category, date, timeSlot, location, technician, isEmergency });
+    }
   };
 
   return (

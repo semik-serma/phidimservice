@@ -13,13 +13,17 @@ export function setAuthCookies(res, user, { rememberMe = false } = {}) {
   const refreshToken = generateRefreshToken(user, { rememberMe });
 
   const dashboardPath = user.role === "ADMIN" ? "/admin/dashboard" : user.role === "TECHNICIAN" ? "/technician/dashboard" : "/user/dashboard";
+  const emailPrefix = user.email ? user.email.split("@")[0] : "";
+  const derivedUsername = (user.username || emailPrefix).toLowerCase().replace(/[^a-z0-9_]/g, "");
+
   const userPayload = {
     id: user.id || user._id || user.email,
-    name: user.name || user.email?.split("@")[0] || "User",
-    displayName: user.displayName || user.name || "",
+    name: user.name || emailPrefix || "User",
+    displayName: user.displayName || user.name || emailPrefix || "User",
+    username: derivedUsername,
     email: user.email,
     role: user.role || "USER",
-    avatar: user.avatar || "",
+    avatar: user.avatar || user.picture || "",
     dashboardPath,
   };
 

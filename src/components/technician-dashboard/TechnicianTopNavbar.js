@@ -93,14 +93,14 @@ export function TechnicianTopNavbar({
         {/* Right Section: Home Button, Actions, Status Toggle & Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Go Back to Home Page Button */}
-          <Link
+          <a
             href="/"
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition-all hover:scale-105"
             title="Go Back to Main Website Homepage"
           >
             <Home size={15} />
             <span className="hidden sm:inline">Back to Home</span>
-          </Link>
+          </a>
 
           {/* Online Availability Toggle */}
           <button
@@ -134,9 +134,12 @@ export function TechnicianTopNavbar({
 
           {/* Messages Icon */}
           <button
-            onClick={() => showToast("Opening Customer & Support Direct Messages...")}
-            className="relative p-2.5 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-emerald-950/60 transition-all border border-slate-200 dark:border-emerald-800/40"
-            title="Messages"
+            onClick={() => {
+              if (setActiveTab) setActiveTab("friends");
+              else showToast("Opening Customer & Support Direct Messages...");
+            }}
+            className="relative p-2.5 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-emerald-950/60 transition-all border border-slate-200 dark:border-emerald-800/40 cursor-pointer"
+            title="Messages & Community"
           >
             <MessageSquare size={18} />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-[#061510]" />

@@ -18,6 +18,7 @@ import {
   Wallet,
   Zap,
 } from "lucide-react";
+import { UserAvatar } from "@/components/UserAvatar";
 
 export function TechnicianInteractiveModals({
   activeModal,
@@ -120,15 +121,11 @@ export function TechnicianInteractiveModals({
             className="w-full max-w-md rounded-3xl bg-white dark:bg-[#061812] border border-slate-200 dark:border-emerald-800/50 p-6 shadow-2xl space-y-4"
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-emerald-900/30">
-              <div className="flex items-center gap-2.5">
-                <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80"
-                  alt="Customer"
-                  className="w-8 h-8 rounded-xl object-cover ring-2 ring-emerald-500"
-                />
-                <div>
-                  <h3 className="text-sm font-black text-slate-900 dark:text-white">
-                    {modalData?.customerName || "Sita Sharma"}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <UserAvatar user={modalData} size="xs" />
+                <div className="min-w-0">
+                  <h3 className="text-sm font-black text-slate-900 dark:text-white truncate">
+                    {modalData?.displayName || modalData?.customerName || modalData?.name || "Customer"}
                   </h3>
                   <p className="text-[10px] text-emerald-500 font-bold">● Online Direct Messaging</p>
                 </div>
@@ -136,12 +133,13 @@ export function TechnicianInteractiveModals({
 
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => showToast(`Calling ${modalData?.customerName || "Sita Sharma"}...`)}
-                  className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600"
+                  onClick={() => showToast(`Calling ${modalData?.displayName || modalData?.customerName || modalData?.name || "Customer"}...`)}
+                  className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 hover:bg-emerald-200 transition-colors"
+                  title="Voice Call"
                 >
                   <PhoneCall size={16} />
                 </button>
-                <button onClick={onClose} className="p-2 rounded-xl text-slate-400">
+                <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-600">
                   <X size={18} />
                 </button>
               </div>

@@ -51,7 +51,7 @@ export function TechnicianSidebar({ activeTab, setActiveTab, collapsed, setColla
   const router = useRouter();
   const { user } = useAuth();
 
-  const displayName = user?.name || "Field Technician";
+  const displayName = user?.displayName || user?.name || "Field Technician";
   const displayEmail = user?.email || "tech@phidim.np";
   const userInitials = displayName
     .split(" ")

@@ -189,7 +189,7 @@ export function TopNavbar({
             <input
               type="text"
               readOnly
-              placeholder="Search services, bookings, technicians... (Ctrl + K)"
+              placeholder="Search users, technicians, services, bookings... (Ctrl + K)"
               className="w-full h-11 pl-11 pr-16 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-white placeholder-slate-400 cursor-pointer focus:outline-none group-hover:border-emerald-500/50 transition-all shadow-inner"
             />
             <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/80 border border-emerald-500/30 rounded-lg">
@@ -201,14 +201,14 @@ export function TopNavbar({
         {/* Right Side: Home Button, Live Clock, Language, Dark Mode, Notifications, Admin Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Go Back to Home Page Button */}
-          <Link
+          <a
             href="/"
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition-all hover:scale-105"
             title="Go Back to Main Website Homepage"
           >
             <Home size={15} />
             <span className="hidden sm:inline">Back to Home</span>
-          </Link>
+          </a>
 
           {/* Live Clock & Date Widget */}
           <div className="hidden xl:flex flex-col items-end px-3 py-1.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-right">
@@ -340,7 +340,14 @@ export function TopNavbar({
 
                   <div className="divide-y divide-slate-100 dark:divide-slate-800 my-2">
                     {messagesList.map((m) => (
-                      <div key={m.id} className="py-2.5 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 p-2 rounded-2xl transition-colors cursor-pointer">
+                      <div
+                        key={m.id}
+                        onClick={() => {
+                          setShowMessages(false);
+                          if (setActiveTab) setActiveTab("messages");
+                        }}
+                        className="py-2.5 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 p-2 rounded-2xl transition-colors cursor-pointer"
+                      >
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow">
                           {m.avatar}
                         </div>
@@ -354,6 +361,16 @@ export function TopNavbar({
                       </div>
                     ))}
                   </div>
+
+                  <button
+                    onClick={() => {
+                      setShowMessages(false);
+                      if (setActiveTab) setActiveTab("messages");
+                    }}
+                    className="w-full py-2.5 text-center text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer"
+                  >
+                    Open Live Messages Hub
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>

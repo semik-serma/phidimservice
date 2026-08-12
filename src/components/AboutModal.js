@@ -10,7 +10,6 @@ import {
   Tv,
   Wind,
   Droplet,
-  ShoppingBag,
   CheckCircle2,
   MapPin,
   Phone,
@@ -82,25 +81,25 @@ export const AboutModal = ({ isOpen, onClose }) => {
     "Plumbing Maintenance",
     "Plumbing Trouble Shooting"
   ];
-  const productsList = [
-    "\u{1F4A1} LED Bulbs",
-    "\u{1F4F7} CCTV Cameras",
-    "\u{1F4BB} Computers & Accessories",
-    "\u{1F310} Networking Devices",
-    "\u{1F4FA} LED TVs",
-    "\u{1F50C} Switches & Sockets",
-    "\u{1F32C}\uFE0F Ceiling & Wall Fans",
-    "\u{1F50B} Inverters",
-    "\u26A1 Electrical Accessories",
-    "\u{1F5A8}\uFE0F Computer Accessories",
-    "\u{1F4E1} Networking Equipment",
-    "\u{1F3E0} Home Appliances"
+  const technicalEquipmentList = [
+    "⚡ Digital Insulation & Earth Testers",
+    "📹 IP & HD CCTV Cable Analyzers",
+    "💻 Hardware Diagnostic & OS Workbenches",
+    "📡 Fusion Splicers & Optical Power Meters",
+    "❄️ High-Pressure Jet Wash Pumps",
+    "🔌 Certified R32 / R410A Refrigerant Gauges",
+    "⚙️ Multi-Meter Circuit Probes",
+    "🚰 Hydrostatic Pipe Pressure Testers",
+    "🛡️ Genuine Certified Replacement Parts",
+    "🌐 Managed Switch & Router Terminals",
+    "🔩 Heavy Duty Copper Flaring Tools",
+    "🏠 On-Site Technician Emergency Kits"
   ];
   const whyChooseUsList = [
     { title: "Experienced Technicians", desc: "Skilled certified field experts for all home & IT jobs." },
     { title: "Affordable Price", desc: "Transparent & budget-friendly local pricing in Panchthar." },
     { title: "Fast Response", desc: "Quick on-site service dispatch across Phidim Municipality." },
-    { title: "Genuine Products", desc: "100% original electrical & electronics items with warranty." },
+    { title: "Genuine Replacement Parts", desc: "100% original electrical, refrigeration & CCTV parts with warranty." },
     { title: "Professional Service", desc: "Reliable, clean, and polite service guaranteed every time." },
     { title: "Home Service Available", desc: "Doorstep technical assistance for home, shop, or office." },
     { title: "Customer Satisfaction First", desc: "Your peace of mind and satisfaction is our top priority." }
@@ -187,10 +186,10 @@ export const AboutModal = ({ isOpen, onClose }) => {
             ⚡ Technical Services
           </button>
           <button
-    onClick={() => setActiveTab("PRODUCTS")}
-    className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider whitespace-nowrap cursor-pointer transition-all ${activeTab === "PRODUCTS" ? "bg-slate-900 text-white shadow-xs" : "bg-white text-gray-700 hover:bg-gray-200"}`}
-  >
-            🛒 Products We Sell
+            onClick={() => setActiveTab("CAPABILITIES")}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider whitespace-nowrap cursor-pointer transition-all ${activeTab === "CAPABILITIES" ? "bg-slate-900 text-white shadow-xs" : "bg-white text-gray-700 hover:bg-gray-200"}`}
+          >
+            🛠️ Service Capabilities
           </button>
           <button
     onClick={() => setActiveTab("WHY_US")}
@@ -202,39 +201,41 @@ export const AboutModal = ({ isOpen, onClose }) => {
     onClick={() => setActiveTab("DEVELOPER")}
     className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider whitespace-nowrap cursor-pointer transition-all ${activeTab === "DEVELOPER" ? "bg-slate-900 text-white shadow-xs" : "bg-white text-gray-700 hover:bg-gray-200"}`}
   >
-            👨‍💻 About Developer
+            👨‍💻 Developer
           </button>
         </div>
 
         {
     /* Scrollable Modal Content */
   }
-        <div className="p-5 sm:p-6 space-y-6 overflow-y-auto text-xs text-gray-700 leading-relaxed grow">
+        <div className="p-5 sm:p-6 overflow-y-auto max-h-[calc(90vh-210px)] space-y-6">
 
           {
-    /* SECTION: SERVICES */
+    /* SECTION: TECHNICAL SERVICES LIST */
   }
-          {(activeTab === "ALL" || activeTab === "SERVICES") && <div className="space-y-4">
+          {(activeTab === "ALL" || activeTab === "SERVICES") && (
+            <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                <h4 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                <h4 className="text-sm font-black text-gray-900 uppercase tracking-wider flex items-center gap-2">
                   <Wrench className="w-4 h-4 text-green-600" />
-                  <span>Our Professional On-Site Services</span>
+                  <span>⚡ On-Site Technical Services</span>
                 </h4>
-                <span className="text-[11px] font-bold text-gray-500">Phidim & Panchthar Region</span>
+                <span className="text-[10px] font-bold text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full border border-green-200">
+                  Doorstep Service Available
+                </span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {
     /* Electrical Services */
   }
-                <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-extrabold text-amber-900 text-sm">
-                    <Zap className="w-5 h-5 text-amber-600" />
-                    <span>⚡ Electrical Services (बिद्युत सम्बन्धी सेवा)</span>
+                <div className="bg-amber-50/50 border border-amber-200/80 rounded-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-amber-900 text-xs">
+                    <Zap className="w-4 h-4 text-amber-600" />
+                    <span>⚡ Electrical Services</span>
                   </div>
-                  <ul className="space-y-1.5 pt-1 text-gray-700 font-medium">
-                    {electricalServices.map((item, i) => <li key={i} className="flex items-start gap-2">
+                  <ul className="space-y-1.5 text-xs text-gray-700 font-medium">
+                    {electricalServices.map((item, i) => <li key={i} className="flex items-start gap-1.5">
                         <Check className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>)}
@@ -242,15 +243,15 @@ export const AboutModal = ({ isOpen, onClose }) => {
                 </div>
 
                 {
-    /* CCTV & Security Services */
+    /* CCTV & Security */
   }
-                <div className="bg-blue-50/70 border border-blue-200/80 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-extrabold text-blue-900 text-sm">
-                    <Camera className="w-5 h-5 text-blue-600" />
-                    <span>📹 CCTV & Security Services</span>
+                <div className="bg-blue-50/50 border border-blue-200/80 rounded-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-blue-900 text-xs">
+                    <Camera className="w-4 h-4 text-blue-600" />
+                    <span>📹 CCTV & Security</span>
                   </div>
-                  <ul className="space-y-1.5 pt-1 text-gray-700 font-medium">
-                    {cctvServices.map((item, i) => <li key={i} className="flex items-start gap-2">
+                  <ul className="space-y-1.5 text-xs text-gray-700 font-medium">
+                    {cctvServices.map((item, i) => <li key={i} className="flex items-start gap-1.5">
                         <Check className="w-3.5 h-3.5 text-blue-600 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>)}
@@ -258,31 +259,31 @@ export const AboutModal = ({ isOpen, onClose }) => {
                 </div>
 
                 {
-    /* Computer & IT Services */
+    /* Computer & IT */
   }
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-extrabold text-slate-900 text-sm">
-                    <Monitor className="w-5 h-5 text-slate-700" />
-                    <span>💻 Computer & IT Services</span>
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-slate-900 text-xs">
+                    <Monitor className="w-4 h-4 text-slate-700" />
+                    <span>💻 Computer & IT</span>
                   </div>
-                  <ul className="space-y-1.5 pt-1 text-gray-700 font-medium">
-                    {computerServices.map((item, i) => <li key={i} className="flex items-start gap-2">
-                        <Check className="w-3.5 h-3.5 text-slate-700 mt-0.5 shrink-0" />
+                  <ul className="space-y-1.5 text-xs text-gray-700 font-medium">
+                    {computerServices.map((item, i) => <li key={i} className="flex items-start gap-1.5">
+                        <Check className="w-3.5 h-3.5 text-slate-600 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>)}
                   </ul>
                 </div>
 
                 {
-    /* Internet & TV Services */
+    /* Internet & TV */
   }
-                <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-extrabold text-emerald-900 text-sm">
-                    <Wifi className="w-5 h-5 text-emerald-600" />
-                    <span>📡 Internet & TV Services</span>
+                <div className="bg-emerald-50/50 border border-emerald-200/80 rounded-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-emerald-900 text-xs">
+                    <Wifi className="w-4 h-4 text-emerald-600" />
+                    <span>📡 Internet & TV</span>
                   </div>
-                  <ul className="space-y-1.5 pt-1 text-gray-700 font-medium">
-                    {internetTvServices.map((item, i) => <li key={i} className="flex items-start gap-2">
+                  <ul className="space-y-1.5 text-xs text-gray-700 font-medium">
+                    {internetTvServices.map((item, i) => <li key={i} className="flex items-start gap-1.5">
                         <Check className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>)}
@@ -290,15 +291,15 @@ export const AboutModal = ({ isOpen, onClose }) => {
                 </div>
 
                 {
-    /* Air Conditioner Services */
+    /* Air Conditioner */
   }
-                <div className="bg-cyan-50/70 border border-cyan-200/80 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-extrabold text-cyan-900 text-sm">
-                    <Wind className="w-5 h-5 text-cyan-600" />
-                    <span>❄️ Air Conditioner Services</span>
+                <div className="bg-cyan-50/50 border border-cyan-200/80 rounded-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-cyan-900 text-xs">
+                    <Wind className="w-4 h-4 text-cyan-600" />
+                    <span>❄️ AC Services</span>
                   </div>
-                  <ul className="space-y-1.5 pt-1 text-gray-700 font-medium">
-                    {acServices.map((item, i) => <li key={i} className="flex items-start gap-2">
+                  <ul className="space-y-1.5 text-xs text-gray-700 font-medium">
+                    {acServices.map((item, i) => <li key={i} className="flex items-start gap-1.5">
                         <Check className="w-3.5 h-3.5 text-cyan-600 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>)}
@@ -306,15 +307,15 @@ export const AboutModal = ({ isOpen, onClose }) => {
                 </div>
 
                 {
-    /* LED TV Services */
+    /* LED TV */
   }
-                <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-extrabold text-indigo-900 text-sm">
-                    <Tv className="w-5 h-5 text-indigo-600" />
-                    <span>📺 LED TV Services</span>
+                <div className="bg-indigo-50/50 border border-indigo-200/80 rounded-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-2 font-black text-indigo-900 text-xs">
+                    <Tv className="w-4 h-4 text-indigo-600" />
+                    <span>📺 LED TV</span>
                   </div>
-                  <ul className="space-y-1.5 pt-1 text-gray-700 font-medium">
-                    {tvServices.map((item, i) => <li key={i} className="flex items-start gap-2">
+                  <ul className="space-y-1.5 text-xs text-gray-700 font-medium">
+                    {tvServices.map((item, i) => <li key={i} className="flex items-start gap-1.5">
                         <Check className="w-3.5 h-3.5 text-indigo-600 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>)}
@@ -322,67 +323,49 @@ export const AboutModal = ({ isOpen, onClose }) => {
                 </div>
 
                 {
-    /* Plumbing Services */
+    /* Plumbing */
   }
-                <div className="bg-teal-50/70 border border-teal-200/80 rounded-xl p-4 space-y-2 md:col-span-2">
-                  <div className="flex items-center gap-2 font-extrabold text-teal-900 text-sm">
-                    <Droplet className="w-5 h-5 text-teal-600" />
-                    <span>🚰 Plumbing Services</span>
+                <div className="bg-teal-50/50 border border-teal-200/80 rounded-xl p-3.5 space-y-2 sm:col-span-2 md:col-span-3">
+                  <div className="flex items-center gap-2 font-black text-teal-900 text-xs">
+                    <Droplet className="w-4 h-4 text-teal-600" />
+                    <span>🚰 Plumbing & Sanitary</span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                    {plumbingServices.map((item, i) => <div key={i} className="flex items-start gap-2 text-gray-700 font-medium">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                    {plumbingServices.map((item, i) => <div key={i} className="flex items-start gap-1.5 text-xs text-gray-700 font-medium">
                         <Check className="w-3.5 h-3.5 text-teal-600 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </div>)}
                   </div>
                 </div>
-
               </div>
-            </div>}
+            </div>
+          )}
 
           {
-    /* SECTION: PRODUCTS WE SELL */
+    /* SECTION: TECHNICAL CAPABILITIES & SPECIALIZED EQUIPMENT */
   }
-          {(activeTab === "ALL" || activeTab === "PRODUCTS") && <div className="bg-gradient-to-br from-green-50 via-white to-green-50/50 border border-green-200 rounded-2xl p-5 space-y-4">
+          {(activeTab === "ALL" || activeTab === "CAPABILITIES") && <div className="bg-gradient-to-br from-green-50 via-white to-green-50/50 border border-green-200 rounded-2xl p-5 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-green-200/60 pb-3">
                 <div>
                   <h4 className="text-sm font-black text-gray-900 uppercase tracking-wider flex items-center gap-2">
-                    <ShoppingBag className="w-4 h-4 text-green-600" />
-                    <span>🛒 Products We Sell at Genuine Prices</span>
+                    <Wrench className="w-4 h-4 text-green-600" />
+                    <span>🛠️ Service Equipment & Genuine Repair Standards</span>
                   </h4>
                   <p className="text-gray-600 text-xs mt-0.5">
-                    Need quality electrical and electronic products? We sell genuine products with warranty!
+                    We use 100% genuine electrical, optical fiber, CCTV, and AC replacement parts with warranty for all repairs.
                   </p>
                 </div>
-                <a
-    href="https://phidimservice.com.np"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-green-600 hover:bg-green-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 self-start sm:self-auto transition-all shadow-xs cursor-pointer"
-  >
-                  <Globe className="w-3.5 h-3.5" />
-                  <span>Visit Online Portal</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-                {productsList.map((prod, i) => <div key={i} className="bg-white border border-green-100 hover:border-green-300 rounded-xl p-2.5 font-bold text-gray-800 text-xs flex items-center gap-1.5 shadow-2xs transition-colors">
-                    <span>{prod}</span>
+                {technicalEquipmentList.map((item, i) => <div key={i} className="bg-white border border-green-100 hover:border-green-300 rounded-xl p-2.5 font-bold text-gray-800 text-xs flex items-center gap-1.5 shadow-2xs transition-colors">
+                    <span>{item}</span>
                   </div>)}
               </div>
 
               <div className="bg-white/90 p-3 rounded-xl border border-green-200/80 flex items-center justify-between text-xs">
-                <span className="font-extrabold text-green-900">🌐 Official Online Hub:</span>
-                <a
-    href="https://phidimservice.com.np"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-green-700 font-black hover:underline underline-offset-2 flex items-center gap-1"
-  >
-                  <span>https://phidimservice.com.np</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                <span className="font-extrabold text-green-900">🛡️ 100% Certified Workmanship Guarantee:</span>
+                <span className="text-green-700 font-bold">Phidim Wards 1 to 4 & Panchthar</span>
               </div>
             </div>}
 
@@ -486,7 +469,7 @@ export const AboutModal = ({ isOpen, onClose }) => {
                 <span>• Hotline: +977 986-2772457</span>
               </div>
               <p className="text-[11px] text-green-400 font-bold pt-1">
-                &quot;Professional Service, Genuine Products, Happy Customers!&quot; 🙏
+                &quot;Professional Service, Genuine Parts & Workmanship, Happy Customers!&quot; 🙏
               </p>
             </div>
 

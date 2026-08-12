@@ -22,19 +22,33 @@ export default function RoleGuard({ roles = [], children, redirectPath = "/login
 
   useEffect(() => {
     if (isLoading) return;
-    if (!isAuthenticated) {
-      const t = setTimeout(() => router.replace(redirectPath), 150);
+    
+    // Check if user is present in localStorage before redirecting
+    let hasStoredSession = false;
+    if (typeof window !== "undefined") {
+      try {
+        hasStoredSession = !!localStorage.getItem("phidim_auth_user");
+      } catch (e) {}
+    }
+
+    if (!isAuthenticated && !hasStoredSession) {
+      const t = setTimeout(() => {
+        router.replace(redirectPath);
+      }, 600);
       return () => clearTimeout(t);
     }
-    if (roles.length > 0 && !roles.includes(user?.role)) {
-      const t = setTimeout(() => router.replace("/403"), 150);
+
+    if (user?.role && roles.length > 0 && !roles.includes(user.role)) {
+      const t = setTimeout(() => {
+        router.replace("/403");
+      }, 400);
       return () => clearTimeout(t);
     }
   }, [isLoading, isAuthenticated, user?.role, roles, router, redirectPath]);
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
         <div className="text-center text-slate-500">
           <Loader2 className="w-6 h-6 text-emerald-600 animate-spin mx-auto mb-3" />
           <p className="text-xs font-bold uppercase tracking-wider">Checking session...</p>

@@ -14,6 +14,7 @@ import {
   History,
   Bell,
   User,
+  UserPlus,
   Settings,
   HelpCircle,
   LogOut,

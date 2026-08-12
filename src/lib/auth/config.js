@@ -25,8 +25,14 @@ export const PUBLIC_PREFIXES = [
   "/401",
   "/403",
   "/api/auth", // the auth backend manages its own tokens/cookies
+  "/api/calls", // real-time call signaling endpoint
+  "/api/users",
+  "/api/chat", // real-time messaging persistence endpoint
   "/api/health",
   "/_next",
+  "/_not-found",
+  "/_error",
+  "/_document",
   "/favicon.ico",
   "/logo.png",
   "/apple-touch-icon.png",

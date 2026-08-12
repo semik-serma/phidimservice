@@ -1,7 +1,10 @@
-import jwt from "jsonwebtoken";
+import { createRequire } from "module";
 import crypto from "crypto";
 import { getAuthConfig } from "@/lib/env.js";
 import { dashboardPathFor } from "@/lib/auth/roles.js";
+
+const req = createRequire(import.meta.url);
+const jwt = req("jsonwebtoken");
 
 const config = getAuthConfig();
 

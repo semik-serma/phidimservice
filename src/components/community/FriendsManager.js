@@ -9,6 +9,7 @@ import {
   Search,
   MessageSquare,
   Video,
+  Phone,
   Sparkles,
   CheckCircle2,
   Clock,
@@ -20,6 +21,18 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
+import {
+  subscribeFriendsStore,
+  getFriendStatus,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
+  removeFriend,
+  getPendingIncomingRequests,
+} from "@/lib/friendStore.js";
+import { getStoredRealUsers, subscribeUserRegistry } from "@/lib/userRegistry.js";
+import { UserAvatar } from "@/components/UserAvatar";
+import { useCall } from "@/components/calls/CallProvider";
 
 const DEMO_REGISTERED_USERS = [
   {
@@ -29,7 +42,7 @@ const DEMO_REGISTERED_USERS = [
     role: "TECHNICIAN",
     email: "rajesh@phidim.np",
     phone: "+977 9811111111",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+    avatar: "",
     bio: "Senior AC Cooling & Electrical Technician in Phidim Ward 4.",
     online: true,
   },
@@ -40,7 +53,7 @@ const DEMO_REGISTERED_USERS = [
     role: "USER",
     email: "saraswati@phidim.np",
     phone: "+977 9822222222",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+    avatar: "",
     bio: "Homeowner in Phidim Ward 2. Frequent service customer.",
     online: true,
   },
@@ -51,7 +64,7 @@ const DEMO_REGISTERED_USERS = [
     role: "USER",
     email: "bikash@phidim.np",
     phone: "+977 9833333333",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+    avatar: "",
     bio: "Store manager at Main Bazar Phidim.",
     online: false,
   },
@@ -62,7 +75,7 @@ const DEMO_REGISTERED_USERS = [
     role: "TECHNICIAN",
     email: "anita@phidim.np",
     phone: "+977 9844444444",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
+    avatar: "",
     bio: "DishHome Fiber Optic splicing & network setup specialist.",
     online: true,
   },
@@ -73,18 +86,29 @@ const DEMO_REGISTERED_USERS = [
     role: "TECHNICIAN",
     email: "suman@phidim.np",
     phone: "+977 9855555555",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+    avatar: "",
     bio: "Master Electrician & Plumber in Panchthar district.",
     online: true,
   },
   {
+    id: "usr-cust-semik",
+    name: "Semik Serma",
+    displayName: "Semik Serma",
+    role: "USER",
+    email: "semikserma@gmail.com",
+    phone: "+977 9862772400",
+    avatar: "",
+    bio: "Registered customer & Panchthar community member.",
+    online: true,
+  },
+  {
     id: "usr-admin-phidim",
-    name: "Phidim Service Admin",
+    name: "Dhanraj Serma",
     displayName: "Platform Admin",
     role: "ADMIN",
-    email: "admin@phidim.np",
+    email: "dhanrajserma34@gmail.com",
     phone: "+977 9800000000",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
+    avatar: "",
     bio: "Official Phidim Service System Administrator.",
     online: true,
   },
@@ -92,48 +116,68 @@ const DEMO_REGISTERED_USERS = [
 
 export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("search"); // 'search' | 'requests' | 'friends'
+  const { startCall } = useCall();
+  const [activeTab, setActiveTab] = useState("search");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(DEMO_REGISTERED_USERS);
-  const [loading, setLoading] = useState(false);
+  const [friendDataVer, setFriendDataVer] = useState(0);
 
-  // Friend status states: 'none' | 'sent' | 'received' | 'friends'
-  const [friendStatusMap, setFriendStatusMap] = useState({
-    "usr-tech-rajesh": "friends",
-    "usr-cust-saraswati": "received", // Incoming request
-    "usr-cust-bikash": "sent", // Outgoing pending request
-    "usr-tech-anita": "friends",
-  });
+  const triggerCall = (friend, type = "video") => {
+    if (onStartCall) {
+      onStartCall(friend, type);
+    } else {
+      startCall(friend, type);
+    }
+  };
 
-  // Fetch search results from API or fallback
+  useEffect(() => {
+    const unsubFriends = subscribeFriendsStore(() => {
+      setFriendDataVer((v) => v + 1);
+    });
+    const unsubRegistry = subscribeUserRegistry(() => {
+      setFriendDataVer((v) => v + 1);
+    });
+    return () => {
+      unsubFriends();
+      unsubRegistry();
+    };
+  }, []);
+
+  // Fetch search results from API and merge with stored real accounts
   useEffect(() => {
     let isMounted = true;
     const fetchUsers = async () => {
-      setLoading(true);
+      let apiUsers = [];
       try {
         const res = await fetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}`);
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.users)) {
-            if (isMounted) setSearchResults(data.users);
-            setLoading(false);
-            return;
+            apiUsers = data.users;
           }
         }
-      } catch (e) {
-        // use fallback
-      }
+      } catch (e) {}
+
+      const localRealUsers = getStoredRealUsers();
+      const map = new Map();
+      [...DEMO_REGISTERED_USERS, ...localRealUsers, ...apiUsers].forEach((u) => {
+        if (u && u.email) {
+          map.set(u.email.toLowerCase(), u);
+        }
+      });
+
+      const allMerged = Array.from(map.values()).filter(
+        (u) =>
+          u.email.toLowerCase() !== user?.email?.toLowerCase() &&
+          (!searchQuery.trim() ||
+            u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            u.role?.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+
       if (isMounted) {
-        const filtered = DEMO_REGISTERED_USERS.filter(
-          (u) =>
-            u.email !== user?.email &&
-            (u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              (u.displayName && u.displayName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-              u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              u.role.toLowerCase().includes(searchQuery.toLowerCase()))
-        );
-        setSearchResults(filtered);
-        setLoading(false);
+        setSearchResults(allMerged);
       }
     };
 
@@ -142,43 +186,31 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
       isMounted = false;
       clearTimeout(timer);
     };
-  }, [searchQuery, user]);
+  }, [searchQuery, user, friendDataVer]);
 
   const handleSendRequest = (targetUser) => {
-    setFriendStatusMap((prev) => ({
-      ...prev,
-      [targetUser.id || targetUser.email]: "sent",
-    }));
+    sendFriendRequest({ senderUser: user, receiverUser: targetUser });
     if (onShowToast) {
       onShowToast(`Friend request sent to ${targetUser.displayName || targetUser.name}!`);
     }
   };
 
   const handleCancelRequest = (targetUser) => {
-    setFriendStatusMap((prev) => ({
-      ...prev,
-      [targetUser.id || targetUser.email]: "none",
-    }));
+    declineFriendRequest(user?.email, targetUser.email);
     if (onShowToast) {
       onShowToast(`Cancelled request to ${targetUser.displayName || targetUser.name}.`);
     }
   };
 
   const handleAcceptRequest = (targetUser) => {
-    setFriendStatusMap((prev) => ({
-      ...prev,
-      [targetUser.id || targetUser.email]: "friends",
-    }));
+    acceptFriendRequest(user?.email, targetUser.email);
     if (onShowToast) {
       onShowToast(`You are now friends with ${targetUser.displayName || targetUser.name}! 🎉`);
     }
   };
 
   const handleDeclineRequest = (targetUser) => {
-    setFriendStatusMap((prev) => ({
-      ...prev,
-      [targetUser.id || targetUser.email]: "none",
-    }));
+    declineFriendRequest(user?.email, targetUser.email);
     if (onShowToast) {
       onShowToast(`Declined request from ${targetUser.displayName || targetUser.name}.`);
     }
@@ -186,22 +218,19 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
 
   const handleRemoveFriend = (targetUser) => {
     if (confirm(`Are you sure you want to remove ${targetUser.displayName || targetUser.name} from friends?`)) {
-      setFriendStatusMap((prev) => ({
-        ...prev,
-        [targetUser.id || targetUser.email]: "none",
-      }));
+      removeFriend(user?.email, targetUser.email);
       if (onShowToast) {
         onShowToast(`Removed ${targetUser.displayName || targetUser.name} from friends.`);
       }
     }
   };
 
-  // Lists count helpers
+  // Lists count helpers using persistent friendStore
   const pendingRequests = searchResults.filter(
-    (u) => friendStatusMap[u.id || u.email] === "received"
+    (u) => getFriendStatus(user?.email, u.email) === "received"
   );
   const activeFriends = searchResults.filter(
-    (u) => friendStatusMap[u.id || u.email] === "friends"
+    (u) => getFriendStatus(user?.email, u.email) === "friends"
   );
 
   return (
@@ -285,7 +314,7 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
       {activeTab === "search" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {searchResults.map((u) => {
-            const status = friendStatusMap[u.id || u.email] || "none";
+            const status = getFriendStatus(user?.email, u.email);
 
             return (
               <motion.div
@@ -297,11 +326,7 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
                     <div className="relative shrink-0">
-                      <img
-                        src={u.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"}
-                        alt={u.name}
-                        className="w-14 h-14 rounded-2xl object-cover ring-2 ring-emerald-500/40"
-                      />
+                      <UserAvatar user={u} size="lg" />
                       {u.online && (
                         <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
                       )}
@@ -336,18 +361,34 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
                 {/* Friend Action Button */}
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                   {status === "friends" ? (
-                    <div className="flex items-center gap-2 w-full">
-                      <span className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-black border border-emerald-500/20">
+                    <div className="flex items-center gap-1.5 w-full">
+                      <span className="flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-black border border-emerald-500/20 truncate">
                         <UserCheck size={14} /> Friends ✓
                       </span>
                       {onStartChat && (
                         <button
                           onClick={() => onStartChat(u)}
                           className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1 shadow cursor-pointer"
+                          title="Open Direct Chat"
                         >
-                          <MessageSquare size={14} /> Chat
+                          <MessageSquare size={14} />
+                          <span>Chat</span>
                         </button>
                       )}
+                      <button
+                        onClick={() => triggerCall(u, "voice")}
+                        className="p-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30 transition-colors cursor-pointer"
+                        title="Start Voice Call"
+                      >
+                        <Phone size={14} />
+                      </button>
+                      <button
+                        onClick={() => triggerCall(u, "video")}
+                        className="p-2 rounded-xl bg-teal-500/20 text-teal-600 dark:text-teal-400 hover:bg-teal-500/30 transition-colors cursor-pointer"
+                        title="Start HD Video Call"
+                      >
+                        <Video size={14} />
+                      </button>
                     </div>
                   ) : status === "sent" ? (
                     <div className="flex items-center justify-between w-full">
@@ -411,7 +452,7 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
               {pendingRequests.map((u) => (
                 <div key={u.id || u.email} className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <img src={u.avatar} alt={u.name} className="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-500/40" />
+                    <UserAvatar user={u} size="md" />
                     <div>
                       <h4 className="text-xs font-black text-slate-900 dark:text-white">{u.displayName || u.name}</h4>
                       <p className="text-[11px] text-slate-400">{u.role} • {u.email}</p>
@@ -450,7 +491,7 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
           {activeFriends.length === 0 ? (
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 text-center border border-slate-200 dark:border-slate-800 space-y-3">
               <Users size={36} className="mx-auto text-slate-300 dark:text-slate-600" />
-              <p className="text-sm font-bold text-slate-700 dark:text-slate-300">You haven't added any friends yet.</p>
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-300">You haven&apos;t added any friends yet.</p>
               <button
                 onClick={() => setActiveTab("search")}
                 className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold"
@@ -464,7 +505,7 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
                 <div key={u.id || u.email} className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                      <img src={u.avatar} alt={u.name} className="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-500/40" />
+                      <UserAvatar user={u} size="md" />
                       {u.online && <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />}
                     </div>
                     <div>
@@ -483,15 +524,20 @@ export function FriendsManager({ onStartChat, onStartCall, onShowToast }) {
                         <MessageSquare size={16} />
                       </button>
                     )}
-                    {onStartCall && (
-                      <button
-                        onClick={() => onStartCall(u, "video")}
-                        className="p-2 rounded-xl bg-teal-500/20 text-teal-600 dark:text-teal-400 hover:bg-teal-500/30 transition-colors cursor-pointer"
-                        title="Start HD Video Call"
-                      >
-                        <Video size={16} />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => triggerCall(u, "voice")}
+                      className="p-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30 transition-colors cursor-pointer"
+                      title="Start Voice Call"
+                    >
+                      <Phone size={16} />
+                    </button>
+                    <button
+                      onClick={() => triggerCall(u, "video")}
+                      className="p-2 rounded-xl bg-teal-500/20 text-teal-600 dark:text-teal-400 hover:bg-teal-500/30 transition-colors cursor-pointer"
+                      title="Start HD Video Call"
+                    >
+                      <Video size={16} />
+                    </button>
                     <button
                       onClick={() => handleRemoveFriend(u)}
                       className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"

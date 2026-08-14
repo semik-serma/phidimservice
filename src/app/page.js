@@ -1,21 +1,13 @@
-"use client";
+import { SpaRoot } from "@/components/SpaRoot";
 
-import dynamic from "next/dynamic";
-
-const App = dynamic(() => import("../App"), {
-  ssr: false,
-  loading: () => (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center font-sans">
-      <div className="flex items-center gap-3">
-        <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm font-bold">Loading Phidim Service System...</span>
-      </div>
-    </div>
-  ),
-});
+export const metadata = {
+  title: "Phidim Service | Local Services, Technicians & Home Services in Phidim, Panchthar",
+  description: "Phidim Service connects you with expert local technicians in Phidim and Panchthar, Nepal. Request certified electricians, plumbers, CCTV installers, fiber internet technicians, DishHome installers, and computer repair services.",
+  alternates: {
+    canonical: "https://phidimservice.com.np",
+  },
+};
 
 export default function Home() {
-  return <App />;
+  return <SpaRoot />;
 }
-
-

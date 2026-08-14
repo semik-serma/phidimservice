@@ -1,13 +1,29 @@
+import { SEO_SERVICES } from "../data/seoServicesData";
 
 export default function sitemap() {
   const baseUrl = "https://phidimservice.com.np";
 
-  return [
+  const staticRoutes = [
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 1,
-    }
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/services`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
   ];
+
+  const dynamicRoutes = SEO_SERVICES.map((service) => ({
+    url: `${baseUrl}/services/${service.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...dynamicRoutes];
 }

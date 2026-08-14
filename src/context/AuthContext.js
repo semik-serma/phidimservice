@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { saveRealUserToRegistry } from "@/lib/userRegistry.js";
+import socket from "@/realtime/client";
 
 const AuthContext = createContext({
   user: null,
@@ -205,6 +206,14 @@ export function AuthProvider({ children }) {
       if (refreshTimer.current) clearInterval(refreshTimer.current);
     };
   }, [user, refreshSession]);
+  
+  useEffect(() => {
+  if (!user?.id) return;
+
+  socket.emit("register-user", user.id);
+
+  console.log("👤 Registered realtime user:", user.id);
+}, [user]);
 
   const safeSetUser = useCallback((acc) => {
     const normalized = normalizeUser(acc);

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SERVICE_REQUEST_STATUSES } from "@/lib/requests";
+import { useCall } from "@/components/calls/CallProvider";
+import { PhoneCall } from "lucide-react";
 
 /**
  * Client rendering for the /requests page. All data comes from the
@@ -12,6 +14,7 @@ import { SERVICE_REQUEST_STATUSES } from "@/lib/requests";
  */
 export default function RequestsPage({ requests, userRole }) {
   const router = useRouter();
+  const { startCall } = useCall();
   const [items, setItems] = useState(requests);
   const [form, setForm] = useState({ title: "", category: "", description: "", phone: "" });
   const [busy, setBusy] = useState(false);
@@ -142,12 +145,13 @@ export default function RequestsPage({ requests, userRole }) {
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Created</th>
+                <th className="px-4 py-3">Call</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {items.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
                     No requests found for your account.
                   </td>
                 </tr>
@@ -181,6 +185,96 @@ export default function RequestsPage({ requests, userRole }) {
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-400">
                     {r.createdAt ? new Date(r.createdAt).toLocaleString() : "-"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {userRole === "USER" ? (
+                      r.technicianEmail ? (
+                        <button
+                          onClick={() =>
+                            startCall(
+                              {
+                                name: r.technicianEmail.split("@")[0] || "Technician",
+                                email: r.technicianEmail,
+                                role: "TECHNICIAN",
+                                phone: "+977 9862772457",
+                              },
+                              "voice"
+                            )
+                          }
+                          className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 flex items-center gap-1 text-xs font-bold transition-all hover:scale-102 cursor-pointer"
+                          title={`Call Technician (${r.technicianEmail})`}
+                        >
+                          <PhoneCall className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                          <span>Call Tech</span>
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-400 font-semibold italic">Unassigned</span>
+                      )
+                    ) : userRole === "TECHNICIAN" ? (
+                      r.userEmail ? (
+                        <button
+                          onClick={() =>
+                            startCall(
+                              {
+                                name: r.userEmail.split("@")[0] || "Customer",
+                                email: r.userEmail,
+                                role: "USER",
+                                phone: r.phone || "",
+                              },
+                              "voice"
+                            )
+                          }
+                          className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 flex items-center gap-1 text-xs font-bold transition-all hover:scale-102 cursor-pointer"
+                          title={`Call Customer (${r.userEmail})`}
+                        >
+                          <PhoneCall className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Call Customer</span>
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-400 font-semibold italic">No Contact</span>
+                      )
+                    ) : (
+                      <div className="flex items-center gap-1 text-xs font-bold text-slate-500">
+                        {r.technicianEmail && (
+                          <button
+                            onClick={() =>
+                              startCall(
+                                {
+                                  name: r.technicianEmail.split("@")[0] || "Technician",
+                                  email: r.technicianEmail,
+                                  role: "TECHNICIAN",
+                                  phone: "+977 9862772457",
+                                },
+                                "voice"
+                              )
+                            }
+                            className="p-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 cursor-pointer"
+                            title="Call Tech"
+                          >
+                            <PhoneCall className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        {r.userEmail && (
+                          <button
+                            onClick={() =>
+                              startCall(
+                                {
+                                  name: r.userEmail.split("@")[0] || "Customer",
+                                  email: r.userEmail,
+                                  role: "USER",
+                                  phone: r.phone || "",
+                                },
+                                "voice"
+                              )
+                            }
+                            className="p-1 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 cursor-pointer"
+                            title="Call Customer"
+                          >
+                            <PhoneCall className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

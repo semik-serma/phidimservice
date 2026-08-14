@@ -37,11 +37,13 @@ function toClientRequest(r) {
     id: r.requestId,
     requestId: r.requestId,
     userId: r.userId,
+    userEmail: r.userEmail || "",
     title: r.title,
     category: r.category || "",
     description: r.description || "",
     phone: r.phone || "",
     status: r.status,
+    technicianId: r.technicianId || "",
     technicianEmail: r.technicianEmail || "",
     createdAt: r.createdAt,
   };

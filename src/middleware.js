@@ -22,6 +22,7 @@ const PUBLIC_PREFIXES = [
   "/api/chat",
   "/api/users",
   "/api/health",
+  "/services",
   "/_next",
 ];
 

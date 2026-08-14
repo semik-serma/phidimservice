@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Search, Heart, User, Eye, Facebook, Youtube, Linkedin, Globe, ExternalLink, LayoutDashboard, LogOut, Wrench } from "lucide-react";
 import { SERVICE_CATEGORIES } from "../data/services";

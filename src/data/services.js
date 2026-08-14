@@ -1,5 +1,3 @@
-"use client";
-
 // Master Services & Technical Packages Data for Phidim Service System
 // 100% Service-Oriented (No Physical Products / No E-commerce)
 

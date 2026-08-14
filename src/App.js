@@ -22,7 +22,7 @@ import { ServiceBookingModal } from "./components/ServiceBookingModal";
 import { LanNetworkingPage } from "./components/LanNetworkingPage";
 import { ContactUsPage } from "./components/ContactUsPage";
 import { Footer } from "./components/Footer";
-import { CheckCircle2 } from "lucide-react";
+import { SERVICES } from "@/data/services";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("HOME");
@@ -56,6 +56,52 @@ export default function App() {
     } catch (e) {
       console.error("Error reading localStorage:", e);
     }
+
+    // Parse search parameters for dynamic navigation & pre-filled booking modal
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+
+      // Parse active tab (e.g. ?tab=about -> ABOUT, ?tab=contact-us -> CONTACT US)
+      const tabParam = params.get("tab");
+      if (tabParam) {
+        const normalized = tabParam.toUpperCase().replace("-", " ");
+        if (normalized === "SERVICES" || normalized === "ALL SERVICES") {
+          setActiveTab("ALL SERVICES");
+        } else if (normalized === "LAN" || normalized === "LAN NETWORKING") {
+          setActiveTab("LAN NETWORKING");
+        } else if (normalized === "ABOUT") {
+          setActiveTab("ABOUT");
+        } else if (normalized === "CONTACT" || normalized === "CONTACT US") {
+          setActiveTab("CONTACT US");
+        } else if (normalized === "HOME") {
+          setActiveTab("HOME");
+        }
+      }
+
+      // Parse search keyword (e.g. ?search=electrician)
+      const searchParam = params.get("search");
+      if (searchParam) {
+        setSearchQuery(searchParam);
+        setActiveTab("ALL SERVICES");
+      }
+
+      // Parse category filter (e.g. ?category=CCTV%20%26%20Security)
+      const categoryParam = params.get("category");
+      if (categoryParam) {
+        setSelectedCategory(categoryParam);
+        setActiveTab("ALL SERVICES");
+      }
+
+      // Parse automatic booking triggers (e.g. ?book=srv-electrical-wiring)
+      const bookParam = params.get("book");
+      if (bookParam) {
+        const matched = SERVICES.find((s) => s.id === bookParam);
+        if (matched) {
+          handleBookService(matched);
+        }
+      }
+    }
+
     setIsMounted(true);
   }, []);
 

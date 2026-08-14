@@ -1,18 +1,42 @@
+"use client";
+
 import { Phone, Mail, MapPin, ShieldCheck, Facebook, Youtube, Linkedin, ExternalLink } from "lucide-react";
 import { RopePullingDevBadge } from "./RopePullingDevBadge";
+
 export const Footer = ({
   onSelectCategory,
   onOpenAbout,
   onOpenContact
 }) => {
-  return <footer className="bg-slate-900 text-gray-300 pt-12 pb-6 border-t border-slate-800">
+  const handleSelectCategory = (cat) => {
+    if (onSelectCategory) {
+      onSelectCategory(cat);
+    } else if (typeof window !== "undefined") {
+      window.location.href = `/?tab=services&category=${encodeURIComponent(cat)}`;
+    }
+  };
+
+  const handleOpenAbout = () => {
+    if (onOpenAbout) {
+      onOpenAbout();
+    } else if (typeof window !== "undefined") {
+      window.location.href = `/?tab=about`;
+    }
+  };
+
+  const handleOpenContact = () => {
+    if (onOpenContact) {
+      onOpenContact();
+    } else if (typeof window !== "undefined") {
+      window.location.href = `/?tab=contact-us`;
+    }
+  };
+
+  return (
+    <footer className="bg-slate-900 text-gray-300 pt-12 pb-6 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
-          
-          {
-    /* Col 1: About */
-  }
+          {/* Col 1: About */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-full overflow-hidden border border-green-500/80 shadow-md bg-slate-950 p-0.5 shrink-0">
@@ -35,58 +59,56 @@ export const Footer = ({
             <div className="pt-2 flex items-center gap-2">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Connect:</span>
               <a
-    href="https://www.facebook.com/dhanraj.serma.14"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-7 h-7 rounded-full bg-[#1877f2] text-white flex items-center justify-center hover:scale-110 transition-transform"
-    title="Facebook: Dhanraj Serma"
-  >
+                href="https://www.facebook.com/dhanraj.serma.14"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 rounded-full bg-[#1877f2] text-white flex items-center justify-center hover:scale-110 transition-transform"
+                title="Facebook: Dhanraj Serma"
+              >
                 <Facebook className="w-3.5 h-3.5 fill-current" />
               </a>
               <a
-    href="https://www.youtube.com/@semikserma"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-7 h-7 rounded-full bg-[#ff0000] text-white flex items-center justify-center hover:scale-110 transition-transform"
-    title="YouTube: @semikserma"
-  >
+                href="https://www.youtube.com/@semikserma"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 rounded-full bg-[#ff0000] text-white flex items-center justify-center hover:scale-110 transition-transform"
+                title="YouTube: @semikserma"
+              >
                 <Youtube className="w-3.5 h-3.5 fill-current" />
               </a>
               <a
-    href="https://www.linkedin.com/in/semik-serma-8263a3391/"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-7 h-7 rounded-full bg-[#0a66c2] text-white flex items-center justify-center hover:scale-110 transition-transform"
-    title="LinkedIn: Semik Serma"
-  >
+                href="https://www.linkedin.com/in/semik-serma-8263a3391/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 rounded-full bg-[#0a66c2] text-white flex items-center justify-center hover:scale-110 transition-transform"
+                title="LinkedIn: Semik Serma"
+              >
                 <Linkedin className="w-3.5 h-3.5 fill-current" />
               </a>
             </div>
           </div>
 
-          {
-    /* Col 2: Quick Links */
-  }
+          {/* Col 2: Quick Links */}
           <div className="space-y-3">
             <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Quick Navigation</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => onSelectCategory("ALL")} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={() => handleSelectCategory("ALL")} className="hover:text-green-400 transition-colors cursor-pointer">
                   Our Technical Services
                 </button>
               </li>
               <li>
-                <button onClick={onOpenAbout} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={handleOpenAbout} className="hover:text-green-400 transition-colors cursor-pointer">
                   About Phidim Service
                 </button>
               </li>
               <li>
-                <button onClick={onOpenContact} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={handleOpenContact} className="hover:text-green-400 transition-colors cursor-pointer">
                   Contact & Support
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("DishHome DTH")} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={() => handleSelectCategory("DishHome DTH")} className="hover:text-green-400 transition-colors cursor-pointer">
                   DishHome DTH Packages
                 </button>
               </li>
@@ -98,36 +120,34 @@ export const Footer = ({
             <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Service Categories</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => onSelectCategory("Electrical & Inverter")} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={() => handleSelectCategory("Electrical & Inverter")} className="hover:text-green-400 transition-colors cursor-pointer">
                   Electrical & Inverter Repair
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("CCTV & Security")} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={() => handleSelectCategory("CCTV & Security")} className="hover:text-green-400 transition-colors cursor-pointer">
                   CCTV & HD Security Setup
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("AC & Refrigeration")} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={() => handleSelectCategory("AC & Refrigeration")} className="hover:text-green-400 transition-colors cursor-pointer">
                   AC Servicing & Gas Refill
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("Fiber & LAN Networking")} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={() => handleSelectCategory("Fiber & LAN Networking")} className="hover:text-green-400 transition-colors cursor-pointer">
                   Fiber Splicing & LAN Networking
                 </button>
               </li>
               <li>
-                <button onClick={() => onSelectCategory("Plumbing & Sanitary")} className="hover:text-green-400 transition-colors cursor-pointer">
+                <button onClick={() => handleSelectCategory("Plumbing & Sanitary")} className="hover:text-green-400 transition-colors cursor-pointer">
                   Plumbing & Water Pump Overhaul
                 </button>
               </li>
             </ul>
           </div>
 
-          {
-    /* Col 4: Contact Info */
-  }
+          {/* Col 4: Contact Info */}
           <div className="space-y-3">
             <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Phidim Store Location</h4>
             <div className="space-y-2 text-xs text-gray-400">
@@ -145,15 +165,12 @@ export const Footer = ({
               </div>
             </div>
           </div>
-
         </div>
 
-        {
-    /* Payment Gateways & Bottom Bar */
-  }
+        {/* Payment Gateways & Bottom Bar */}
         <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <span>© {(/* @__PURE__ */ new Date()).getFullYear()} <span className="text-white font-bold">Phidim Service</span>. All Rights Reserved.</span>
+            <span>© {new Date().getFullYear()} <span className="text-white font-bold">Phidim Service</span>. All Rights Reserved.</span>
             <span className="text-gray-700 hidden sm:inline">•</span>
             <RopePullingDevBadge />
           </div>
@@ -165,7 +182,7 @@ export const Footer = ({
             <span className="bg-amber-600 text-white px-2 py-0.5 rounded-xs font-black text-[10px]">COD</span>
           </div>
         </div>
-
       </div>
-    </footer>;
+    </footer>
+  );
 };

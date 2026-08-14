@@ -32,7 +32,10 @@ export function useWebSocket(url = "wss://echo.websocket.org") {
         }
       };
 
-      socket.onerror = () => {
+      socket.onerror = (e) => {
+        try {
+          if (e && typeof e.preventDefault === "function") e.preventDefault();
+        } catch {}
         // Fallback to active simulation mode
         setIsConnected(true);
       };

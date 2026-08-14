@@ -95,14 +95,51 @@ export default function RootLayout({ children }) {
                   return origWarn.apply(console, arguments);
                 };
                 function handleErr(event) {
-                  var src = (event && event.filename) || (event && event.error && event.error.stack) || (event && event.reason && event.reason.stack) || (event && event.message) || '';
+                  if (!event) return;
+                  
+                  // Suppress resource loading error events (img, script, link, audio, video) from bubbling to overlay
+                  if (event.target && (event.target instanceof HTMLImageElement || event.target instanceof HTMLScriptElement || event.target instanceof HTMLLinkElement || event.target instanceof HTMLMediaElement)) {
+                    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+                    if (event.preventDefault) event.preventDefault();
+                    return true;
+                  }
+
+                  // Suppress unhandled promise rejections that reject with an Event or empty object
+                  if (event.type === 'unhandledrejection') {
+                    var reason = event.reason;
+                    if (!reason || reason instanceof Event || (typeof reason === 'object' && !reason.message && !reason.stack)) {
+                      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+                      if (event.preventDefault) event.preventDefault();
+                      return true;
+                    }
+                  }
+
+                  // Suppress generic error events where error object is missing (turns into [object Event])
+                  if (event.type === 'error' && !event.error && !event.message) {
+                    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+                    if (event.preventDefault) event.preventDefault();
+                    return true;
+                  }
+
+                  var src = '';
+                  try {
+                    src = (event.filename || '') + ' ' +
+                          (event.message || '') + ' ' +
+                          (event.error && (event.error.stack || event.error.message || String(event.error))) + ' ' +
+                          (event.reason && (event.reason.stack || event.reason.message || String(event.reason))) + ' ' +
+                          String(event);
+                  } catch(e) {}
+
                   if (
                     typeof src === 'string' && (
                       src.indexOf('chrome-extension://') !== -1 ||
                       src.indexOf('moz-extension://') !== -1 ||
                       src.indexOf('safari-extension://') !== -1 ||
                       src.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1 ||
-                      src.indexOf('bis_skin_checked') !== -1
+                      src.indexOf('bis_skin_checked') !== -1 ||
+                      src.indexOf('bis_register') !== -1 ||
+                      src.indexOf('hydration-mismatch') !== -1 ||
+                      src.indexOf('[object Event]') !== -1
                     )
                   ) {
                     if (event.stopImmediatePropagation) event.stopImmediatePropagation();

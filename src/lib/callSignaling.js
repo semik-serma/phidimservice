@@ -325,12 +325,18 @@ export function subscribeCallSignaling(userInfo, callback, activeCallId = null) 
 
   const handleMessage = (data) => {
     if (!data || !data.type) return;
-    callback(data.type, data.payload);
+    try {
+      callback(data.type, data.payload);
+    } catch (err) {
+      console.warn("Call signaling callback error:", err);
+    }
   };
 
   // 1. BroadcastChannel listener
   const bcHandler = (e) => {
-    handleMessage(e.data);
+    try {
+      handleMessage(e.data);
+    } catch {}
   };
   if (broadcastChannel) {
     broadcastChannel.addEventListener("message", bcHandler);
@@ -338,18 +344,20 @@ export function subscribeCallSignaling(userInfo, callback, activeCallId = null) 
 
   // 2. Window CustomEvent listener
   const winHandler = (e) => {
-    handleMessage(e.detail);
+    try {
+      handleMessage(e.detail);
+    } catch {}
   };
   window.addEventListener("phidim_call_event", winHandler);
 
   // 3. Storage event listener (cross-tab sync)
   const storageHandler = (e) => {
-    if (e.key === "phidim_call_event_sync" && e.newValue) {
-      try {
+    try {
+      if (e.key === "phidim_call_event_sync" && e.newValue) {
         const parsed = JSON.parse(e.newValue);
         handleMessage(parsed);
-      } catch {}
-    }
+      }
+    } catch {}
   };
   window.addEventListener("storage", storageHandler);
 

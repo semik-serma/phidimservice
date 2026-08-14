@@ -163,6 +163,10 @@ export default async function ServiceDetailPage({ params }) {
             <span>Home</span>
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+          <Link href="/panchthar" className="hover:text-green-600">
+            <span>Panchthar</span>
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
           <Link href="/services" className="hover:text-green-600">
             <span>Services</span>
           </Link>
@@ -257,6 +261,27 @@ export default async function ServiceDetailPage({ params }) {
                     </p>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Geographic Location Hub Links */}
+            <div className="space-y-3 pt-4 border-t border-gray-200">
+              <h4 className="text-xs font-black text-gray-500 uppercase tracking-wider">Service Coverage Hubs</h4>
+              <div className="flex flex-wrap gap-2.5">
+                <Link
+                  href="/phidim"
+                  className="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-extrabold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Phidim Municipality Hub (Wards 1-14)</span>
+                </Link>
+                <Link
+                  href="/panchthar"
+                  className="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-extrabold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Panchthar District Regional Hub</span>
+                </Link>
               </div>
             </div>
 

@@ -228,23 +228,42 @@ export default function ServicesPage() {
         </div>
 
         {/* Service Areas Section */}
-        <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
-          <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-red-500" />
-            <span>Target Service Areas in Phidim & Panchthar</span>
-          </h2>
-          <p className="text-xs text-gray-600 leading-relaxed font-semibold">
-            Our local technicians are located directly in Phidim Bazaar and provide fast doorstep dispatch (within 30-45 minutes) across the following key target zones:
-          </p>
+        <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-red-500" />
+                <span>Primary Service Coverage: Phidim & Panchthar</span>
+              </h2>
+              <p className="text-xs text-gray-600 leading-relaxed font-semibold mt-1">
+                Our verified field technicians provide rapid doorstep dispatch across Phidim Municipality and scheduled coverage throughout Panchthar District.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <Link
+                href="/phidim"
+                className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 font-extrabold text-xs hover:bg-emerald-100 transition-colors"
+              >
+                📍 Phidim City Page
+              </Link>
+              <Link
+                href="/panchthar"
+                className="px-4 py-2 rounded-xl bg-indigo-50 text-indigo-800 border border-indigo-300 font-extrabold text-xs hover:bg-indigo-100 transition-colors"
+              >
+                📍 Panchthar District Page
+              </Link>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-xs text-gray-700 font-bold">
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Phidim Bazaar (Ward 1, 2)</div>
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Phidim Ward 3 (Gadhi)</div>
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Phidim Ward 4</div>
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Ranke Bazaar</div>
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Yasok (Kummayak)</div>
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Salleri</div>
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Panchthar District Zones</div>
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">Koshi Province Hills</div>
+            <Link href="/phidim" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-emerald-400 transition-colors">Phidim Bazaar (Ward 1, 2)</Link>
+            <Link href="/phidim" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-emerald-400 transition-colors">Phidim Ward 3 (Gadhi)</Link>
+            <Link href="/phidim" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-emerald-400 transition-colors">Phidim Ward 4 (Pragati Chowk)</Link>
+            <Link href="/panchthar" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-indigo-400 transition-colors">Ranke Bazaar (Phalgunanda)</Link>
+            <Link href="/panchthar" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-indigo-400 transition-colors">Yasok (Kummayak)</Link>
+            <Link href="/phidim" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-emerald-400 transition-colors">Salleri / Bharapa</Link>
+            <Link href="/panchthar" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-indigo-400 transition-colors">Panchthar District Zones</Link>
+            <Link href="/panchthar" className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center hover:border-indigo-400 transition-colors">Koshi Province Hills</Link>
           </div>
         </div>
 

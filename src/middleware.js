@@ -23,6 +23,8 @@ const PUBLIC_PREFIXES = [
   "/api/users",
   "/api/health",
   "/services",
+  "/phidim",
+  "/panchthar",
   "/_next",
 ];
 

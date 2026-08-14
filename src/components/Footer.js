@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Phone, Mail, MapPin, ShieldCheck, Facebook, Youtube, Linkedin, ExternalLink } from "lucide-react";
 import { RopePullingDevBadge } from "./RopePullingDevBadge";
 
@@ -88,14 +89,24 @@ export const Footer = ({
             </div>
           </div>
 
-          {/* Col 2: Quick Links */}
+          {/* Col 2: Quick Links & Location Hubs */}
           <div className="space-y-3">
-            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Quick Navigation</h4>
+            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider">Navigation & Locations</h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <button onClick={() => handleSelectCategory("ALL")} className="hover:text-green-400 transition-colors cursor-pointer">
                   Our Technical Services
                 </button>
+              </li>
+              <li>
+                <Link href="/phidim" className="hover:text-green-400 transition-colors text-emerald-400 font-bold block">
+                  📍 Services in Phidim
+                </Link>
+              </li>
+              <li>
+                <Link href="/panchthar" className="hover:text-green-400 transition-colors text-indigo-400 font-bold block">
+                  📍 Services in Panchthar
+                </Link>
               </li>
               <li>
                 <button onClick={handleOpenAbout} className="hover:text-green-400 transition-colors cursor-pointer">
@@ -105,11 +116,6 @@ export const Footer = ({
               <li>
                 <button onClick={handleOpenContact} className="hover:text-green-400 transition-colors cursor-pointer">
                   Contact & Support
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleSelectCategory("DishHome DTH")} className="hover:text-green-400 transition-colors cursor-pointer">
-                  DishHome DTH Packages
                 </button>
               </li>
             </ul>

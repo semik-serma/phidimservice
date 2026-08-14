@@ -435,3 +435,170 @@ export const SEO_SERVICES = [
     relatedServices: ["electrician-phidim", "plumbing-phidim"]
   }
 ];
+
+export const PHIDIM_LOCATION_DATA = {
+  slug: "phidim",
+  name: "Phidim Municipality",
+  district: "Panchthar",
+  province: "Koshi Province, Nepal",
+  title: "Local Services in Phidim | Verified Technicians & Home Repairs in Phidim, Panchthar",
+  metaDescription: "Looking for reliable local services in Phidim? Phidim Service connects homes and businesses with certified local technicians for electrical wiring, plumbing, CCTV installation, optical fiber networking, DishHome, and computer repair across all 14 wards of Phidim, Panchthar.",
+  h1: "Local Services & Verified Technicians in Phidim, Panchthar",
+  intro: "Phidim Municipality is the vibrant commercial, cultural, and administrative heart of Panchthar District in eastern Nepal. Whether you live in Phidim Bazaar, Gadhi, Salleri, or any of the 14 municipal wards, Phidim Service provides prompt 30-minute technician dispatch directly to your doorstep.",
+  overview: "Our local platform was built specifically to solve technical challenges faced by residents, businesses, schools, and offices in Phidim. From high-speed optical fiber splicing and DishHome satellite alignment to complete house electrical wiring and sanitary plumbing overhauls, our verified local technicians guarantee reliable workmanship backed by real warranties.",
+  wards: [
+    { ward: "Ward 1", areas: "Gadhi, District Administration Area, Shivalaya Temple Zone" },
+    { ward: "Ward 2", areas: "Main Bazaar, Thado Line, Bank Road, Commerce Zone" },
+    { ward: "Ward 3", areas: "Upper Phidim, Ranitar Access, Residential Areas" },
+    { ward: "Ward 4", areas: "Pragati Chowk, Taranagar, Campus Road, Hospital Road" },
+    { ward: "Ward 5", areas: "Chokmagu, Hillside Residential & Agricultural Zones" },
+    { ward: "Ward 6", areas: "Siwa, Valley Settlements & Farming Belts" },
+    { ward: "Ward 7", areas: "Salleri, Bharapa Corridor, Road Junctions" },
+    { ward: "Wards 8-14", areas: "Outer Municipal Zones & Surrounding Panchthar Links" }
+  ],
+  popularServices: [
+    { slug: "electrician-phidim", name: "Electrician & House Wiring", desc: "Residential wiring, MCB distribution boards, inverter and solar setups in Phidim." },
+    { slug: "plumbing-phidim", name: "Plumbing & Sanitary Repair", desc: "PPR/CPVC pipe leakage repair, water tank switch installation, pump overhauls." },
+    { slug: "fibernet-phidim", name: "FiberNet & High-Speed WiFi", desc: "DishHome 50-200 Mbps fiber internet packages, dual-band router setup in Phidim." },
+    { slug: "cctv-phidim", name: "CCTV HD Security Installation", desc: "4/8/16-channel Dahua & Hikvision camera systems with mobile live streaming." },
+    { slug: "dishhome-phidim", name: "DishHome DTH & TV Tuning", desc: "Digital spectrum antenna alignment, set-top box activation, HD channels." },
+    { slug: "computer-repair-phidim", name: "Computer & Laptop Repair", desc: "Windows OS installation, NVMe SSD speed upgrades, hardware diagnostics." }
+  ],
+  technicians: [
+    {
+      name: "Dhanraj Serma",
+      role: "Master Administrator & Technical Lead",
+      phone: "+977 986-2772457",
+      bio: "Chief Technical Coordinator for Phidim Service. Manages district dispatch, customer escalations, and commercial network infrastructure.",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+    },
+    {
+      name: "Rajesh Tamang",
+      role: "Senior AC, Cooling & Hardware Specialist",
+      phone: "+977 9862772457",
+      bio: "Expert technician in HVAC, split AC jet wash, refrigerant gas recovery, and home appliance electrical systems in Phidim.",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80"
+    },
+    {
+      name: "Anita Gurung",
+      role: "Certified Solar & Field Electrical Technician",
+      phone: "+977 9862334455",
+      bio: "Specializes in solar hybrid inverters, commercial wiring, and safety earthing installations across Phidim Municipality.",
+      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80"
+    },
+    {
+      name: "Niraj Sunuwar",
+      role: "Optical Fiber & Networking Engineer",
+      phone: "+977 9862772457",
+      bio: "Precision fusion splicer, LAN cabling expert, and DishHome FiberNet field engineer serving Phidim Bazaar and outer wards.",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
+    }
+  ],
+  faqs: [
+    {
+      q: "How fast can a technician arrive in Phidim Bazaar?",
+      a: "For central areas like Ward 1, Ward 2 (Main Bazaar), and Ward 4 (Pragati Chowk), our technicians typically arrive at your doorstep within 30 to 45 minutes of booking."
+    },
+    {
+      q: "What services are available for doorstep visit in Phidim?",
+      a: "We offer comprehensive on-site services including electrical house wiring, PPR/CPVC plumbing repair, DishHome DTH alignment, optical fiber splicing, CCTV security installation, AC servicing, and computer/laptop repair."
+    },
+    {
+      q: "How do I book a certified technician in Phidim?",
+      a: "You can book directly through our website booking form, click our instant WhatsApp support button, or call our primary Phidim hotline at +977 986-2772457."
+    },
+    {
+      q: "Do you provide service warranties in Phidim?",
+      a: "Yes. All technical services completed through Phidim Service include service warranties ranging from 30 days for alignments up to 2 years for full electrical house wiring."
+    }
+  ]
+};
+
+export const PANCHTHAR_LOCATION_DATA = {
+  slug: "panchthar",
+  name: "Panchthar District",
+  headquarters: "Phidim",
+  province: "Koshi Province, Nepal",
+  title: "Panchthar Services | Local Service Platform & Technicians in Panchthar, Nepal",
+  metaDescription: "Find certified technical services and expert doorstep technicians throughout Panchthar District, Nepal. Reliable electrical, plumbing, fiber internet, DishHome satellite, and CCTV solutions across Phidim, Ranke, Yasok, and surrounding rural municipalities.",
+  h1: "Local Service Platform & Technical Solutions in Panchthar, Nepal",
+  intro: "Panchthar District is an essential Himalayan mid-hill region of Koshi Province in eastern Nepal, bounded by Ilam, Taplejung, Terhathum, and Dhankuta. Headquartered in Phidim Municipality, Phidim Service provides reliable, on-demand technical solutions and verified technician visits across the entire district.",
+  overview: "Connecting rugged geography with modern technology, our district-wide service network brings certified field technicians to your home, farm, shop, or office. We support high-speed fiber internet, DishHome TV broadcasts, off-grid solar power systems, and CCTV security installations across all local bodies in Panchthar.",
+  municipalities: [
+    {
+      name: "Phidim Municipality",
+      type: "Urban Municipality (Headquarters)",
+      coverage: "Phidim Bazaar, Gadhi, Salleri, Bharapa, Pragati Chowk, Wards 1-14",
+      highlight: "Primary hub with instant 30-minute dispatch."
+    },
+    {
+      name: "Phalgunanda Rural Municipality",
+      type: "Rural Municipality",
+      coverage: "Ranke Bazaar, Pauwa Bhanjyang, Phaktep, Chilingdin, Mechi Highway",
+      highlight: "Highway corridor technical support and fiber links."
+    },
+    {
+      name: "Kummayak Rural Municipality",
+      type: "Rural Municipality",
+      coverage: "Yasok Bazaar, Mangjabung, Rani Gaun, Syabarumba",
+      highlight: "Solar electrical setups, DTH tuning, and plumbing."
+    },
+    {
+      name: "Miklajung Rural Municipality",
+      type: "Rural Municipality",
+      coverage: "Rabi Bazaar, Oyam, Kurumba, Limba, Southern Panchthar",
+      highlight: "Commercial business CCTV, electrical wiring, and IT."
+    },
+    {
+      name: "Hilihang Rural Municipality",
+      type: "Rural Municipality",
+      coverage: "Jorpokhari, Amarpur, Panchami, Subhang, Kabeli Zone",
+      highlight: "Hydro-corridor electrical and camera security."
+    },
+    {
+      name: "Yangwarak Rural Municipality",
+      type: "Rural Municipality",
+      coverage: "Tharpu Bazaar, Nagi, Chyangthapu, Oyam Access",
+      highlight: "Northern Panchthar satellite TV and computer repairs."
+    },
+    {
+      name: "Falelung Rural Municipality",
+      type: "Rural Municipality",
+      coverage: "Memeng, Prangbung, Yangnam, Sidin, Border Highlands",
+      highlight: "Off-grid solar, home wiring, and water pump systems."
+    },
+    {
+      name: "Tumbewa Rural Municipality",
+      type: "Rural Municipality",
+      coverage: "Mauwa, Aangna, Olane, Southwestern Panchthar",
+      highlight: "Sanitary plumbing, pump repair, and electrical repairs."
+    }
+  ],
+  popularServices: [
+    { slug: "fibernet-phidim", name: "DishHome FiberNet Panchthar", desc: "Reliable optical fiber broadband connections delivered across Panchthar." },
+    { slug: "electrician-phidim", name: "Panchthar Electrical & Solar", desc: "Complete wiring, solar inverter bypass, and MCB protection across the hills." },
+    { slug: "cctv-phidim", name: "CCTV Security Surveillance", desc: "Multi-camera HD security setups for shops, cardamom warehouses, and homes." },
+    { slug: "dishhome-phidim", name: "DishHome DTH Satellite Service", desc: "Crystal-clear HD television antenna alignment and package recharge." },
+    { slug: "plumbing-phidim", name: "Water Pump & Sanitary Plumbing", desc: "Heavy-duty water booster pumps, tank switches, and pipe leak repairs." },
+    { slug: "computer-repair-phidim", name: "Panchthar IT & Laptop Support", desc: "On-site and remote computer repairs, office software setup, and SSD speed boost." }
+  ],
+  faqs: [
+    {
+      q: "Does Phidim Service cover rural municipalities outside Phidim Bazaar?",
+      a: "Yes. While Phidim Bazaar receives rapid 30-minute dispatch, our mobile technical teams regularly schedule on-site service calls across Ranke, Yasok, Rabi, Jorpokhari, and Tharpu in Panchthar District."
+    },
+    {
+      q: "Can I get optical fiber or DishHome installation in remote areas of Panchthar?",
+      a: "Yes. We specialize in rural DishHome satellite setups and optical fiber drop extension lines for schools, businesses, and residential communities throughout Panchthar."
+    },
+    {
+      q: "How are travel and service fees handled for distant Panchthar locations?",
+      a: "Standard labor rates apply for the service itself. For locations outside Phidim Municipality, a modest and transparent travel allowance is agreed upon in advance before our technician departs."
+    },
+    {
+      q: "Who coordinates emergency technical dispatches in Panchthar?",
+      a: "All emergency dispatches across Panchthar District are supervised by Master Administrator Dhanraj Serma and our lead technicians via +977 986-2772457."
+    }
+  ]
+};
+

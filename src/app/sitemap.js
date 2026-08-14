@@ -11,6 +11,18 @@ export default function sitemap() {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/phidim`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/panchthar`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/services`,
       lastModified: new Date(),
       changeFrequency: "daily",

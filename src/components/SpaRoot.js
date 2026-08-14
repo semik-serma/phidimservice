@@ -15,5 +15,9 @@ const App = dynamic(() => import("../App"), {
 });
 
 export function SpaRoot() {
-  return <App />;
+  return (
+    <div suppressHydrationWarning>
+      <App />
+    </div>
+  );
 }

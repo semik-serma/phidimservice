@@ -79,6 +79,10 @@ export default function RootLayout({ children }) {
                     str.indexOf('chrome-extension://') !== -1 ||
                     str.indexOf('moz-extension://') !== -1 ||
                     str.indexOf('safari-extension://') !== -1 ||
+                    str.indexOf('hydration-mismatch') !== -1 ||
+                    str.indexOf('A tree hydrated but some attributes') !== -1 ||
+                    str.indexOf('did not match') !== -1 ||
+                    str.indexOf('Extra attributes from the server') !== -1 ||
                     str.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1
                   );
                 }
@@ -108,6 +112,30 @@ export default function RootLayout({ children }) {
                 }
                 window.addEventListener('error', handleErr, true);
                 window.addEventListener('unhandledrejection', handleErr, true);
+
+                // Instantly remove extension attributes to avoid React hydration mismatches
+                try {
+                  var observer = new MutationObserver(function(mutations) {
+                    for (var i = 0; i < mutations.length; i++) {
+                      var m = mutations[i];
+                      if (m.type === 'attributes' && (m.attributeName === 'bis_skin_checked' || m.attributeName === 'bis_register')) {
+                        m.target.removeAttribute(m.attributeName);
+                      }
+                      if (m.addedNodes) {
+                        for (var j = 0; j < m.addedNodes.length; j++) {
+                          var node = m.addedNodes[j];
+                          if (node && node.nodeType === 1) {
+                            if (node.hasAttribute('bis_skin_checked')) node.removeAttribute('bis_skin_checked');
+                            if (node.hasAttribute('bis_register')) node.removeAttribute('bis_register');
+                          }
+                        }
+                      }
+                    }
+                  });
+                  if (document.documentElement) {
+                    observer.observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ['bis_skin_checked', 'bis_register'] });
+                  }
+                } catch(e) {}
               })();
             `,
           }}

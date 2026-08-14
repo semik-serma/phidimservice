@@ -14,11 +14,38 @@ const poppins = Poppins({
 export const metadata = {
   metadataBase: new URL("https://phidimservice.com.np"),
   title: {
-    default: "Phidim Service | On-Site Technical Services in Panchthar",
+    default: "Phidim Service | No. 1 Local Services & Home Technicians in Phidim, Panchthar, Nepal",
     template: "%s | Phidim Service",
   },
   description:
-    "Professional on-site technical services in Phidim, Panchthar — DTH, CCTV, electrical, computer repair, plumbing and more.",
+    "Phidim Service (फिदिम सेवा) is the premier local on-demand service platform in Phidim, Panchthar, Nepal. Connect with certified electricians, plumbers, DishHome technicians, CCTV camera installers, FiberNet internet specialists, and computer repair experts.",
+  keywords: [
+    "Phidim",
+    "Phidim service",
+    "Phidim services",
+    "services in Phidim",
+    "local services Phidim",
+    "Phidim Nepal",
+    "Phidim Panchthar",
+    "Phidim Bazaar",
+    "Phidim Municipality",
+    "electrician in Phidim",
+    "plumber in Phidim",
+    "CCTV installation Phidim",
+    "DishHome Phidim",
+    "FiberNet Phidim",
+    "internet service Phidim",
+    "computer repair Phidim",
+    "technician Phidim",
+    "home services Phidim",
+    "फिदिम",
+    "फिदिम सेवा",
+    "पाँचथर"
+  ],
+  authors: [{ name: "Dhanraj Serma", url: "https://phidimservice.com.np" }, { name: "Semik Serma" }],
+  creator: "Phidim Service",
+  publisher: "Phidim Service",
+  category: "Home Services & Technical Support",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -30,24 +57,32 @@ export const metadata = {
   manifest: "/site.webmanifest",
   
   openGraph: {
-    title: "Phidim Service | Technical & Digital Services",
-    description: "Professional on-site technical services in Phidim, Panchthar — DTH, CCTV, electrical, computer repair, plumbing and more.",
+    title: "Phidim Service | No. 1 Local Services in Phidim, Panchthar, Nepal",
+    description: "Connect with certified local technicians for doorstep electrical, plumbing, fiber internet, CCTV, DishHome, and AC repair in Phidim and Panchthar, Nepal.",
+    url: "https://phidimservice.com.np",
     siteName: "Phidim Service",
     images: [
       {
         url: "/logo.png",
         width: 800,
         height: 800,
-        alt: "Phidim Service Logo"
+        alt: "Phidim Service - Local Services in Phidim, Panchthar"
       }
     ],
-    type: "website"
+    type: "website",
+    locale: "en_US"
   },
   twitter: {
     card: "summary_large_image",
-    title: "Phidim Service",
-    description: "Professional on-site technical services in Phidim, Panchthar",
+    title: "Phidim Service | Local Services in Phidim, Panchthar",
+    description: "Professional on-site technical services in Phidim, Panchthar, Nepal. Certified electricians, plumbers, DishHome, CCTV & FiberNet.",
     images: ["/logo.png"]
+  },
+  other: {
+    "geo.region": "NP-KO",
+    "geo.placename": "Phidim, Panchthar, Nepal",
+    "geo.position": "27.1485;87.7634",
+    "ICBM": "27.1485, 87.7634"
   }
 };
 
@@ -55,6 +90,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${poppins.variable} font-sans`} suppressHydrationWarning>
       <head>
+        <meta name="geo.region" content="NP-KO" />
+        <meta name="geo.placename" content="Phidim, Panchthar, Nepal" />
+        <meta name="geo.position" content="27.1485;87.7634" />
+        <meta name="ICBM" content="27.1485, 87.7634" />
+        <meta name="city" content="Phidim" />
+        <meta name="country" content="Nepal" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

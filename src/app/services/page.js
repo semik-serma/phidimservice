@@ -20,11 +20,30 @@ import { Footer } from "@/components/Footer";
 import { SEO_SERVICES } from "@/data/seoServicesData";
 
 export const metadata = {
-  title: "Our Services | Local Technician Services in Phidim, Panchthar",
-  description: "Explore doorstep technical services in Phidim, Panchthar, Nepal. Certified local specialists for electrical repairs, plumbing, CCTV installation, fiber internet configuration, and computer troubleshooting.",
+  title: "Technical & Home Services in Phidim | Certified Technicians in Phidim, Panchthar",
+  description: "Explore full technical services in Phidim, Panchthar, Nepal. Certified local specialists for electrical repairs, plumbing, DishHome DTH, CCTV camera installation, fiber internet configuration, and computer laptop repair in Phidim.",
+  keywords: [
+    "Phidim services",
+    "services in Phidim",
+    "local services Phidim",
+    "Phidim electrician",
+    "Phidim plumber",
+    "Phidim CCTV",
+    "Phidim DishHome",
+    "Phidim FiberNet",
+    "Phidim computer repair",
+    "फिदिम सेवा",
+    "फिदिम प्राविधिक"
+  ],
   alternates: {
     canonical: "https://phidimservice.com.np/services",
   },
+  openGraph: {
+    title: "Technical & Home Services in Phidim | Certified Technicians in Phidim, Panchthar",
+    description: "Explore full technical services in Phidim, Panchthar, Nepal. Certified local specialists for electrical repairs, plumbing, DishHome DTH, CCTV camera installation, fiber internet configuration, and computer laptop repair in Phidim.",
+    url: "https://phidimservice.com.np/services",
+    type: "website",
+  }
 };
 
 export default function ServicesPage() {

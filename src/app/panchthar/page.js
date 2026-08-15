@@ -22,6 +22,25 @@ import { PANCHTHAR_LOCATION_DATA, SEO_SERVICES } from "@/data/seoServicesData";
 export const metadata = {
   title: PANCHTHAR_LOCATION_DATA.title,
   description: PANCHTHAR_LOCATION_DATA.metaDescription,
+  keywords: [
+    "Panchthar",
+    "Phidim Panchthar",
+    "Panchthar services",
+    "Phidim Service",
+    "services in Panchthar",
+    "Panchthar Nepal",
+    "electrician in Panchthar",
+    "plumber in Panchthar",
+    "CCTV Panchthar",
+    "DishHome Panchthar",
+    "FiberNet Panchthar",
+    "Ranke Bazaar",
+    "Yasok Panchthar",
+    "Rabi Panchthar",
+    "पाँचथर",
+    "पाँचथर सेवा",
+    "फिदिम पाँचथर"
+  ],
   alternates: {
     canonical: `https://phidimservice.com.np/panchthar`,
   },
@@ -30,7 +49,17 @@ export const metadata = {
     description: PANCHTHAR_LOCATION_DATA.metaDescription,
     url: `https://phidimservice.com.np/panchthar`,
     type: "website",
+    locale: "en_US",
+    alternateLocale: ["ne_NP"]
   },
+  other: {
+    "geo.region": "NP-KO",
+    "geo.placename": "Panchthar, Koshi Province, Nepal",
+    "geo.position": "27.1485;87.7634",
+    "ICBM": "27.1485, 87.7634",
+    "DC.title": "Panchthar Services - Phidim Service",
+    "DC.creator": "Dhanraj Serma"
+  }
 };
 
 export default function PanchtharLocationPage() {

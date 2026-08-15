@@ -30,14 +30,29 @@ export async function generateMetadata({ params }) {
   const service = SEO_SERVICES.find((s) => s.slug === slug);
   if (!service) return {};
 
+  const keywords = [
+    ...(service.nepaliKeywords || []),
+    service.category,
+    `${service.category} in Phidim`,
+    `${service.category} Phidim`,
+    "Phidim",
+    "Phidim Service",
+    "Phidim Services",
+    "Phidim Nepal",
+    "Phidim Panchthar",
+    "फिदिम",
+    "फिदिम सेवा"
+  ];
+
   return {
-    title: service.title,
+    title: `${service.title} | Phidim Service`,
     description: service.description,
+    keywords,
     alternates: {
       canonical: `https://phidimservice.com.np/services/${service.slug}`,
     },
     openGraph: {
-      title: service.title,
+      title: `${service.title} | Phidim Service`,
       description: service.description,
       url: `https://phidimservice.com.np/services/${service.slug}`,
       images: [
@@ -49,13 +64,21 @@ export async function generateMetadata({ params }) {
         },
       ],
       type: "website",
+      locale: "en_US",
+      alternateLocale: ["ne_NP"]
     },
     twitter: {
       card: "summary_large_image",
-      title: service.title,
+      title: `${service.title} | Phidim Service`,
       description: service.description,
       images: [service.imageUrl],
     },
+    other: {
+      "geo.region": "NP-KO",
+      "geo.placename": "Phidim, Panchthar, Koshi Province, Nepal",
+      "geo.position": "27.1485;87.7634",
+      "ICBM": "27.1485, 87.7634"
+    }
   };
 }
 

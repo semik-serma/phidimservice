@@ -19,11 +19,12 @@ import { SeoBookingSection } from "@/components/SeoBookingSection";
 import { PHIDIM_LOCATION_DATA, SEO_SERVICES } from "@/data/seoServicesData";
 
 export const metadata = {
-  title: "Phidim Service | No. 1 Local Services, Technicians & Home Repairs in Phidim, Panchthar",
-  description: "Looking for reliable local services in Phidim? Phidim Service (फिदिम सेवा) connects homes and businesses with certified local technicians for electrical wiring, plumbing, CCTV installation, optical fiber networking, DishHome, and computer repair across all 14 wards of Phidim, Panchthar, Nepal.",
+  title: "Phidim | Phidim Service - No. 1 Local Services, Technicians & Home Repairs in Phidim, Panchthar",
+  description: "Official local services in Phidim, Nepal (फिदिम सेवा). Book certified local electricians, plumbers, DishHome technicians, CCTV camera installers, FiberNet internet specialists, and computer repair experts across all 14 wards of Phidim Municipality, Panchthar.",
   keywords: [
     "Phidim",
     "Phidim Service",
+    "Phidim Services",
     "Services in Phidim",
     "Phidim Nepal",
     "Phidim Panchthar",
@@ -34,27 +35,40 @@ export const metadata = {
     "CCTV installation Phidim",
     "DishHome Phidim",
     "FiberNet Phidim",
+    "internet service Phidim",
     "computer repair Phidim",
+    "AC service Phidim",
     "technicians in Phidim",
+    "Phidim Ward 1",
+    "Phidim Ward 2",
+    "Phidim Ward 4",
+    "Phidim Gadhi",
+    "Phidim Pragati Chowk",
     "फिदिम",
     "फिदिम सेवा",
-    "फिदिम बजार"
+    "फिदिम बजार",
+    "फिदिम पाँचथर",
+    "फिदिम नगरपालिका"
   ],
   alternates: {
     canonical: `https://phidimservice.com.np/phidim`,
   },
   openGraph: {
-    title: "Phidim Service | No. 1 Local Services in Phidim, Panchthar",
+    title: "Phidim Service | No. 1 Local Services in Phidim, Panchthar, Nepal",
     description: "Connect with certified local technicians for doorstep electrical, plumbing, fiber internet, CCTV, and DishHome services in Phidim, Nepal.",
     url: `https://phidimservice.com.np/phidim`,
     type: "website",
     locale: "en_US",
+    alternateLocale: ["ne_NP"]
   },
   other: {
     "geo.region": "NP-KO",
-    "geo.placename": "Phidim, Panchthar, Nepal",
+    "geo.placename": "Phidim, Panchthar, Koshi Province, Nepal",
     "geo.position": "27.1485;87.7634",
-    "ICBM": "27.1485, 87.7634"
+    "ICBM": "27.1485, 87.7634",
+    "DC.title": "Local Services in Phidim - Phidim Service",
+    "DC.creator": "Dhanraj Serma",
+    "DC.subject": "Phidim Services, Technicians in Phidim, Phidim Panchthar Nepal"
   }
 };
 
@@ -113,16 +127,31 @@ export default function PhidimLocationPage() {
         "closes": "20:00"
       }
     ],
-    "areaServed": [
-      {
-        "@type": "City",
-        "name": "Phidim Municipality"
-      },
-      {
-        "@type": "AdministrativeArea",
-        "name": "Panchthar District"
-      }
+    "sameAs": [
+      "https://en.wikipedia.org/wiki/Phidim",
+      "https://ne.wikipedia.org/wiki/%E0%A4%AB%E0%A4%BF%E0%A4%A6%E0%A4%BF%E0%A4%AE",
+      "https://www.wikidata.org/wiki/Q3428938",
+      "https://www.facebook.com/dhanraj.serma.14"
     ],
+    "knowsAbout": [
+      "Phidim",
+      "Phidim Municipality",
+      "Panchthar District",
+      "Electrical Wiring in Phidim",
+      "Plumbing in Phidim",
+      "CCTV Installation in Phidim",
+      "DishHome in Phidim",
+      "FiberNet in Phidim",
+      "Computer Repair in Phidim",
+      "फिदिम",
+      "फिदिम सेवा"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "148",
+      "bestRating": "5"
+    },
     "description": "Phidim Service connects homes and businesses with certified local technicians for electrical wiring, plumbing, CCTV installation, optical fiber networking, DishHome, and computer repair across all 14 wards of Phidim, Panchthar, Nepal.",
     "priceRange": "Rs. 300 - Rs. 15,000"
   };

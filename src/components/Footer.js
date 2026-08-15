@@ -99,6 +99,11 @@ export const Footer = ({
                 </button>
               </li>
               <li>
+                <Link href="/services" className="hover:text-green-400 transition-colors text-yellow-400 font-bold block">
+                  🛠️ All Phidim Services
+                </Link>
+              </li>
+              <li>
                 <Link href="/phidim" className="hover:text-green-400 transition-colors text-emerald-400 font-bold block">
                   📍 Services in Phidim
                 </Link>

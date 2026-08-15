@@ -20,10 +20,11 @@ import { Footer } from "@/components/Footer";
 import { SEO_SERVICES } from "@/data/seoServicesData";
 
 export const metadata = {
-  title: "Technical & Home Services in Phidim | Certified Technicians in Phidim, Panchthar",
-  description: "Explore full technical services in Phidim, Panchthar, Nepal. Certified local specialists for electrical repairs, plumbing, DishHome DTH, CCTV camera installation, fiber internet configuration, and computer laptop repair in Phidim.",
+  title: "Phidim Services | No. 1 Local Services & Certified Technicians in Phidim, Panchthar",
+  description: "Complete local technical & home services in Phidim, Panchthar, Nepal (फिदिम सेवा). Certified specialists for electrical repairs, house wiring, plumbing, DishHome DTH, CCTV camera installation, fiber internet, and computer repair in Phidim.",
   keywords: [
     "Phidim services",
+    "Phidim Service",
     "services in Phidim",
     "local services Phidim",
     "Phidim electrician",
@@ -32,17 +33,30 @@ export const metadata = {
     "Phidim DishHome",
     "Phidim FiberNet",
     "Phidim computer repair",
+    "Phidim AC service",
+    "technicians in Phidim",
+    "Phidim Nepal",
+    "Phidim Panchthar",
     "फिदिम सेवा",
-    "फिदिम प्राविधिक"
+    "फिदिम प्राविधिक",
+    "फिदिम मर्मत सेवा"
   ],
   alternates: {
     canonical: "https://phidimservice.com.np/services",
   },
   openGraph: {
-    title: "Technical & Home Services in Phidim | Certified Technicians in Phidim, Panchthar",
+    title: "Phidim Services | No. 1 Local Services & Certified Technicians in Phidim, Panchthar",
     description: "Explore full technical services in Phidim, Panchthar, Nepal. Certified local specialists for electrical repairs, plumbing, DishHome DTH, CCTV camera installation, fiber internet configuration, and computer laptop repair in Phidim.",
     url: "https://phidimservice.com.np/services",
     type: "website",
+    locale: "en_US",
+    alternateLocale: ["ne_NP"]
+  },
+  other: {
+    "geo.region": "NP-KO",
+    "geo.placename": "Phidim, Panchthar, Koshi Province, Nepal",
+    "geo.position": "27.1485;87.7634",
+    "ICBM": "27.1485, 87.7634"
   }
 };
 

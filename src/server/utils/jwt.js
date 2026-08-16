@@ -24,7 +24,9 @@ export function generateAccessToken(user) {
     name: user.name,
     role: user.role || "USER",
     dashboardPath: dashboardPathFor(user.role),
-    avatar: user.avatar,
+    // JWT cookies must remain below browser header limits. A base64 upload is
+    // delivered through the profile API rather than embedded in a token.
+    avatar: String(user.avatar || "").startsWith("data:") ? "" : user.avatar,
     type: "access",
   };
 

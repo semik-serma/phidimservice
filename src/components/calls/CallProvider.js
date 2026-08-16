@@ -37,6 +37,7 @@ export function CallProvider({ children }) {
   const [activeCallType, setActiveCallType] = useState("video");
   const [callModalInitialState, setCallModalInitialState] = useState("RINGING");
   const [currentCallId, setCurrentCallId] = useState(null);
+  const [isCaller, setIsCaller] = useState(false);
 
   // Incoming Call State
   const [incomingCall, setIncomingCall] = useState(null);
@@ -113,6 +114,7 @@ export function CallProvider({ children }) {
           setIsCallModalOpen(false);
           setActiveCallPartner(null);
           setCurrentCallId(null);
+          setIsCaller(false);
           break;
         }
 
@@ -141,6 +143,7 @@ export function CallProvider({ children }) {
       setActiveCallType(type);
       setCallModalInitialState("RINGING");
       setCurrentCallId(session?.callId || null);
+      setIsCaller(true);
       setIsCallModalOpen(true);
     },
     [currentUser, myEmail]
@@ -157,6 +160,7 @@ export function CallProvider({ children }) {
       setActiveCallType(callSession.callType || "video");
       setCallModalInitialState("CONNECTED");
       setCurrentCallId(callSession.callId);
+      setIsCaller(false);
       setIsCallModalOpen(true);
     },
     [currentUser]
@@ -181,6 +185,7 @@ export function CallProvider({ children }) {
     setIsCallModalOpen(false);
     setActiveCallPartner(null);
     setCurrentCallId(null);
+    setIsCaller(false);
   }, [currentCallId]);
 
   return (
@@ -208,6 +213,7 @@ export function CallProvider({ children }) {
         callType={activeCallType}
         initialCallState={callModalInitialState}
         activeCallId={currentCallId}
+        isCaller={isCaller}
       />
     </CallContext.Provider>
   );

@@ -3,10 +3,12 @@
 import { motion } from "motion/react";
 import { Ticket, Sparkles, Gift, ArrowRight, Copy, Check } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getCoupons, subscribeCoupons } from "@/lib/couponStore";
+import { claimCouponForUser, getClaimedCouponCodes, getCoupons, subscribeCouponClaims, subscribeCoupons } from "@/lib/couponStore";
+import { useAuth } from "@/context/AuthContext";
 
 export function OffersAndAIRecommend({ onClaimCoupon, onBookRecommended }) {
-  const [copiedCode, setCopiedCode] = useState(null);
+  const { user } = useAuth();
+  const [claimedCodes, setClaimedCodes] = useState(() => getClaimedCouponCodes(user));
   const [coupons, setCoupons] = useState(() => getCoupons().filter((c) => c.active));
 
   useEffect(() => {
@@ -16,15 +18,21 @@ export function OffersAndAIRecommend({ onClaimCoupon, onBookRecommended }) {
     return unsub;
   }, []);
 
+  useEffect(() => {
+    setClaimedCodes(getClaimedCouponCodes(user));
+    return subscribeCouponClaims(user, setClaimedCodes);
+  }, [user?.email, user?.id]);
+
   const aiRecommendations = [
     { title: "UPS Battery Backup for CCTV", reason: "Based on your 4K CCTV Setup in Ward 1", price: "NPR 4,500", icon: Sparkles },
     { title: "Annual Electrical Health Audit", reason: "Recommended for Panchthar rainy season", price: "NPR 1,200", icon: Gift },
   ];
 
   const copyCode = (code) => {
-    setCopiedCode(code);
+    if (!claimCouponForUser(user, code)) return;
+    setClaimedCodes((current) => [...current, code]);
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(code).catch(() => {});
     if (onClaimCoupon) onClaimCoupon(code);
-    setTimeout(() => setCopiedCode(null), 2500);
   };
 
   return (
@@ -77,10 +85,13 @@ export function OffersAndAIRecommend({ onClaimCoupon, onBookRecommended }) {
                 </span>
                 <button
                   onClick={() => copyCode(c.code)}
-                  className="px-3 py-1 rounded-xl bg-white text-slate-900 font-extrabold text-[11px] hover:bg-emerald-50 transition-colors shadow-sm flex items-center gap-1"
+                  disabled={claimedCodes.includes(c.code)}
+                  className={`px-3 py-1 rounded-xl bg-white text-slate-900 font-extrabold text-[11px] transition-colors shadow-sm flex items-center gap-1 ${
+                    claimedCodes.includes(c.code) ? "cursor-default opacity-80" : "hover:bg-emerald-50"
+                  }`}
                 >
-                  {copiedCode === c.code ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                  <span>{copiedCode === c.code ? "Claimed!" : "Claim"}</span>
+                  {claimedCodes.includes(c.code) ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                  <span>{claimedCodes.includes(c.code) ? "Claimed" : "Claim"}</span>
                 </button>
               </div>
             </div>

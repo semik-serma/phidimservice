@@ -55,8 +55,12 @@ export async function requireRoles(roles = ALL_ROLES, options = {}) {
     redirect(callback ? `${login}?callbackUrl=${encodeURIComponent(callback)}` : login);
   }
 
+  // Admins always have supervisory access across all dashboard pages
+  if (session.user?.role === "ADMIN") {
+    return session.user;
+  }
+
   if (!hasRole(session.user, roles)) {
-    // Audit the blocked attempt (best effort, never blocks the redirect).
     try {
       await logAudit({
         action: "page_access_denied",
@@ -69,7 +73,13 @@ export async function requireRoles(roles = ALL_ROLES, options = {}) {
       // ignore
     }
     const ownDashboard = session.user.dashboardPath || dashboardPathFor(session.user.role);
-    redirect(options.deniedPath || ownDashboard);
+    if (options.deniedPath) {
+      redirect(options.deniedPath);
+    }
+    if (ownDashboard && !roles.includes(session.user.role)) {
+      redirect(ownDashboard);
+    }
+    redirect("/403");
   }
 
   return session.user;

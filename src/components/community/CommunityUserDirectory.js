@@ -27,6 +27,7 @@ import {
   removeFriend,
 } from "@/lib/friendStore.js";
 import { getStoredRealUsers, subscribeUserRegistry } from "@/lib/userRegistry.js";
+import { resolveUserAvatar } from "@/lib/avatarCache.js";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useCall } from "@/components/calls/CallProvider";
 
@@ -38,7 +39,7 @@ const ALL_COMMUNITY_USERS = [
     role: "TECHNICIAN",
     email: "rajesh@phidim.np",
     phone: "+977 9862111111",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
     bio: "Senior AC Cooling & Electrical Technician in Phidim Ward 4.",
     location: "Phidim-4, Panchthar",
     online: true,
@@ -50,7 +51,7 @@ const ALL_COMMUNITY_USERS = [
     role: "USER",
     email: "saraswati@phidim.np",
     phone: "+977 9822222222",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
     bio: "Homeowner in Phidim Ward 2. Frequent service customer.",
     location: "Phidim-2, Panchthar",
     online: true,
@@ -62,19 +63,19 @@ const ALL_COMMUNITY_USERS = [
     role: "USER",
     email: "bikash@phidim.np",
     phone: "+977 9833333333",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80",
     bio: "Store manager at Main Bazar Phidim.",
     location: "Main Bazar, Phidim",
     online: false,
   },
   {
     id: "usr-tech-anita",
-    name: "Anita Rai",
-    displayName: "Anita Rai (Fiber Expert)",
+    name: "Anita Gurung",
+    displayName: "Anita Gurung (Fiber Expert)",
     role: "TECHNICIAN",
     email: "anita@phidim.np",
     phone: "+977 9844444444",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
     bio: "DishHome Fiber Optic splicing & network setup specialist.",
     location: "Yokok, Panchthar",
     online: true,
@@ -86,7 +87,7 @@ const ALL_COMMUNITY_USERS = [
     role: "TECHNICIAN",
     email: "suman@phidim.np",
     phone: "+977 9855555555",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
     bio: "Master Electrician & Plumber in Panchthar district.",
     location: "Phidim-1, Panchthar",
     online: true,
@@ -98,7 +99,7 @@ const ALL_COMMUNITY_USERS = [
     role: "USER",
     email: "semikserma@gmail.com",
     phone: "+977 9862772400",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
     bio: "Registered customer & Panchthar community member.",
     location: "Phidim-1, Panchthar",
     online: true,
@@ -110,7 +111,7 @@ const ALL_COMMUNITY_USERS = [
     role: "USER",
     email: "pooja@phidim.np",
     phone: "+977 9866666666",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
     bio: "Resident of Phidim Ward 3, Panchthar.",
     location: "Phidim-3, Panchthar",
     online: true,
@@ -122,7 +123,7 @@ const ALL_COMMUNITY_USERS = [
     role: "TECHNICIAN",
     email: "kiran@phidim.np",
     phone: "+977 9877777777",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=150&q=80",
     bio: "CCTV Security Systems & Smart Alarm technician.",
     location: "Phidim Bazar, Panchthar",
     online: true,
@@ -134,7 +135,7 @@ const ALL_COMMUNITY_USERS = [
     role: "USER",
     email: "sunil@phidim.np",
     phone: "+977 9888888888",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80",
     bio: "Hotel proprietor in Phidim main square.",
     location: "Main Bazar, Phidim",
     online: false,
@@ -146,7 +147,7 @@ const ALL_COMMUNITY_USERS = [
     role: "USER",
     email: "webdeveloper@phidim.np",
     phone: "+977 9862000111",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
     bio: "Registered Web Developer & Panchthar community member.",
     location: "Phidim-1, Panchthar",
     online: true,
@@ -158,7 +159,7 @@ const ALL_COMMUNITY_USERS = [
     role: "ADMIN",
     email: "dhanrajserma34@gmail.com",
     phone: "+977 9800000000",
-    avatar: "",
+    avatar: "/dhanraj.png",
     bio: "Official Phidim Service System Master Administrator.",
     location: "Phidim HQ, Panchthar",
     online: true,
@@ -214,7 +215,10 @@ export function CommunityUserDirectory({ onStartChat, onStartCall, onShowToast }
       const map = new Map();
       [...ALL_COMMUNITY_USERS, ...localRealUsers, ...apiUsers].forEach((u) => {
         if (u && u.email) {
-          map.set(u.email.toLowerCase(), u);
+          map.set(u.email.toLowerCase(), {
+            ...u,
+            avatar: resolveUserAvatar(u),
+          });
         }
       });
 

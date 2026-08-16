@@ -18,6 +18,7 @@ import { AboutModal } from "./components/AboutModal";
 import { WhatsAppWidget } from "./components/WhatsAppWidget";
 import { HomePageOverview } from "./components/HomePageOverview";
 import { HeroCarousel } from "./components/HeroCarousel";
+import { HomepageCommentSection } from "./components/HomepageCommentSection";
 import { ServiceBookingModal } from "./components/ServiceBookingModal";
 import { LanNetworkingPage } from "./components/LanNetworkingPage";
 import { ContactUsPage } from "./components/ContactUsPage";
@@ -126,8 +127,8 @@ export default function App() {
 
   const handleSelectCategory = (catName) => {
     setSelectedCategory(catName);
-    if (activeTab !== "HOME") {
-      setActiveTab("HOME");
+    if (activeTab !== "ALL SERVICES") {
+      setActiveTab("ALL SERVICES");
     }
   };
 
@@ -226,6 +227,7 @@ export default function App() {
         {/* TAB 1: HOME OVERVIEW */}
         {activeTab === "HOME" && (
           <div>
+            {/* 1. Top Carousel Slider */}
             <HeroCarousel
               onExploreServices={() => {
                 setActiveTab("ALL SERVICES");
@@ -237,7 +239,14 @@ export default function App() {
               }}
               onBookService={handleBookService}
             />
-            <div className="max-w-[1536px] mx-auto px-4 md:px-8 lg:px-12 py-8 space-y-12">
+
+            {/* 2. Comment Box in between Carousel and Technical Services Section */}
+            <div className="max-w-[1536px] mx-auto px-4 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-10 pb-4">
+              <HomepageCommentSection />
+            </div>
+
+            {/* 3. Section: Professional On-Site Technical Services in Panchthar */}
+            <div className="max-w-[1536px] mx-auto px-4 md:px-8 lg:px-12 py-4 space-y-12">
               <HomePageOverview
                 onNavigateTab={(tab) => {
                   setActiveTab(tab);
@@ -257,6 +266,10 @@ export default function App() {
         {/* TAB 2: ALL SERVICES */}
         {activeTab === "ALL SERVICES" && (
           <OurServicesPage
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
             onNavigateHome={() => {
               setActiveTab("HOME");
               window.scrollTo({ top: 0, behavior: "smooth" });

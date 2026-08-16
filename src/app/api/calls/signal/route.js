@@ -102,7 +102,7 @@ export async function POST(req) {
       if (currentCall && candidate) {
         const callerEmail = (currentCall.caller?.email || "").toLowerCase();
         const sEmail = (senderEmail || "").toLowerCase();
-        const isCaller = sEmail === callerEmail || !currentCall.recipient?.email || sEmail.includes(callerEmail);
+        const isCaller = sEmail === callerEmail;
 
         if (isCaller) {
           if (!currentCall.callerIceCandidates) currentCall.callerIceCandidates = [];
@@ -123,7 +123,7 @@ export async function POST(req) {
       if (currentCall && mediaState) {
         const callerEmail = (currentCall.caller?.email || "").toLowerCase();
         const sEmail = (senderEmail || "").toLowerCase();
-        const isCaller = sEmail === callerEmail || sEmail.includes(callerEmail);
+        const isCaller = sEmail === callerEmail;
 
         if (isCaller) {
           currentCall.callerMediaState = { ...(currentCall.callerMediaState || {}), ...mediaState };

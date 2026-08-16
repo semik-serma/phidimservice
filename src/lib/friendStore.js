@@ -3,48 +3,11 @@
 // Persistent Friend Request & Friendship Store (Client & API backed)
 // Stores friend requests & friendships in localStorage and syncs reactively across tabs/page reloads.
 
+import { resolveUserAvatar, saveUserAvatar } from "@/lib/avatarCache.js";
+
 const FRIENDS_STORAGE_KEY = "phidim_friends_data_v1";
 
 function getInitialData() {
-  if (typeof window === "undefined") {
-    return {
-      requests: [
-        {
-          id: "req-1",
-          senderEmail: "saraswati@phidim.np",
-          receiverEmail: "user@phidim.np",
-          senderName: "Saraswati Subedi",
-          senderAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-          senderRole: "USER",
-          status: "pending", // 'pending' | 'accepted' | 'declined'
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-        },
-        {
-          id: "req-2",
-          senderEmail: "user@phidim.np",
-          receiverEmail: "bikash@phidim.np",
-          senderName: "Ram Shrestha",
-          receiverName: "Bikash Thapa",
-          status: "pending",
-          createdAt: new Date(Date.now() - 7200000).toISOString(),
-        },
-      ],
-      friends: [
-        { user1: "user@phidim.np", user2: "rajesh@phidim.np" },
-        { user1: "user@phidim.np", user2: "anita@phidim.np" },
-        { user1: "dhanrajserma34@gmail.com", user2: "user@phidim.np" },
-        { user1: "dhanrajserma34@gmail.com", user2: "semikserma@gmail.com" },
-      ],
-    };
-  }
-
-  try {
-    const raw = localStorage.getItem(FRIENDS_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {
-    // ignore
-  }
-
   const defaultData = {
     requests: [
       {
@@ -54,8 +17,24 @@ function getInitialData() {
         senderName: "Saraswati Subedi",
         senderAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
         senderRole: "USER",
+        receiverName: "Ram Shrestha",
+        receiverAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+        receiverRole: "USER",
         status: "pending",
         createdAt: new Date(Date.now() - 3600000).toISOString(),
+      },
+      {
+        id: "req-2",
+        senderEmail: "bikash@phidim.np",
+        receiverEmail: "user@phidim.np",
+        senderName: "Bikash Thapa",
+        senderAvatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80",
+        senderRole: "USER",
+        receiverName: "Ram Shrestha",
+        receiverAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+        receiverRole: "USER",
+        status: "pending",
+        createdAt: new Date(Date.now() - 7200000).toISOString(),
       },
     ],
     friends: [
@@ -65,6 +44,24 @@ function getInitialData() {
       { user1: "dhanrajserma34@gmail.com", user2: "semikserma@gmail.com" },
     ],
   };
+
+  if (typeof window === "undefined") return defaultData;
+
+  try {
+    const raw = localStorage.getItem(FRIENDS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.requests)) {
+        // Hydrate latest resolved avatars
+        parsed.requests = parsed.requests.map((r) => ({
+          ...r,
+          senderAvatar: resolveUserAvatar(r.senderEmail, r.senderAvatar),
+          receiverAvatar: resolveUserAvatar(r.receiverEmail, r.receiverAvatar),
+        }));
+        return parsed;
+      }
+    }
+  } catch (e) {}
 
   try {
     localStorage.setItem(FRIENDS_STORAGE_KEY, JSON.stringify(defaultData));
@@ -90,9 +87,11 @@ export function subscribeFriendsStore(callback) {
   if (typeof window !== "undefined") {
     const handler = () => callback(getInitialData());
     window.addEventListener("phidim_friends_updated", handler);
+    window.addEventListener("phidim_avatar_updated", handler);
     return () => {
       listeners.delete(callback);
       window.removeEventListener("phidim_friends_updated", handler);
+      window.removeEventListener("phidim_avatar_updated", handler);
     };
   }
   return () => listeners.delete(callback);
@@ -101,8 +100,8 @@ export function subscribeFriendsStore(callback) {
 export function getFriendStatus(myEmail, targetEmail) {
   if (!myEmail || !targetEmail) return "none";
   const data = getInitialData();
-  const e1 = myEmail.toLowerCase();
-  const e2 = targetEmail.toLowerCase();
+  const e1 = String(myEmail).toLowerCase().trim();
+  const e2 = String(targetEmail).toLowerCase().trim();
 
   // Check if active friends
   const isFriend = data.friends.some(
@@ -130,10 +129,16 @@ export function getFriendStatus(myEmail, targetEmail) {
 
 export function sendFriendRequest({ senderUser, receiverUser }) {
   const data = getInitialData();
-  const sEmail = (senderUser?.email || "user@phidim.np").toLowerCase();
-  const rEmail = (receiverUser?.email || "").toLowerCase();
+  const sEmail = (senderUser?.email || "user@phidim.np").toLowerCase().trim();
+  const rEmail = (receiverUser?.email || "").toLowerCase().trim();
 
   if (!rEmail || sEmail === rEmail) return false;
+
+  const sAvatar = resolveUserAvatar(senderUser);
+  const rAvatar = resolveUserAvatar(receiverUser);
+
+  if (sAvatar) saveUserAvatar(sEmail, sAvatar);
+  if (rAvatar) saveUserAvatar(rEmail, rAvatar);
 
   // Check if existing request
   const existingIndex = data.requests.findIndex(
@@ -147,10 +152,10 @@ export function sendFriendRequest({ senderUser, receiverUser }) {
     senderEmail: sEmail,
     receiverEmail: rEmail,
     senderName: senderUser?.displayName || senderUser?.name || sEmail.split("@")[0],
-    senderAvatar: senderUser?.avatar || "",
+    senderAvatar: sAvatar || "",
     senderRole: senderUser?.role || "USER",
     receiverName: receiverUser?.displayName || receiverUser?.name || rEmail.split("@")[0],
-    receiverAvatar: receiverUser?.avatar || "",
+    receiverAvatar: rAvatar || "",
     receiverRole: receiverUser?.role || "USER",
     status: "pending",
     createdAt: new Date().toISOString(),
@@ -168,8 +173,8 @@ export function sendFriendRequest({ senderUser, receiverUser }) {
 
 export function acceptFriendRequest(myEmail, targetEmail) {
   const data = getInitialData();
-  const e1 = (myEmail || "").toLowerCase();
-  const e2 = (targetEmail || "").toLowerCase();
+  const e1 = (myEmail || "").toLowerCase().trim();
+  const e2 = (targetEmail || "").toLowerCase().trim();
 
   // Update request status
   data.requests = data.requests.map((r) => {
@@ -198,8 +203,8 @@ export function acceptFriendRequest(myEmail, targetEmail) {
 
 export function declineFriendRequest(myEmail, targetEmail) {
   const data = getInitialData();
-  const e1 = (myEmail || "").toLowerCase();
-  const e2 = (targetEmail || "").toLowerCase();
+  const e1 = (myEmail || "").toLowerCase().trim();
+  const e2 = (targetEmail || "").toLowerCase().trim();
 
   data.requests = data.requests.filter(
     (r) =>
@@ -214,8 +219,8 @@ export function declineFriendRequest(myEmail, targetEmail) {
 
 export function removeFriend(myEmail, targetEmail) {
   const data = getInitialData();
-  const e1 = (myEmail || "").toLowerCase();
-  const e2 = (targetEmail || "").toLowerCase();
+  const e1 = (myEmail || "").toLowerCase().trim();
+  const e2 = (targetEmail || "").toLowerCase().trim();
 
   data.friends = data.friends.filter(
     (f) =>
@@ -230,15 +235,19 @@ export function removeFriend(myEmail, targetEmail) {
 
 export function getPendingIncomingRequests(myEmail) {
   const data = getInitialData();
-  const e1 = (myEmail || "").toLowerCase();
-  return data.requests.filter(
-    (r) => r.receiverEmail.toLowerCase() === e1 && r.status === "pending"
-  );
+  const e1 = (myEmail || "").toLowerCase().trim();
+  return data.requests
+    .filter((r) => r.receiverEmail.toLowerCase() === e1 && r.status === "pending")
+    .map((r) => ({
+      ...r,
+      senderAvatar: resolveUserAvatar(r.senderEmail, r.senderAvatar),
+      receiverAvatar: resolveUserAvatar(r.receiverEmail, r.receiverAvatar),
+    }));
 }
 
 export function getMyFriendsList(myEmail) {
   const data = getInitialData();
-  const e1 = (myEmail || "").toLowerCase();
+  const e1 = (myEmail || "").toLowerCase().trim();
   const friendEmails = data.friends
     .filter((f) => f.user1.toLowerCase() === e1 || f.user2.toLowerCase() === e1)
     .map((f) => (f.user1.toLowerCase() === e1 ? f.user2 : f.user1));

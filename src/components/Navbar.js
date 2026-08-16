@@ -87,7 +87,7 @@ export const Navbar = ({
   const navItems = ["HOME", "ALL SERVICES", "LAN NETWORKING", "ABOUT", "CONTACT US"];
 
   return (
-    <nav className="bg-white border-b border-gray-200 relative z-30 shadow-xs px-6 sm:px-16 md:px-28 lg:px-44 xl:px-56">
+    <nav className="font-navbar bg-white border-b border-gray-200 relative z-30 shadow-xs px-6 sm:px-16 md:px-28 lg:px-44 xl:px-56" data-navbar="true">
       <div className="max-w-[1700px] mx-auto flex items-center justify-between py-2.5 md:py-1.5">
         
         {/* Left Side: Mobile Hamburger & Browse Categories */}

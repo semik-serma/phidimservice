@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { saveRealUserToRegistry } from "@/lib/userRegistry.js";
+import { saveUserAvatar, resolveUserAvatar, getCachedAvatar } from "@/lib/avatarCache.js";
 import socket from "@/realtime/client";
 
 const AuthContext = createContext({
@@ -15,6 +16,7 @@ const AuthContext = createContext({
   register: async () => {},
   refreshSession: async () => {},
   hasRole: () => false,
+  updateUser: async () => {},
 });
 
 export const DEMO_ACCOUNTS = {
@@ -36,17 +38,17 @@ export const DEMO_ACCOUNTS = {
     role: "TECHNICIAN",
     specialty: "Senior AC & Fiber Specialist",
     rating: "4.95 ★",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
     address: "Phidim Sector 4, Panchthar",
     dashboardPath: "/technician/dashboard",
   },
   ADMIN: {
-    id: "ADM-001",
+    id: "ADMIN-001",
     name: "Dhanraj Serma",
     email: "dhanrajserma34@gmail.com",
-    phone: "+977 9800000000",
+    phone: "+977 9862772457",
     role: "ADMIN",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
+    avatar: "/dhanraj.png",
     dashboardPath: "/admin/dashboard",
   },
 };
@@ -57,11 +59,12 @@ function normalizeUser(u) {
   if (!u) return null;
   const emailPrefix = u.email ? u.email.split("@")[0] : "";
   const derivedUsername = (u.username || emailPrefix).toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const avatar = resolveUserAvatar(u);
   return {
     ...u,
     displayName: u.displayName || u.name || emailPrefix || "User",
     username: derivedUsername,
-    avatar: u.avatar || u.picture || "",
+    avatar,
   };
 }
 
@@ -219,6 +222,7 @@ export function AuthProvider({ children }) {
     const normalized = normalizeUser(acc);
     setUser(normalized);
     if (normalized) {
+      cacheAvatar(normalized.email, normalized.avatar);
       saveRealUserToRegistry(normalized);
     }
     try {
@@ -287,10 +291,6 @@ export function AuthProvider({ children }) {
           : DEMO_ACCOUNTS[activeRole] || DEMO_ACCOUNTS.USER;
         safeSetUser(account);
         setIsLoading(false);
-
-        if (typeof window !== "undefined" && account.dashboardPath) {
-          window.location.href = account.dashboardPath;
-        }
         return account;
       } catch (error) {
         setIsLoading(false);
@@ -352,12 +352,21 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   const updateUser = useCallback(async (updatedFields) => {
+    let currentUserEmail = "";
     setUser((prev) => {
       const next = { ...(prev || {}), ...updatedFields };
+      currentUserEmail = next.email || "";
       if (typeof window !== "undefined") {
         try {
+          if (Object.prototype.hasOwnProperty.call(updatedFields, "avatar")) {
+            saveUserAvatar(next.email, updatedFields.avatar);
+          }
+          saveRealUserToRegistry(next);
           localStorage.setItem(SESSION_KEY, JSON.stringify(next));
-          const cookieVal = encodeURIComponent(JSON.stringify(next));
+          const cookieVal = encodeURIComponent(JSON.stringify({
+            ...next,
+            avatar: next.avatar?.startsWith("data:") ? "" : next.avatar,
+          }));
           document.cookie = `phidim_auth_user=${cookieVal}; path=/; max-age=2592000; SameSite=Lax`;
         } catch (e) {}
       }
@@ -373,19 +382,32 @@ export function AuthProvider({ children }) {
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.user) {
-          setUser(data.user);
+          const normalized = normalizeUser(data.user);
+          // Keep locally uploaded base64 images across server session refreshes.
+          if (Object.prototype.hasOwnProperty.call(updatedFields, "avatar")) {
+            saveUserAvatar(normalized.email, updatedFields.avatar);
+            normalized.avatar = updatedFields.avatar;
+          }
+          saveRealUserToRegistry(normalized);
+          setUser(normalized);
           if (typeof window !== "undefined") {
             try {
-              localStorage.setItem(SESSION_KEY, JSON.stringify(data.user));
-              const cookieVal = encodeURIComponent(JSON.stringify(data.user));
+              localStorage.setItem(SESSION_KEY, JSON.stringify(normalized));
+              const cookieVal = encodeURIComponent(JSON.stringify({
+                ...normalized,
+                avatar: normalized.avatar?.startsWith("data:") ? "" : normalized.avatar,
+              }));
               document.cookie = `phidim_auth_user=${cookieVal}; path=/; max-age=2592000; SameSite=Lax`;
             } catch (e) {}
           }
           return data.user;
         }
       }
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || "Profile update failed.");
     } catch (e) {
       console.error("Failed to persist profile update to server API:", e);
+      throw e;
     }
   }, []);
 

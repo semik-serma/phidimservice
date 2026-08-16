@@ -18,6 +18,7 @@ import {
 import { SeoHeaderNavbar } from "@/components/SeoHeaderNavbar";
 import { Footer } from "@/components/Footer";
 import { SEO_SERVICES } from "@/data/seoServicesData";
+import { ServicesPageClient } from "@/components/ServicesPageClient";
 
 export const metadata = {
   title: "Phidim Services | No. 1 Local Services & Certified Technicians in Phidim, Panchthar",
@@ -66,63 +67,63 @@ export default function ServicesPage() {
       id: "electrician-phidim",
       title: "Electrical & Inverter Services (विद्युत सेवा)",
       desc: "Complete house wiring, circuit breaker (MCB) installations, inverter/solar load balancing, and emergency electrical troubleshooting.",
-      icon: Zap,
+      iconName: "Zap",
       color: "from-amber-500 to-yellow-600"
     },
     {
       id: "plumbing-phidim",
       title: "Plumbing & Sanitary Services (प्लम्बिङ सेवा)",
       desc: "Emergency pipe leakage repair, CPVC/PPR pipe fusion welding, bathroom sanitary fittings, and water pump overhaul.",
-      icon: Droplet,
+      iconName: "Droplet",
       color: "from-sky-500 to-blue-600"
     },
     {
       id: "cctv-phidim",
       title: "CCTV & Security Systems (सीसीटीभी सेवा)",
       desc: "Professional IP/Analog camera installation, NVR setup, night-vision calibration, and mobile remote live viewing setup.",
-      icon: Camera,
+      iconName: "Camera",
       color: "from-emerald-500 to-teal-600"
     },
     {
       id: "internet-phidim",
       title: "WiFi & Internet Services (इन्टरनेट सेवा)",
       desc: "WiFi router setup, signal extensions, dual-band configurations, and doorstep troubleshooting for high-speed connections.",
-      icon: Wifi,
+      iconName: "Wifi",
       color: "from-blue-500 to-indigo-600"
     },
     {
       id: "fibernet-phidim",
       title: "DishHome FiberNet Setup (डिसहोम फाइबरनेट)",
       desc: "Optical fiber drop wire installations, fusion splicing, power signal calibration, and high-speed fiber package activation.",
-      icon: Wifi,
+      iconName: "Wifi",
       color: "from-purple-500 to-indigo-600"
     },
     {
       id: "dishhome-phidim",
       title: "DishHome DTH Signal Tuning (डिसहोम सेवा)",
       desc: "Satellite dish azimuth/elevation alignment, universal LNB skew tuning, RG6 terminations, and setup box channel activation.",
-      icon: Tv,
+      iconName: "Tv",
       color: "from-red-500 to-rose-600"
     },
     {
       id: "networking-phidim",
       title: "LAN Networking & Structured Cabling",
       desc: "Cat6 Ethernet structured cabling, office switch rack setup, subnet configurations, and enterprise access point deployment.",
-      icon: Wrench,
+      iconName: "Wrench",
       color: "from-cyan-500 to-blue-600"
     },
     {
       id: "computer-phidim",
       title: "Computer & Laptop Repair (कम्प्युटर मर्मत)",
       desc: "Windows 11/10 installation, NVMe SSD speed upgrades, thermal paste application, virus cleaning, and data recovery.",
-      icon: Monitor,
+      iconName: "Monitor",
       color: "from-slate-600 to-slate-800"
     },
     {
       id: "ac-cooling-phidim",
       title: "AC Servicing & Gas Refill (एसी मर्मत)",
       desc: "Split AC deep pressure jet washing, antibacterial coil treatment, R32/R410A refrigerant gas top-up, and diagnostics.",
-      icon: Wind,
+      iconName: "Wind",
       color: "from-teal-500 to-emerald-600"
     }
   ];
@@ -222,43 +223,8 @@ export default function ServicesPage() {
           </div>
         </div>
 
-        {/* Services List Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat) => {
-            const IconComponent = cat.icon;
-            return (
-              <div key={cat.id} className="bg-white border border-gray-200 hover:border-green-400 rounded-3xl p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group">
-                <div className="space-y-4">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${cat.color} text-white flex items-center justify-center font-black shadow-xs`}>
-                    <IconComponent className="w-6 h-6" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <h2 className="text-lg font-black text-gray-900 group-hover:text-green-600 transition-colors">
-                      {cat.title}
-                    </h2>
-                    <p className="text-xs text-gray-600 leading-relaxed font-semibold">
-                      {cat.desc}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="pt-6 mt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-[10px] bg-green-50 text-green-700 font-black px-2.5 py-1 rounded-full border border-green-200">
-                    AVAILABLE
-                  </span>
-                  <Link
-                    href={`/services/${cat.id}`}
-                    className="text-xs font-black text-slate-900 group-hover:text-green-600 flex items-center gap-1 transition-colors"
-                  >
-                    <span>View Rates & Techs</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/* Live Filterable Services Section */}
+        <ServicesPageClient categories={categories} />
 
         {/* Service Areas Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">

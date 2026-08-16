@@ -1,5 +1,7 @@
 "use client";
 
+import { resolveUserAvatar, saveUserAvatar } from "@/lib/avatarCache.js";
+
 // Unified Real User Registry & Persistence Store
 // Ensures every newly created account (local register, Google login, admin creation)
 // is immediately saved and visible across User, Technician, and Admin dashboards.
@@ -13,8 +15,8 @@ export const DEFAULT_REAL_USERS = [
     displayName: "Dhanraj Serma (Master Admin)",
     role: "ADMIN",
     email: "dhanrajserma34@gmail.com",
-    phone: "+977 9800000000",
-    avatar: "",
+    phone: "+977 9862772457",
+    avatar: "/dhanraj.png",
     bio: "Official Phidim Service System Master Administrator.",
     location: "Phidim HQ, Panchthar",
     online: true,
@@ -26,7 +28,7 @@ export const DEFAULT_REAL_USERS = [
     role: "USER",
     email: "semikserma@gmail.com",
     phone: "+977 9862772400",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
     bio: "Registered customer & Panchthar community member.",
     location: "Phidim-1, Panchthar",
     online: true,
@@ -38,7 +40,7 @@ export const DEFAULT_REAL_USERS = [
     role: "USER",
     email: "webdeveloper@phidim.np",
     phone: "+977 9862000111",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
     bio: "Registered Web Developer & Panchthar community member.",
     location: "Phidim-1, Panchthar",
     online: true,
@@ -50,7 +52,7 @@ export const DEFAULT_REAL_USERS = [
     role: "TECHNICIAN",
     email: "rajesh@phidim.np",
     phone: "+977 9842109842",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
     bio: "Certified DishHome DTH & CCTV installation expert.",
     location: "Phidim-4, Panchthar",
     online: true,
@@ -62,7 +64,7 @@ export const DEFAULT_REAL_USERS = [
     role: "TECHNICIAN",
     email: "anita@phidim.np",
     phone: "+977 9862334455",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
     bio: "Certified Solar & Commercial Electrical Technician.",
     location: "Panchthar Hub, Phidim",
     online: true,
@@ -74,7 +76,7 @@ export const DEFAULT_REAL_USERS = [
     role: "TECHNICIAN",
     email: "suman@phidim.np",
     phone: "+977 9855555555",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
     bio: "Master Electrician & Plumber in Panchthar district.",
     location: "Phidim-1, Panchthar",
     online: true,
@@ -86,7 +88,7 @@ export const DEFAULT_REAL_USERS = [
     role: "TECHNICIAN",
     email: "kiran@phidim.np",
     phone: "+977 9877777777",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=150&q=80",
     bio: "CCTV Security Systems & Smart Alarm technician.",
     location: "Phidim Bazar, Panchthar",
     online: true,
@@ -98,7 +100,7 @@ export const DEFAULT_REAL_USERS = [
     role: "USER",
     email: "saraswati@phidim.np",
     phone: "+977 9812345678",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
     bio: "Resident of Phidim Ward 2, Panchthar.",
     location: "Phidim-2, Panchthar",
     online: true,
@@ -110,7 +112,7 @@ export const DEFAULT_REAL_USERS = [
     role: "USER",
     email: "bikash@phidim.np",
     phone: "+977 9801122334",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80",
     bio: "Resident of Phidim Ward 4, Panchthar.",
     location: "Phidim-4, Panchthar",
     online: true,
@@ -122,7 +124,7 @@ export const DEFAULT_REAL_USERS = [
     role: "USER",
     email: "pooja@phidim.np",
     phone: "+977 9866666666",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
     bio: "Resident of Phidim Ward 3, Panchthar.",
     location: "Phidim-3, Panchthar",
     online: true,
@@ -134,7 +136,7 @@ export const DEFAULT_REAL_USERS = [
     role: "USER",
     email: "sunil@phidim.np",
     phone: "+977 9888888888",
-    avatar: "",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80",
     bio: "Hotel proprietor in Phidim main square.",
     location: "Main Bazar, Phidim",
     online: false,
@@ -142,22 +144,31 @@ export const DEFAULT_REAL_USERS = [
 ];
 
 export function getStoredRealUsers() {
-  if (typeof window === "undefined") return DEFAULT_REAL_USERS;
-  try {
-    const raw = localStorage.getItem(USERS_STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        // Merge with default seed users so all 11 real users are always present
-        const map = new Map();
-        [...DEFAULT_REAL_USERS, ...parsed].forEach((u) => {
-          if (u && u.email) map.set(u.email.toLowerCase(), u);
-        });
-        return Array.from(map.values());
+  let list = DEFAULT_REAL_USERS;
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem(USERS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const map = new Map();
+          [...DEFAULT_REAL_USERS, ...parsed].forEach((u) => {
+            if (u && u.email) {
+              map.set(u.email.toLowerCase(), {
+                ...u,
+                avatar: resolveUserAvatar(u),
+              });
+            }
+          });
+          return Array.from(map.values());
+        }
       }
-    }
-  } catch (e) {}
-  return DEFAULT_REAL_USERS;
+    } catch (e) {}
+  }
+  return list.map((u) => ({
+    ...u,
+    avatar: resolveUserAvatar(u),
+  }));
 }
 
 export function saveRealUserToRegistry(userObj) {
@@ -165,6 +176,11 @@ export function saveRealUserToRegistry(userObj) {
   try {
     const existing = getStoredRealUsers();
     const lowerEmail = userObj.email.toLowerCase();
+    const avatar = resolveUserAvatar(userObj);
+
+    if (avatar) {
+      saveUserAvatar(lowerEmail, avatar);
+    }
 
     const idx = existing.findIndex((u) => u.email.toLowerCase() === lowerEmail);
     const updatedUser = {
@@ -174,7 +190,7 @@ export function saveRealUserToRegistry(userObj) {
       email: lowerEmail,
       phone: userObj.phone || "",
       role: userObj.role || "USER",
-      avatar: userObj.avatar || userObj.picture || userObj.image || "",
+      avatar: avatar || "",
       bio: userObj.bio || `Registered ${userObj.role || "USER"} in Panchthar.`,
       location: userObj.location || "Phidim, Panchthar",
       online: true,
@@ -199,9 +215,11 @@ export function subscribeUserRegistry(callback) {
   if (typeof window !== "undefined") {
     const handler = () => callback(getStoredRealUsers());
     window.addEventListener("phidim_users_updated", handler);
+    window.addEventListener("phidim_avatar_updated", handler);
     return () => {
       listeners.delete(callback);
       window.removeEventListener("phidim_users_updated", handler);
+      window.removeEventListener("phidim_avatar_updated", handler);
     };
   }
   return () => listeners.delete(callback);

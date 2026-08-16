@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Bell,
   Megaphone,
+  Images,
   Settings,
   LogOut,
   ShieldCheck,
@@ -40,8 +41,8 @@ export const NAV_ITEMS = [
   { id: "friends", name: "Find Friends", icon: UserCheck, badge: "Community", badgeColor: "bg-emerald-500 text-white" },
   { id: "messages", name: "Messages", icon: MessageSquare, badge: "5", badgeColor: "bg-blue-500 text-white", path: "/admin/support" },
   { id: "announcements", name: "Announcements", icon: Megaphone, badge: "Live", badgeColor: "bg-emerald-600 text-white font-extrabold" },
-  { id: "account-settings", name: "Account Settings", icon: UserCheck, badge: "Edit", badgeColor: "bg-emerald-600 text-white" },
-  { id: "settings", name: "System Settings", icon: Settings, badge: null, path: "/admin/settings" },
+  { id: "carousel", name: "Homepage Carousel", icon: Images, badge: "Media", badgeColor: "bg-violet-500 text-white" },
+  { id: "account-settings", name: "Account Settings", icon: Settings, badge: "Edit", badgeColor: "bg-emerald-600 text-white", path: "/admin/settings" },
   { id: "logout", name: "Logout", icon: LogOut, badge: null, isDanger: true },
 ];
 
@@ -70,36 +71,36 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
 
       <aside
         className={`fixed top-0 left-0 z-50 h-screen bg-[#061510] dark:bg-[#040d0a] text-slate-300 border-r border-emerald-900/30 transition-all duration-300 flex flex-col ${
-          collapsed ? "w-[84px]" : "w-[280px]"
+          collapsed ? "w-[68px]" : "w-[245px]"
         } ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
         {/* Header / Logo */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-emerald-900/30">
-          <div className="flex items-center gap-3 overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-emerald-900/30">
+          <div className="flex items-center gap-2.5 overflow-hidden">
             <Link href="/" className="relative flex-shrink-0 cursor-pointer">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(22,163,74,0.4)] text-white font-black">
-                <ShieldCheck size={24} className="text-white drop-shadow" />
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-700 flex items-center justify-center shadow-[0_0_15px_rgba(22,163,74,0.35)] text-white font-black">
+                <ShieldCheck size={18} className="text-white drop-shadow" />
               </div>
-              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-[#061510] animate-pulse" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#061510] animate-pulse" />
             </Link>
 
             {!collapsed && (
               <motion.div
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
+                exit={{ opacity: 0, x: -6 }}
                 className="leading-tight min-w-0"
               >
                 <Link href="/" className="flex items-center gap-1.5 hover:opacity-90">
-                  <span className="font-extrabold text-lg text-white tracking-tight truncate">
+                  <span className="font-extrabold text-sm text-white tracking-tight truncate">
                     Phidim<span className="text-emerald-400">Service</span>
                   </span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
+                  <span className="px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold uppercase tracking-wider border border-emerald-500/30">
                     ADMIN
                   </span>
                 </Link>
-                <p className="text-[11px] text-emerald-400/70 font-medium truncate">
-                  Admin Control Center
+                <p className="text-[10px] text-emerald-400/70 font-medium truncate">
+                  Admin Command Center
                 </p>
               </motion.div>
             )}
@@ -107,15 +108,15 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-xl bg-emerald-950/60 hover:bg-emerald-800/60 border border-emerald-700/40 text-emerald-400 hover:text-white transition-all shadow-sm"
+            className="hidden lg:flex items-center justify-center w-6 h-6 rounded-lg bg-emerald-950/60 hover:bg-emerald-800/60 border border-emerald-700/40 text-emerald-400 hover:text-white transition-all shadow-sm"
             title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
-            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-0.5">
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
 
@@ -132,14 +133,14 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
                   }
                   if (mobileOpen) setMobileOpen(false);
                 }}
-                className={`group relative w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-[14px] font-medium transition-all duration-200 ${
+                className={`group relative w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
                   item.id === "home"
                     ? "bg-emerald-600/30 hover:bg-emerald-600/50 text-white font-extrabold border border-emerald-500/50"
                     : item.isDanger
                     ? "text-rose-400 hover:bg-rose-950/30 hover:text-rose-300"
                     : isActive
-                    ? "bg-gradient-to-r from-emerald-500/25 via-emerald-500/15 to-transparent text-emerald-400 font-bold border border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
-                    : "text-slate-400 hover:text-slate-100 hover:bg-emerald-950/30"
+                    ? "bg-gradient-to-r from-emerald-500/25 via-emerald-500/15 to-transparent text-emerald-400 font-bold border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.12)]"
+                    : "hover:bg-white/5 hover:text-white text-slate-300"
                 }`}
                 title={collapsed ? item.name : undefined}
               >

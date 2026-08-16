@@ -62,7 +62,7 @@ const DEMO_REGISTERED_USERS = [
     displayName: "Dhanraj Serma (Master Admin)",
     role: "ADMIN",
     email: "dhanrajserma34@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
+    avatar: "/dhanraj.png",
     bio: "Master Platform Administrator",
   },
 ];

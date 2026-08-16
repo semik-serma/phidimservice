@@ -23,6 +23,7 @@ import {
   Home,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { UserAvatar } from "@/components/UserAvatar";
 
 export function TopNavbar({
   activeTab,
@@ -149,98 +150,93 @@ export function TopNavbar({
   };
 
   return (
-    <header className="sticky top-0 z-30 h-[76px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
-      <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8 gap-4">
+    <header className="sticky top-0 z-30 h-[58px] bg-white/85 dark:bg-[#050e0b]/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-emerald-900/30 transition-colors">
+      <div className="flex items-center justify-between h-full px-4 sm:px-6 gap-3">
         {/* Left Side: Mobile Hamburger & Dynamic Page Title + Breadcrumbs */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+            className="lg:hidden p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
             aria-label="Open sidebar"
           >
-            <Menu size={20} />
+            <Menu size={18} />
           </button>
 
           <div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
+            <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500 font-medium">
               <Link href="/" className="hover:text-emerald-600 font-bold flex items-center gap-1">
-                <Home size={13} />
+                <Home size={11} />
                 <span>Home</span>
               </Link>
-              <ChevronRight size={12} />
+              <ChevronRight size={10} />
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Phidim Service</span>
-              <ChevronRight size={12} />
+              <ChevronRight size={10} />
               <span className="capitalize">{activeTab}</span>
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mt-0.5">
+            <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight leading-tight">
               {getPageTitle(activeTab)}
             </h1>
           </div>
         </div>
 
         {/* Center: Global Search Bar with Ctrl+K trigger */}
-        <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
+        <div className="hidden md:flex items-center flex-1 max-w-sm mx-3">
           <div
             onClick={onOpenCommandPalette}
             className="relative w-full cursor-pointer group"
           >
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-emerald-500 transition-colors" />
             <input
               type="text"
               readOnly
-              placeholder="Search users, technicians, services, bookings... (Ctrl + K)"
-              className="w-full h-11 pl-11 pr-16 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-white placeholder-slate-400 cursor-pointer focus:outline-none group-hover:border-emerald-500/50 transition-all shadow-inner"
+              placeholder="Search platform... (⌘K / Ctrl+K)"
+              className="w-full h-8.5 pl-9 pr-14 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 text-xs text-slate-900 dark:text-white placeholder-slate-400 cursor-pointer focus:outline-none group-hover:border-emerald-500/50 transition-all shadow-inner"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/80 border border-emerald-500/30 rounded-lg">
-              Ctrl K
+            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.2 text-[10px] font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/80 border border-emerald-500/30 rounded-md">
+              Ctrl+K
             </kbd>
           </div>
         </div>
 
-        {/* Right Side: Home Button, Live Clock, Language, Dark Mode, Notifications, Admin Profile */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Right Side: Back to Home, Live Clock, Messages, Notifications, Avatar */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Go Back to Home Page Button */}
           <a
             href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition-all hover:scale-105"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] shadow-sm transition-all hover:scale-102"
             title="Go Back to Main Website Homepage"
           >
-            <Home size={15} />
+            <Home size={13} />
             <span className="hidden sm:inline">Back to Home</span>
           </a>
 
-          {/* Live Clock & Date Widget */}
-          <div className="hidden xl:flex flex-col items-end px-3 py-1.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-right">
-            <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-300">
-              <ClockIcon size={13} className="text-emerald-500 animate-spin-slow" />
-              <span>{time || "17:47:22"}</span>
-            </div>
-            <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
-              {dateStr || "Aug 4, 2026"}
-            </span>
+          {/* Live Nepal Clock */}
+          <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 text-[11px] font-bold text-slate-700 dark:text-slate-200">
+            <ClockIcon size={12} className="text-emerald-500" />
+            <span className="font-mono">{time || "12:00:00 PM"}</span>
           </div>
 
           {/* Language Switch */}
           <button
             onClick={() => setLang(lang === "EN" ? "NP" : "EN")}
-            className="flex items-center gap-1 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500/50 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500/50 text-[11px] font-bold text-slate-700 dark:text-slate-200 transition-all cursor-pointer"
             title="Toggle Language (English / Nepali)"
           >
-            <Globe size={15} className="text-emerald-500" />
+            <Globe size={13} className="text-emerald-500" />
             <span>{lang}</span>
           </button>
 
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 transition-all"
+            className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 transition-all cursor-pointer"
             aria-label="Toggle Theme"
           >
             {darkMode ? (
-              <Sun size={18} className="text-amber-400" />
+              <Sun size={15} className="text-amber-400" />
             ) : (
-              <Moon size={18} className="text-emerald-600" />
+              <Moon size={15} className="text-emerald-600" />
             )}
           </button>
 
@@ -384,22 +380,13 @@ export function TopNavbar({
                 setShowNotifications(false);
                 setShowMessages(false);
               }}
-              className="flex items-center gap-2 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500/50 transition-all"
+              className="flex items-center gap-1.5 p-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer"
             >
-              {user?.avatar ? (
-                <img src={user.avatar} alt={displayName} className="w-8 h-8 rounded-xl object-cover ring-2 ring-emerald-500/50" />
-              ) : (
-                <div className="relative">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-blue-600 text-white font-extrabold text-xs flex items-center justify-center shadow-md">
-                    {userInitials}
-                  </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
-                </div>
-              )}
+              <UserAvatar user={user} size="xs" />
               <span className="hidden sm:inline text-xs font-extrabold text-slate-800 dark:text-slate-100">
                 {displayName}
               </span>
-              <ChevronDown size={14} className="text-slate-400 hidden sm:inline" />
+              <ChevronDown size={13} className="text-slate-400 hidden sm:inline" />
             </button>
 
             <AnimatePresence>

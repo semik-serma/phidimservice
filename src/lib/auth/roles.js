@@ -52,7 +52,10 @@ export const DASHBOARD_ROLES = Object.freeze({
   [DASHBOARD_PATHS.ADMIN]: [ROLES.ADMIN],
 });
 
-/** Convenience predicate: does this user hold any of the given roles? */
 export function hasRole(user, allowedRoles) {
-  return !!user && Array.isArray(allowedRoles) && allowedRoles.includes(user.role);
+  if (!user || !user.role) return false;
+  if (!Array.isArray(allowedRoles) || allowedRoles.length === 0) return true;
+  const userRole = String(user.role).toUpperCase().trim();
+  const normalized = allowedRoles.map((r) => String(r).toUpperCase().trim());
+  return normalized.includes(userRole);
 }

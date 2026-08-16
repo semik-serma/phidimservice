@@ -65,55 +65,55 @@ export function PopularServicesGrid({ onSelectService }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
         {SERVICES.map((s, index) => (
           <motion.div
             key={s.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.03 }}
-            whileHover={{ y: -6, scale: 1.01 }}
-            className="group bg-white/90 dark:bg-slate-900/90 rounded-[22px] border border-slate-200/80 dark:border-slate-800/80 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(16,185,129,0.12)] hover:border-emerald-500/40 transition-all p-5 flex flex-col justify-between"
+            transition={{ duration: 0.3, delay: index * 0.02 }}
+            whileHover={{ y: -3, scale: 1.01 }}
+            className="group bg-white dark:bg-slate-900/90 rounded-xl border border-slate-200/80 dark:border-emerald-900/30 shadow-sm hover:border-emerald-500/40 transition-all p-3.5 flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${s.color} text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                  <s.icon size={22} />
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${s.color} text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200`}>
+                  <s.icon size={17} />
                 </div>
-                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-extrabold">
-                  <Star size={12} className="fill-amber-400 stroke-amber-500" />
+                <div className="flex items-center gap-0.5 px-1.5 py-0.2 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-extrabold">
+                  <Star size={10} className="fill-amber-400 stroke-amber-500" />
                   <span>{s.rating}</span>
                 </div>
               </div>
 
-              <h4 className="text-base font-black text-slate-900 dark:text-white tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              <h4 className="text-xs font-black text-slate-900 dark:text-white tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                 {s.name}
               </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
                 {s.desc}
               </p>
             </div>
 
-            <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+            <div className="pt-2.5 mt-2.5 border-t border-slate-100 dark:border-slate-800 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Starts at</span>
-                  <span className="text-sm font-black text-slate-900 dark:text-white font-mono">{s.price}</span>
+                  <span className="text-[9px] text-slate-400 uppercase font-bold block">From</span>
+                  <span className="text-xs font-black text-slate-900 dark:text-white font-mono">{s.price}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1 justify-end">
-                    <Clock size={11} className="text-emerald-500" /> {s.time}
+                  <span className="text-[9px] text-slate-400 font-medium flex items-center gap-1 justify-end">
+                    <Clock size={10} className="text-emerald-500" /> {s.time}
                   </span>
-                  <span className="text-[10px] text-slate-500 font-semibold">{s.reviews} Reviews</span>
+                  <span className="text-[9px] text-slate-500 font-semibold">{s.reviews} Reviews</span>
                 </div>
               </div>
 
               <button
                 onClick={() => onSelectService(s)}
-                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:shadow-lg transition-all flex items-center justify-center gap-1.5"
+                className="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer"
               >
                 <span>Book Now</span>
-                <ArrowRight size={14} />
+                <ArrowRight size={12} />
               </button>
             </div>
           </motion.div>

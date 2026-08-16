@@ -23,7 +23,9 @@ export function setAuthCookies(res, user, { rememberMe = false } = {}) {
     username: derivedUsername,
     email: user.email,
     role: user.role || "USER",
-    avatar: user.avatar || user.picture || "",
+    // Keep auth cookies compact; full profile photos are returned in API JSON
+    // and cached client-side, not embedded in cookie headers.
+    avatar: String(user.avatar || user.picture || "").startsWith("data:") ? "" : (user.avatar || user.picture || ""),
     dashboardPath,
   };
 

@@ -66,7 +66,7 @@ Key factors for a reliable WiFi setup:
       name: "Phidim Service Admin",
       role: "ADMIN",
       specialty: "Official Platform Announcement",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
+      avatar: "/dhanraj.png",
       followersCount: 890,
       isFollowingUser: false,
     },

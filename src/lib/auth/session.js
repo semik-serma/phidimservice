@@ -25,9 +25,9 @@ export const VALID_ROLES = Object.freeze(Object.values(ROLES));
 
 /** Shape of the user object safe to hand to the client. */
 export function toClientUser(user) {
-  const role = user?.role || "USER";
+  const role = String(user?.role || "USER").toUpperCase().trim();
   return {
-    id: user._id?.toString ? user._id.toString() : user._id,
+    id: user._id?.toString ? user._id.toString() : (user._id || user.id || user.email),
     name: user.name || "",
     displayName: user.displayName || user.name || "",
     email: user.email || "",
@@ -145,7 +145,7 @@ export async function getSessionUser({ request } = {}) {
         decoded = decoded.slice(2);
       }
       const parsed = JSON.parse(decoded);
-      if (parsed && parsed.email && parsed.role) {
+      if (parsed && (parsed.email || parsed.id || parsed._id)) {
         return {
           user: toClientUser(parsed),
           token: "cookie_fallback",

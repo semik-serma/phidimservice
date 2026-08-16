@@ -1,4 +1,4 @@
-import { Poppins } from "next/font/google";
+import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toast";
 import { AuthProvider } from "@/context/AuthContext";
@@ -8,6 +8,12 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-poppins",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -142,7 +148,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${poppins.variable} font-sans`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${poppins.variable} font-site`} suppressHydrationWarning>
       <head>
         <meta name="geo.region" content="NP-KO" />
         <meta name="geo.placename" content="Phidim, Panchthar, Nepal" />
@@ -174,11 +180,14 @@ export default function RootLayout({ children }) {
                     str.indexOf('chrome-extension://') !== -1 ||
                     str.indexOf('moz-extension://') !== -1 ||
                     str.indexOf('safari-extension://') !== -1 ||
+                    str.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1 ||
+                    str.indexOf('requests.js') !== -1 ||
+                    str.indexOf('executors/') !== -1 ||
                     str.indexOf('hydration-mismatch') !== -1 ||
                     str.indexOf('A tree hydrated but some attributes') !== -1 ||
                     str.indexOf('did not match') !== -1 ||
                     str.indexOf('Extra attributes from the server') !== -1 ||
-                    str.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1
+                    (str.indexOf('Failed to fetch') !== -1 && (str.indexOf('extension') !== -1 || str.indexOf('requests.js') !== -1 || str.indexOf('executors') !== -1))
                   );
                 }
                 console.error = function() {
@@ -199,7 +208,7 @@ export default function RootLayout({ children }) {
                     return true;
                   }
 
-                  // Suppress unhandled promise rejections that reject with an Event or empty object
+                  // Suppress unhandled promise rejections that reject with an Event or empty object or extension
                   if (event.type === 'unhandledrejection') {
                     var reason = event.reason;
                     if (!reason || reason instanceof Event || (typeof reason === 'object' && !reason.message && !reason.stack)) {
@@ -231,10 +240,13 @@ export default function RootLayout({ children }) {
                       src.indexOf('moz-extension://') !== -1 ||
                       src.indexOf('safari-extension://') !== -1 ||
                       src.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1 ||
+                      src.indexOf('requests.js') !== -1 ||
+                      src.indexOf('executors/') !== -1 ||
                       src.indexOf('bis_skin_checked') !== -1 ||
                       src.indexOf('bis_register') !== -1 ||
                       src.indexOf('hydration-mismatch') !== -1 ||
-                      src.indexOf('[object Event]') !== -1
+                      src.indexOf('[object Event]') !== -1 ||
+                      (src.indexOf('Failed to fetch') !== -1 && (src.indexOf('extension') !== -1 || src.indexOf('requests.js') !== -1 || src.indexOf('executors') !== -1))
                     )
                   ) {
                     if (event.stopImmediatePropagation) event.stopImmediatePropagation();
@@ -275,7 +287,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/logo.png" type="image/png" sizes="any" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <body className={`antialiased font-sans ${poppins.variable}`} suppressHydrationWarning>
+      <body className={`antialiased font-site ${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
         <AuthProvider>
           <CallProvider>
             {children}

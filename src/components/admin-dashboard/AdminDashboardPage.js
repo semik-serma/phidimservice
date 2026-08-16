@@ -13,7 +13,7 @@ import { BottomSection } from "../dashboard/BottomSection";
 import { RightSideWidgets } from "../dashboard/RightSideWidgets";
 import { CommandPalette } from "../dashboard/CommandPalette";
 import { QuickActionModals } from "../dashboard/QuickActionModals";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import RoleGuard from "../RoleGuard";
 import { LogoutConfirmModal } from "../LogoutConfirmModal";
@@ -21,6 +21,7 @@ import { AccountSettings } from "../AccountSettings";
 import { DirectChatSection } from "../chat/DirectChatSection";
 import { CreateArticleModal } from "../articles/CreateArticleModal";
 import { AnnouncementManager } from "./AnnouncementManager";
+import { HomepageCarouselManager } from "./HomepageCarouselManager";
 import { CouponManager } from "./CouponManager";
 import { FriendsManager } from "../community/FriendsManager";
 import { AdminCategoriesManager } from "../admin/AdminCategoriesManager";
@@ -81,7 +82,7 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
 
   return (
     <RoleGuard roles={["ADMIN"]}>
-      <div className={`min-h-screen bg-slate-50/70 dark:bg-[#070f0d] text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white transition-colors duration-300`}>
+      <div className={`min-h-screen bg-[#f5f8f6] dark:bg-[#070f0d] text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500 selection:text-white transition-colors duration-300`}>
       {/* Toast Notification Banner */}
       <AnimatePresence>
         {toastMessage && (
@@ -111,7 +112,7 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
       {/* Main Layout Container */}
       <div
         className={`transition-all duration-300 flex flex-col min-h-screen ${
-          collapsed ? "lg:pl-[84px]" : "lg:pl-[280px]"
+          collapsed ? "lg:pl-[68px]" : "lg:pl-[245px]"
         }`}
       >
         {/* Top Navbar */}
@@ -127,7 +128,7 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
         />
 
         {/* Dashboard Content Container */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
+        <main className="flex-1 p-3.5 sm:p-5 lg:p-6 space-y-5 max-w-[1360px] mx-auto w-full">
           {activeTab === "account-settings" || activeTab === "settings" ? (
             <AccountSettings onShowToast={showToast} />
           ) : activeTab === "friends" ? (
@@ -176,6 +177,8 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
             />
           ) : activeTab === "announcements" ? (
             <AnnouncementManager />
+          ) : activeTab === "carousel" ? (
+            <HomepageCarouselManager onShowToast={showToast} />
           ) : activeTab === "coupons" || activeTab === "offers" ? (
             <CouponManager onShowToast={showToast} />
           ) : activeTab === "messages" || activeTab === "articles" ? (
@@ -193,8 +196,19 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
               <BottomSection />
             </div>
           ) : (
-            <>
-              {/* Full Admin Master Command Center */}
+            <div className="space-y-8">
+              <section className="relative overflow-hidden rounded-[28px] border border-emerald-100 bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.04)] dark:border-emerald-900/40 dark:bg-slate-900 sm:p-8">
+                <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-emerald-400/10 blur-3xl" />
+                <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                  <div>
+                    <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.16em] text-emerald-600"><Sparkles size={14} /> Operations overview</p>
+                    <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Good to see you, {user?.displayName || user?.name || "Admin"}.</h2>
+                    <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">A focused view of live operations, team performance, and customer activity across Phidim Service.</p>
+                  </div>
+                  <button onClick={() => setActiveTab("carousel")} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-xs font-extrabold text-white shadow-lg transition-transform hover:-translate-y-0.5 dark:bg-emerald-600"><span>Manage homepage</span><ArrowUpRight size={15} /></button>
+                </div>
+              </section>
+
               <section>
                 <StatCards />
               </section>
@@ -227,7 +241,7 @@ export default function AdminDashboardPage({ initialTab = "dashboard" }) {
               <section>
                 <BottomSection />
               </section>
-            </>
+            </div>
           )}
         </main>
 

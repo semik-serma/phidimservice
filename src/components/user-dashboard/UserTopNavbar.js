@@ -65,83 +65,83 @@ export function UserTopNavbar({
   };
 
   return (
-    <header className="sticky top-0 z-30 h-[76px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
-      <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8 gap-4">
+    <header className="sticky top-0 z-30 h-[58px] bg-white/85 dark:bg-[#050e0b]/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-emerald-900/30 shadow-[0_1px_0_rgba(15,23,42,0.03)] transition-colors">
+      <div className="flex items-center justify-between h-full px-4 sm:px-6 gap-3">
         {/* Left Side: Mobile Hamburger & Dynamic Page Title + Breadcrumbs */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+            className="lg:hidden p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
             aria-label="Open sidebar"
           >
-            <Menu size={20} />
+            <Menu size={18} />
           </button>
 
           <div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
+            <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500 font-medium">
               <Link href="/" className="hover:text-emerald-600 font-bold flex items-center gap-1">
-                <Home size={13} />
+                <Home size={11} />
                 <span>Home</span>
               </Link>
-              <ChevronRight size={12} />
+              <ChevronRight size={10} />
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Phidim Service</span>
-              <ChevronRight size={12} />
+              <ChevronRight size={10} />
               <span className="capitalize">{activeTab}</span>
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mt-0.5">
+            <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight leading-tight">
               {getPageTitle(activeTab)}
             </h1>
           </div>
         </div>
 
         {/* Center: Global Search Input */}
-        <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
+        <div className="hidden md:flex items-center flex-1 max-w-sm mx-3">
           <div
             onClick={onOpenSearch}
             className="relative w-full cursor-pointer group"
           >
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-emerald-500 transition-colors" />
             <input
               type="text"
               readOnly
-              placeholder="Search users, friends, technicians, or services (⌘K)..."
-              className="w-full h-11 pl-11 pr-14 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-white placeholder-slate-400 cursor-pointer focus:outline-none group-hover:border-emerald-500/50 transition-all shadow-inner"
+              placeholder="Search services, technicians... (⌘K)"
+              className="w-full h-8.5 pl-9 pr-12 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 text-xs text-slate-900 dark:text-white placeholder-slate-400 cursor-pointer focus:outline-none group-hover:border-emerald-500/50 transition-all"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/80 border border-emerald-500/30 rounded-lg">
+            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.2 text-[10px] font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/80 border border-emerald-500/30 rounded-md">
               ⌘K
             </kbd>
           </div>
         </div>
 
         {/* Right Side: Home Button, Wallet, Theme Toggle, Notifications, User Avatar */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Go Back to Home Page Button */}
           <a
             href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition-all hover:scale-105"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] shadow-sm transition-all hover:scale-102"
             title="Go Back to Main Website Homepage"
           >
-            <Home size={15} />
+            <Home size={13} />
             <span className="hidden sm:inline">Back to Home</span>
           </a>
 
           {/* Wallet Balance Badge */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/30 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-            <Wallet size={16} className="text-emerald-500" />
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/30 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+            <Wallet size={13} className="text-emerald-500" />
             <span>NPR 4,500</span>
           </div>
 
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 transition-all"
+            className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 transition-all"
             aria-label="Toggle Theme"
           >
             {darkMode ? (
-              <Sun size={18} className="text-amber-400" />
+              <Sun size={15} className="text-amber-400" />
             ) : (
-              <Moon size={18} className="text-emerald-600" />
+              <Moon size={15} className="text-emerald-600" />
             )}
           </button>
 

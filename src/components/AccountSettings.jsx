@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { User, Image as ImageIcon, CheckCircle2, Save, Sparkles, UserCheck, RefreshCw, Upload, Camera } from "lucide-react";
+import { User, Image as ImageIcon, CheckCircle2, Save, Sparkles, UserCheck, RefreshCw, Upload, Trash2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
+import { saveUserAvatar, resolveUserAvatar } from "@/lib/avatarCache.js";
+import { saveRealUserToRegistry } from "@/lib/userRegistry.js";
 
 const AVATAR_PRESETS = [
   "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80",
@@ -30,11 +32,11 @@ export function AccountSettings({ onShowToast }) {
       setName(user.name || "");
       setDisplayName(user.displayName || user.name || "");
       setUsername(user.username || "");
-      setAvatar(user.avatar || "");
+      setAvatar(resolveUserAvatar(user));
     }
   }, [user]);
 
-  const userInitials = (name || "User")
+  const userInitials = (name || user?.name || "User")
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -91,13 +93,26 @@ export function AccountSettings({ onShowToast }) {
     setIsSaving(true);
 
     try {
-      if (updateUser) {
-        await updateUser({
-          name: name.trim(),
-          displayName: displayName.trim() || name.trim(),
-          username: username.trim().toLowerCase().replace(/[^a-z0-9_]/g, ""),
-          avatar: avatar.trim(),
+      const email = user?.email || "";
+      const trimmedAvatar = avatar.trim();
+      const updatedData = {
+        name: name.trim(),
+        displayName: displayName.trim() || name.trim(),
+        username: username.trim().toLowerCase().replace(/[^a-z0-9_]/g, ""),
+        avatar: trimmedAvatar,
+      };
+
+      if (email) {
+        saveUserAvatar(email, trimmedAvatar);
+        saveRealUserToRegistry({
+          ...user,
+          ...updatedData,
+          email,
         });
+      }
+
+      if (updateUser) {
+        await updateUser(updatedData);
       }
     } catch (err) {
       console.warn("Profile update saved locally with warning:", err);
@@ -113,57 +128,57 @@ export function AccountSettings({ onShowToast }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 15 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -15 }}
-      className="max-w-4xl mx-auto space-y-8"
+      exit={{ opacity: 0, y: -10 }}
+      className="max-w-4xl mx-auto space-y-6"
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800 rounded-2xl p-5 sm:p-6 text-white shadow-xl relative overflow-hidden">
         <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-emerald-100 text-xs font-extrabold uppercase tracking-wider backdrop-blur-md">
-            <Sparkles size={14} className="text-emerald-200" />
+        <div className="relative z-10 space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-emerald-100 text-[11px] font-extrabold uppercase tracking-wider backdrop-blur-md">
+            <Sparkles size={13} className="text-emerald-200" />
             <span>Profile & Account Customization</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Account Settings</h2>
-          <p className="text-emerald-100 text-xs sm:text-sm max-w-xl font-medium leading-relaxed">
-            Customize your account full name, public display name, and avatar picture across all Phidim Service dashboards.
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight">Account Settings</h2>
+          <p className="text-emerald-100 text-xs max-w-xl font-medium leading-relaxed">
+            Customize your account full name, public display name, and avatar picture across all Phidim Service dashboards and community features.
           </p>
         </div>
       </div>
 
       {/* Main Settings Form */}
-      <form onSubmit={handleSave} className="bg-white dark:bg-[#091e17] rounded-3xl border border-slate-200/80 dark:border-emerald-900/40 p-6 sm:p-8 shadow-sm space-y-8">
+      <form onSubmit={handleSave} className="bg-white dark:bg-[#091e17] rounded-2xl border border-slate-200/80 dark:border-emerald-900/40 p-5 sm:p-6 shadow-sm space-y-6">
         
         {/* Profile Picture Section */}
-        <div className="space-y-4">
-          <label className="block text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <ImageIcon size={18} className="text-emerald-600 dark:text-emerald-400" />
+        <div className="space-y-3.5">
+          <label className="block text-xs font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <ImageIcon size={16} className="text-emerald-600 dark:text-emerald-400" />
             <span>Profile Picture</span>
           </label>
 
-          <div className="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-2xl bg-slate-50 dark:bg-emerald-950/40 border border-slate-200/80 dark:border-emerald-800/40">
+          <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-emerald-950/40 border border-slate-200/80 dark:border-emerald-800/40">
             {/* Image Preview */}
             <div className="relative shrink-0">
               {avatar ? (
                 <img
                   src={avatar}
                   alt="Profile Avatar Preview"
-                  className="w-20 h-20 rounded-2xl object-cover ring-4 ring-emerald-500/50 shadow-md"
+                  className="w-16 h-16 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow-sm"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-black text-2xl flex items-center justify-center shadow-md ring-4 ring-emerald-500/30">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-black text-xl flex items-center justify-center shadow-sm ring-2 ring-emerald-500/30">
                   {userInitials}
                 </div>
               )}
-              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#091e17] flex items-center justify-center text-white text-[10px]">
+              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#091e17] flex items-center justify-center text-white text-[9px]">
                 ✓
               </span>
             </div>
 
-            <div className="flex-1 w-full space-y-3">
-              <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 w-full space-y-2.5">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -174,31 +189,42 @@ export function AccountSettings({ onShowToast }) {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow cursor-pointer shrink-0"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow cursor-pointer shrink-0"
                 >
-                  <Upload size={14} />
-                  <span>Upload Photo from Device</span>
+                  <Upload size={13} />
+                  <span>Upload Photo</span>
                 </button>
+                {avatar && (
+                  <button
+                    type="button"
+                    onClick={() => setAvatar("")}
+                    className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 text-xs font-bold transition-all cursor-pointer shrink-0"
+                    title="Remove Photo"
+                  >
+                    <Trash2 size={13} />
+                    <span>Remove</span>
+                  </button>
+                )}
                 <input
                   type="text"
                   placeholder="Or paste Image URL (https://...)"
                   value={avatar}
                   onChange={(e) => setAvatar(e.target.value)}
-                  className="flex-1 px-4 py-2 rounded-xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-medium"
+                  className="flex-1 h-8.5 px-3 rounded-xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-medium"
                 />
               </div>
 
               {/* Avatar Presets */}
               <div>
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-2">Or choose from avatar presets:</p>
-                <div className="flex items-center gap-2.5 overflow-x-auto pb-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Or choose from avatar presets:</p>
+                <div className="flex items-center gap-2 overflow-x-auto pb-1">
                   {AVATAR_PRESETS.map((presetUrl, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => setAvatar(presetUrl)}
-                      className={`w-9 h-9 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                        avatar === presetUrl ? "border-emerald-500 scale-110 ring-2 ring-emerald-500/40" : "border-slate-200 dark:border-slate-700 opacity-70 hover:opacity-100"
+                      className={`w-8 h-8 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                        avatar === presetUrl ? "border-emerald-500 scale-105 ring-2 ring-emerald-500/40" : "border-slate-200 dark:border-slate-700 opacity-70 hover:opacity-100"
                       }`}
                     >
                       <img src={presetUrl} alt={`Preset ${idx + 1}`} className="w-full h-full object-cover" />
@@ -213,12 +239,12 @@ export function AccountSettings({ onShowToast }) {
         <hr className="border-slate-100 dark:border-emerald-900/30" />
 
         {/* Name Fields Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Account Name */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-              <User size={15} className="text-emerald-600 dark:text-emerald-400" />
-              <span>Account Name (Full Name)</span>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <User size={14} className="text-emerald-600 dark:text-emerald-400" />
+              <span>Full Name</span>
             </label>
             <input
               type="text"
@@ -226,15 +252,15 @@ export function AccountSettings({ onShowToast }) {
               placeholder="e.g. Ram Shrestha"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
+              className="w-full h-9 px-3 rounded-xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
             />
-            <p className="text-[11px] text-slate-400 font-medium">Your primary full account name on record.</p>
+            <p className="text-[10px] text-slate-400 font-medium">Your primary full account name on record.</p>
           </div>
 
           {/* Display Name */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-              <UserCheck size={15} className="text-teal-600 dark:text-teal-400" />
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <UserCheck size={14} className="text-teal-600 dark:text-teal-400" />
               <span>Display Name</span>
             </label>
             <input
@@ -243,51 +269,51 @@ export function AccountSettings({ onShowToast }) {
               placeholder="e.g. Ram (Phidim Customer)"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
+              className="w-full h-9 px-3 rounded-xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
             />
-            <p className="text-[11px] text-slate-400 font-medium">Public display name shown on top navigation & headers.</p>
+            <p className="text-[10px] text-slate-400 font-medium">Public display name shown on top navigation.</p>
           </div>
 
           {/* Username */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-              <User size={15} className="text-blue-600 dark:text-blue-400" />
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <User size={14} className="text-blue-600 dark:text-blue-400" />
               <span>Username (@handle)</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">@</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">@</span>
               <input
                 type="text"
                 placeholder="e.g. ram_shrestha"
                 value={username}
                 onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
-                className="w-full pl-8 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold font-mono text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
+                className="w-full h-9 pl-7 pr-3 rounded-xl border border-slate-300 dark:border-emerald-800/60 bg-white dark:bg-slate-900 text-xs font-bold font-mono text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 shadow-inner"
               />
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Unique handle used for direct messaging and community tags.</p>
+            <p className="text-[10px] text-slate-400 font-medium">Unique handle used for messaging and tags.</p>
           </div>
         </div>
 
         {/* Submit & Save Status */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-emerald-900/30">
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-emerald-900/30">
           {isSaved ? (
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold animate-in fade-in">
-              <CheckCircle2 size={16} />
+            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold animate-in fade-in">
+              <CheckCircle2 size={15} />
               <span>Account settings saved successfully!</span>
             </div>
           ) : (
-            <div className="text-xs text-slate-400 font-medium">
-              Changes update immediately across all 3 dashboards.
+            <div className="text-[11px] text-slate-400 font-medium">
+              Changes update immediately across all dashboards.
             </div>
           )}
 
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/20 transition-all cursor-pointer hover:scale-105 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-sm transition-all cursor-pointer hover:scale-102 disabled:opacity-50"
           >
-            {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
-            <span>{isSaving ? "Saving..." : "Save Account Settings"}</span>
+            {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
+            <span>{isSaving ? "Saving..." : "Save Changes"}</span>
           </button>
         </div>
       </form>

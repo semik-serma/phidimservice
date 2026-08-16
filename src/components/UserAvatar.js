@@ -1,17 +1,45 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { resolveUserAvatar, subscribeAvatarUpdates } from "@/lib/avatarCache.js";
 
 /**
  * Universal UserAvatar Component
- * 1) Renders real profile pictures (Google, uploaded, local avatars)
- * 2) Fallbacks to a high-contrast SVG Initials avatar matching the user's name (never broken or placeholder)
+ * 1) Renders real profile pictures (Google, uploaded, local avatars, cached custom uploads)
+ * 2) Reactively updates whenever a new picture is saved in Account Settings
+ * 3) Fallbacks to a high-contrast SVG Initials avatar matching the user's name (never broken or placeholder)
  */
 export function UserAvatar({ user, size = "md", className = "" }) {
   const [imageError, setImageError] = useState(false);
+  const [avatarOverride, setAvatarOverride] = useState("");
 
   const name = user?.displayName || user?.name || user?.email?.split("@")[0] || "User";
-  const avatarUrl = user?.avatar || user?.picture || user?.image || user?.photoURL || "";
+  const userEmail = (user?.email || (typeof user === "string" ? user : "")).trim().toLowerCase();
+
+  // Resolve latest avatar with override and cache fallback
+  const resolvedUrl = useMemo(() => {
+    return avatarOverride || resolveUserAvatar(user);
+  }, [user, avatarOverride]);
+
+  // Subscribe to live avatar updates across the application
+  useEffect(() => {
+    const unsub = subscribeAvatarUpdates((detail) => {
+      if (!detail?.email || (userEmail && detail.email.toLowerCase() === userEmail)) {
+        if (detail?.avatar) {
+          setAvatarOverride(detail.avatar);
+          setImageError(false);
+        } else {
+          setAvatarOverride(resolveUserAvatar(user));
+        }
+      }
+    });
+    return unsub;
+  }, [user, userEmail]);
+
+  useEffect(() => {
+    setImageError(false);
+    setAvatarOverride("");
+  }, [user]);
 
   const initials = useMemo(() => {
     const parts = name.trim().split(/\s+/);
@@ -49,17 +77,17 @@ export function UserAvatar({ user, size = "md", className = "" }) {
   const currentSize = sizeClasses[size] || sizeClasses.md;
 
   const isValidUrl =
-    avatarUrl &&
-    typeof avatarUrl === "string" &&
-    (avatarUrl.startsWith("http://") ||
-      avatarUrl.startsWith("https://") ||
-      avatarUrl.startsWith("data:image/") ||
-      avatarUrl.startsWith("/"));
+    resolvedUrl &&
+    typeof resolvedUrl === "string" &&
+    (resolvedUrl.startsWith("http://") ||
+      resolvedUrl.startsWith("https://") ||
+      resolvedUrl.startsWith("data:image/") ||
+      resolvedUrl.startsWith("/"));
 
   if (isValidUrl && !imageError) {
     return (
       <img
-        src={avatarUrl}
+        src={resolvedUrl}
         alt={name}
         className={`${currentSize} rounded-2xl object-cover ring-2 ring-emerald-500/40 shrink-0 ${className}`}
         onError={() => setImageError(true)}

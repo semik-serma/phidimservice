@@ -189,7 +189,7 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
       {/* Main Layout Container */}
       <div
         className={`transition-all duration-300 flex flex-col min-h-screen ${
-          collapsed ? "lg:pl-[84px]" : "lg:pl-[280px]"
+          collapsed ? "lg:pl-[68px]" : "lg:pl-[245px]"
         }`}
       >
         {/* Top Navbar */}
@@ -207,7 +207,7 @@ export default function TechnicianDashboardPage({ initialTab = "dashboard" }) {
         />
 
         {/* Main Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1700px] mx-auto w-full">
+        <main className="flex-1 p-3.5 sm:p-5 lg:p-6 space-y-5 max-w-[1360px] mx-auto w-full">
           {activeTab === "account-settings" || activeTab === "settings" ? (
             <AccountSettings onShowToast={showToast} />
           ) : activeTab === "messages" ? (

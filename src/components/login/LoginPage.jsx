@@ -206,8 +206,18 @@ export default function LoginPage() {
         rememberMe,
         role: 'USER',
       });
-      toast.success(`Welcome back, ${account.name}! Redirecting to customer dashboard...`);
-      router.push('/user/dashboard');
+      const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const redirectParam = urlParams?.get('redirect');
+      const targetDashboard = redirectParam || account.dashboardPath || (
+        account.role === 'ADMIN'
+          ? '/admin/dashboard'
+          : account.role === 'TECHNICIAN'
+          ? '/technician/dashboard'
+          : '/user/dashboard'
+      );
+      if (typeof window !== 'undefined') {
+        window.location.href = targetDashboard;
+      }
     } catch (err) {
       const msg = err?.message || 'Customer login failed. Please check your credentials.';
       setServerError(msg);
@@ -305,12 +315,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row font-sans bg-slate-50">
+    <div className="min-h-screen flex flex-col lg:flex-row font-sans bg-[#f4f8f6]">
       {/* LEFT: Brand showcase (desktop only) */}
       <BrandPanel isLoading={isSubmitting} onDemoLogin={handleDemoLogin} />
 
       {/* RIGHT: Centered authentication card */}
-      <main className="w-full lg:flex-1 min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-12 py-10 bg-gradient-to-br from-white via-[#F8FAF9] to-[#EFFAF3] relative overflow-hidden">
+      <main className="w-full lg:flex-1 min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-12 py-10 bg-[radial-gradient(circle_at_100%_0%,rgba(34,197,94,0.12),transparent_30%),linear-gradient(135deg,#ffffff_0%,#f7fbf8_55%,#effaf4_100%)] relative overflow-hidden">
         {/* Ambient light background */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#22C55E]/10 blur-[120px]" />
@@ -341,7 +351,7 @@ export default function LoginPage() {
         </div>
 
         {/* Main Auth Card */}
-        <div className="relative w-full max-w-[480px] bg-white/90 backdrop-blur-xl rounded-[28px] p-6 sm:p-8 border border-white/70 shadow-2xl shadow-emerald-900/[0.06] animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+        <div className="relative w-full max-w-[480px] bg-white/90 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 border border-slate-200/70 shadow-[0_24px_60px_rgba(6,78,59,0.12)] animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
           
           {/* Top Right 3-Dot Hidden Options Menu */}
           <div className="absolute top-5 right-5 z-20">
@@ -404,7 +414,7 @@ export default function LoginPage() {
           </div>
 
           {/* Card Header */}
-          <div className="text-center space-y-2 pr-8">
+          <div className="text-center space-y-2.5 pr-8">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#16A34A]/10 to-[#22C55E]/10 border border-[#16A34A]/20 shadow-xs mx-auto">
               {role === 'USER' ? (
                 <User className="w-7 h-7 text-emerald-600" />

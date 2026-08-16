@@ -4,13 +4,11 @@ import { useState } from "react";
 import {
   Layers,
   PlusCircle,
-  FolderPlus,
   Tag,
   CheckCircle2,
   Trash2,
   Edit,
   Sparkles,
-  ChevronRight,
   Package,
   Wrench,
   Search,
@@ -26,23 +24,18 @@ import { INITIAL_CATEGORIES } from "@/data/categoriesData";
 export function AdminCategoriesManager({
   categories = INITIAL_CATEGORIES,
   onAddCategory,
-  onAddSubCategory,
   onOpenAddServiceModal,
   onShowToast,
 }) {
   const [categoriesList, setCategoriesList] = useState(categories);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Modals state
+  // Category Modal state
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [showSubCategoryModal, setShowSubCategoryModal] = useState(false);
 
   // Form states
   const [newCatName, setNewCatName] = useState("");
   const [newCatDesc, setNewCatDesc] = useState("");
-  const [parentCatId, setParentCatId] = useState(categoriesList[0]?.id || "");
-  const [newSubName, setNewSubName] = useState("");
-  const [newSubDesc, setNewSubDesc] = useState("");
 
   const handleCreateCategory = (e) => {
     e.preventDefault();
@@ -54,7 +47,6 @@ export function AdminCategoriesManager({
       description: newCatDesc.trim() || "Main service category",
       icon: "Layers",
       count: 0,
-      subCategories: [],
     };
 
     setCategoriesList((prev) => [newCat, ...prev]);
@@ -66,37 +58,6 @@ export function AdminCategoriesManager({
     setShowCategoryModal(false);
   };
 
-  const handleCreateSubCategory = (e) => {
-    e.preventDefault();
-    if (!newSubName.trim() || !parentCatId) return;
-
-    const newSub = {
-      id: `sub-${Date.now()}`,
-      name: newSubName.trim(),
-      description: newSubDesc.trim(),
-      count: 0,
-    };
-
-    setCategoriesList((prev) =>
-      prev.map((c) => {
-        if (c.id === parentCatId) {
-          return {
-            ...c,
-            subCategories: [...(c.subCategories || []), newSub],
-          };
-        }
-        return c;
-      })
-    );
-
-    if (onAddSubCategory) onAddSubCategory(parentCatId, newSub);
-    if (onShowToast) onShowToast(`Sub-category "${newSub.name}" added!`);
-
-    setNewSubName("");
-    setNewSubDesc("");
-    setShowSubCategoryModal(false);
-  };
-
   const handleDeleteCategory = (catId, catName) => {
     if (confirm(`Are you sure you want to delete category "${catName}"?`)) {
       setCategoriesList((prev) => prev.filter((c) => c.id !== catId));
@@ -106,7 +67,7 @@ export function AdminCategoriesManager({
 
   const filteredCategories = categoriesList.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.subCategories?.some((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    (c.description && c.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -118,29 +79,21 @@ export function AdminCategoriesManager({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-emerald-100 text-xs font-black uppercase tracking-wider backdrop-blur-md">
               <Sparkles size={14} className="text-emerald-200" />
-              <span>Catalog & Hierarchy Management</span>
+              <span>Catalog & Category Management</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Categories & Sub-Categories</h2>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Technical Service Categories</h2>
             <p className="text-xs sm:text-sm text-emerald-100 max-w-2xl font-medium leading-relaxed">
-              Create main technical service categories and sub-categories. Service packages can be mapped directly to each category.
+              Manage main technical service categories across Phidim & Panchthar. Doorstep service packages and certified technicians map directly to each category.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => setShowCategoryModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white text-emerald-900 font-extrabold text-xs shadow hover:bg-emerald-50 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white text-emerald-900 font-extrabold text-xs shadow hover:bg-emerald-50 transition-all cursor-pointer hover:scale-102"
             >
               <PlusCircle size={16} />
               <span>+ Create Category</span>
-            </button>
-
-            <button
-              onClick={() => setShowSubCategoryModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500/20 text-emerald-100 border border-emerald-400/30 font-extrabold text-xs hover:bg-emerald-500/30 transition-all cursor-pointer"
-            >
-              <FolderPlus size={16} />
-              <span>+ Create Sub-Category</span>
             </button>
           </div>
         </div>
@@ -152,7 +105,7 @@ export function AdminCategoriesManager({
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search categories or sub-categories..."
+            placeholder="Search service categories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
@@ -190,7 +143,7 @@ export function AdminCategoriesManager({
                       {cat.name}
                     </h3>
                     <span className="text-[11px] font-bold text-slate-400">
-                      {cat.subCategories?.length || 0} Sub-categories • {cat.count || 0} Service Offerings
+                      {cat.count || 0} Service Offerings
                     </span>
                   </div>
                 </div>
@@ -204,52 +157,21 @@ export function AdminCategoriesManager({
                 </button>
               </div>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium line-clamp-2">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium line-clamp-3 leading-relaxed">
                 {cat.description || "Main Service Category"}
               </p>
-
-              {/* Sub-categories Pills */}
-              <div className="space-y-2 pt-1">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                  Sub-Categories:
-                </span>
-                {cat.subCategories && cat.subCategories.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.subCategories.map((sub) => (
-                      <span
-                        key={sub.id}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
-                      >
-                        <ChevronRight size={12} className="text-emerald-500" />
-                        <span>{sub.name}</span>
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-[11px] text-slate-400 font-medium italic">
-                    Direct Main Service Category
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Bottom Actions */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <button
-                onClick={() => {
-                  setParentCatId(cat.id);
-                  setShowSubCategoryModal(true);
-                }}
-                className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <PlusCircle size={14} />
-                <span>Add Sub-category</span>
-              </button>
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                Active Category
+              </span>
 
               {onOpenAddServiceModal && (
                 <button
                   onClick={onOpenAddServiceModal}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-colors cursor-pointer flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-colors cursor-pointer flex items-center gap-1"
                 >
                   <PlusCircle size={13} />
                   <span>+ Add Service</span>
@@ -273,11 +195,11 @@ export function AdminCategoriesManager({
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <PlusCircle size={18} className="text-emerald-500" />
-                  <span>Create Main Category</span>
+                  <span>Create Category</span>
                 </h3>
                 <button
                   onClick={() => setShowCategoryModal(false)}
-                  className="text-slate-400 hover:text-slate-600 font-bold"
+                  className="text-slate-400 hover:text-slate-600 font-bold cursor-pointer"
                 >
                   ✕
                 </button>
@@ -304,7 +226,7 @@ export function AdminCategoriesManager({
                   </label>
                   <textarea
                     rows={2}
-                    placeholder="Brief summary of items in this category..."
+                    placeholder="Brief summary of services in this category..."
                     value={newCatDesc}
                     onChange={(e) => setNewCatDesc(e.target.value)}
                     className="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
@@ -315,91 +237,15 @@ export function AdminCategoriesManager({
                   <button
                     type="button"
                     onClick={() => setShowCategoryModal(false)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold"
+                    className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow"
+                    className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow cursor-pointer"
                   >
                     Save Category
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* CREATE SUB-CATEGORY MODAL */}
-      <AnimatePresence>
-        {showSubCategoryModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full p-6 space-y-5"
-            >
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <FolderPlus size={18} className="text-teal-500" />
-                  <span>Create Sub-Category</span>
-                </h3>
-                <button
-                  onClick={() => setShowSubCategoryModal(false)}
-                  className="text-slate-400 hover:text-slate-600 font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateSubCategory} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Select Parent Category *
-                  </label>
-                  <select
-                    value={parentCatId}
-                    onChange={(e) => setParentCatId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 cursor-pointer"
-                  >
-                    {categoriesList.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Sub-Category Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. IP & Smart Cameras"
-                    value={newSubName}
-                    onChange={(e) => setNewSubName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowSubCategoryModal(false)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black shadow"
-                  >
-                    Save Sub-category
                   </button>
                 </div>
               </form>

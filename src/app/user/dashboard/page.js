@@ -11,6 +11,6 @@ export const metadata = {
 };
 
 export default async function UserDashboardPageRoute() {
-  await requireRoles([ROLES.USER]);
+  await requireRoles([ROLES.USER, ROLES.ADMIN]);
   return <UserDashboardPage initialTab="dashboard" />;
 }

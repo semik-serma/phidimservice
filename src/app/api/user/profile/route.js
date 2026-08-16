@@ -45,7 +45,13 @@ export async function PATCH(request) {
     const clientUser = updatedUser ? toClientUser(updatedUser) : { ...user, ...fields };
 
     const res = NextResponse.json({ success: true, user: clientUser });
-    const cookieVal = encodeURIComponent(JSON.stringify(clientUser));
+    // Browser cookies are limited to roughly 4 KB. Uploaded photos are data
+    // URLs and must never be copied into the lightweight session cookie.
+    const cookieUser = {
+      ...clientUser,
+      avatar: clientUser.avatar?.startsWith("data:") ? "" : clientUser.avatar,
+    };
+    const cookieVal = encodeURIComponent(JSON.stringify(cookieUser));
     res.cookies.set("phidim_auth_user", cookieVal, {
       path: "/",
       maxAge: 2592000,

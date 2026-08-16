@@ -25,7 +25,7 @@ export const Header = ({
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 py-2.5 sm:py-3 px-3 sm:px-4 md:px-6">
+    <header className="font-navbar bg-white border-b border-gray-200 py-2.5 sm:py-3 px-3 sm:px-4 md:px-6" data-navbar="true">
       <div className="max-w-[1700px] mx-auto flex flex-col md:flex-row items-center justify-between md:justify-center gap-4 md:gap-[150px]">
         
         {/* Brand Logo - Desktop & Tablet */}

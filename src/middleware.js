@@ -99,7 +99,9 @@ export function middleware(request) {
 
   // 3. Logged-in users visiting auth pages get redirected to their dashboard
   if (sessionUser && ["/forgot-password", "/reset-password"].includes(pathname)) {
-    return NextResponse.redirect(new URL(ownDashboard, request.url));
+    if (pathname !== ownDashboard) {
+      return NextResponse.redirect(new URL(ownDashboard, request.url));
+    }
   }
 
   // 4. Public routes pass through
@@ -135,14 +137,21 @@ export function middleware(request) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (isUserRoute && role !== "USER") {
-      return NextResponse.redirect(new URL(ownDashboard, request.url));
+    // Role boundary checks (Admins can access user routes for testing/supervision)
+    if (isUserRoute && role !== "USER" && role !== "ADMIN") {
+      if (pathname !== ownDashboard) {
+        return NextResponse.redirect(new URL(ownDashboard, request.url));
+      }
     }
-    if (isTechRoute && role !== "TECHNICIAN") {
-      return NextResponse.redirect(new URL(ownDashboard, request.url));
+    if (isTechRoute && role !== "TECHNICIAN" && role !== "ADMIN") {
+      if (pathname !== ownDashboard) {
+        return NextResponse.redirect(new URL(ownDashboard, request.url));
+      }
     }
     if (isAdminRoute && role !== "ADMIN") {
-      return NextResponse.redirect(new URL(ownDashboard, request.url));
+      if (pathname !== ownDashboard) {
+        return NextResponse.redirect(new URL(ownDashboard, request.url));
+      }
     }
   }
 

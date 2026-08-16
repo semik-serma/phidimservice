@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Wifi, ArrowRight, CheckCircle2, Wind, Wrench, ShieldCheck } from "lucide-react";
+import { getHeroCarouselSlides, refreshHeroCarouselSlides, subscribeHeroCarouselSlides } from "@/lib/heroCarouselStore";
 
 export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [adminSlides, setAdminSlides] = useState(() => getHeroCarouselSlides());
 
-  const slides = [
+  const defaultSlides = [
     {
       id: 1,
       bgClass: "bg-gradient-to-r from-[#0f4c81] via-[#1b6ca8] to-[#2889cb]",
@@ -101,6 +103,24 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
     }
   ];
 
+  // Admin slides lead the rotation so a newly published campaign is visible
+  // immediately, while the built-in service slides remain a useful fallback.
+  const slides = [...adminSlides.map((slide) => ({
+    ...slide,
+    type: "admin_image",
+    bgClass: "bg-slate-950",
+    action: onExploreServices || onFiberSelect,
+  })), ...defaultSlides];
+
+  useEffect(() => subscribeHeroCarouselSlides((nextSlides) => {
+    setAdminSlides(nextSlides);
+    setCurrentSlide(0);
+  }), []);
+
+  useEffect(() => {
+    refreshHeroCarouselSlides();
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -119,34 +139,34 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
   const active = slides[currentSlide];
 
   return (
-    <section className="hidden md:flex relative overflow-hidden w-full min-h-[500px] md:min-h-[580px] lg:min-h-[620px] items-center shadow-2xl border-b border-slate-800/40">
+    <section className="relative overflow-hidden w-full min-h-[420px] sm:min-h-[460px] md:min-h-[500px] lg:min-h-[540px] flex items-center shadow-2xl border-b border-slate-800/40">
       {/* Dynamic Slide Background */}
       <div className={`absolute inset-0 transition-all duration-700 ${active.bgClass}`}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/30 pointer-events-none" />
       </div>
 
       {/* Main Slide Container */}
-      <div className="relative max-w-7xl mx-auto px-6 md:px-12 w-full py-12 md:py-16 z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+      <div className="relative max-w-7xl mx-auto px-5 md:px-10 w-full py-8 sm:py-10 md:py-14 z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center">
           
           {/* Left Text Column */}
-          <div className="md:col-span-6 text-white space-y-4 animate-in fade-in slide-in-from-left duration-500">
-            <span className="inline-block text-xs font-bold tracking-widest text-blue-200 uppercase bg-white/10 px-3 py-1 rounded-sm border border-white/20">
+          <div className="md:col-span-7 text-white space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-left duration-500">
+            <span className="inline-block text-xs md:text-sm font-extrabold tracking-widest text-blue-200 uppercase bg-white/10 px-3 py-1 rounded-xs border border-white/20">
               {active.subtitle}
             </span>
 
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white drop-shadow-md">
               {active.title}
             </h2>
 
-            <p className="text-xs md:text-sm text-blue-100/90 leading-relaxed max-w-lg font-normal">
+            <p className="text-xs sm:text-sm md:text-base text-blue-100/95 leading-relaxed max-w-xl font-normal">
               {active.description}
             </p>
 
             <div className="pt-2">
               <button
                 onClick={active.action}
-                className="inline-flex items-center gap-2 border-2 border-white/80 hover:border-white text-white font-bold text-xs px-6 py-2.5 uppercase tracking-wider rounded-xs hover:bg-white hover:text-blue-900 transition-all cursor-pointer shadow-lg hover:shadow-xl"
+                className="inline-flex items-center gap-2 border border-white/90 hover:border-white text-white font-extrabold text-xs sm:text-sm px-6 py-2.5 uppercase tracking-wider rounded-xs hover:bg-white hover:text-blue-900 transition-all cursor-pointer shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <span>{active.buttonText}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -155,60 +175,56 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
           </div>
 
           {/* Right Service Graphic Column */}
-          <div className="md:col-span-6 flex items-center justify-center relative min-h-[280px]">
+          <div className="md:col-span-5 flex items-center justify-center relative">
+
+            {active.type === "admin_image" && (
+              <div className="relative h-[260px] sm:h-[300px] md:h-[340px] w-full max-w-md lg:max-w-lg overflow-hidden rounded-2xl border border-white/30 bg-slate-900/40 shadow-2xl">
+                <img src={active.image} alt={active.title} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-white/10" />
+                <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-slate-950/60 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white backdrop-blur-md">
+                  <CheckCircle2 size={14} className="text-emerald-300" /> Featured
+                </div>
+              </div>
+            )}
 
             {/* 1. AC Installation Graphic (Ac1.jpg + Ac2.jpg) */}
             {active.type === "ac_install_graphic" && (
-              <div className="relative w-full max-w-md bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/30 text-white shadow-2xl space-y-3">
+              <div className="relative w-full max-w-md lg:max-w-lg bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/30 text-white shadow-2xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Wind className="w-7 h-7 text-cyan-300 animate-pulse" />
-                    <div>
-                      <h4 className="font-black text-sm text-white">Split AC Mounting & Service</h4>
-                      <p className="text-[10px] text-cyan-200 font-semibold">Phidim Doorstep Technician</p>
-                    </div>
+                    <Wind className="w-5 h-5 text-cyan-300 animate-pulse" />
+                    <span className="font-extrabold text-sm sm:text-base text-white">Split AC Mounting</span>
                   </div>
-                  <span className="bg-cyan-400 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
-                    REAL FIELD WORK
+                  <span className="bg-cyan-400 text-slate-950 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
+                    FIELD WORK
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md group">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md h-44 sm:h-52 md:h-56 group">
                     <img
                       src="/Ac1.jpg"
                       alt="AC Servicing Phidim 1"
-                      className="w-full h-40 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2">
-                      <span className="text-[10px] font-black text-cyan-300 drop-shadow-md">
-                        🛠️ Indoor Unit Service
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2.5">
+                      <span className="text-xs font-bold text-cyan-200 bg-slate-950/70 backdrop-blur-xs px-2 py-0.5 rounded-md">
+                        Indoor Service
                       </span>
                     </div>
                   </div>
 
-                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md group">
+                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md h-44 sm:h-52 md:h-56 group">
                     <img
                       src="/Ac2.jpg"
                       alt="AC Servicing Phidim 2"
-                      className="w-full h-40 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2">
-                      <span className="text-[10px] font-black text-cyan-300 drop-shadow-md">
-                        ❄️ Outdoor Bracket Mount
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2.5">
+                      <span className="text-xs font-bold text-cyan-200 bg-slate-950/70 backdrop-blur-xs px-2 py-0.5 rounded-md">
+                        Outdoor Mount
                       </span>
                     </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>Copper Pipe Fitting</span>
-                  </div>
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>30-Min On-Site Dispatch</span>
                   </div>
                 </div>
               </div>
@@ -216,56 +232,42 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
 
             {/* 2. AC Gas Release Graphic (Acgasrelease4.jpg + Ac3.jpg) */}
             {active.type === "ac_gas_graphic" && (
-              <div className="relative w-full max-w-md bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/30 text-white shadow-2xl space-y-3">
+              <div className="relative w-full max-w-md lg:max-w-lg bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/30 text-white shadow-2xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Wind className="w-7 h-7 text-cyan-300 animate-pulse" />
-                    <div>
-                      <h4 className="font-black text-sm text-white">AC Gas Charging & Pressure Test</h4>
-                      <p className="text-[10px] text-cyan-200 font-semibold">Phidim On-Site Technician</p>
-                    </div>
+                    <Wind className="w-5 h-5 text-cyan-300 animate-pulse" />
+                    <span className="font-extrabold text-sm sm:text-base text-white">AC Gas Charging</span>
                   </div>
-                  <span className="bg-green-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
-                    GAS CHARGING
+                  <span className="bg-emerald-400 text-slate-950 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
+                    PRESSURE TEST
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md group">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md h-44 sm:h-52 md:h-56 group">
                     <img
                       src="/Acgasrelease4.jpg"
                       alt="AC Gas Release Service"
-                      className="w-full h-40 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2">
-                      <span className="text-[10px] font-black text-cyan-300 drop-shadow-md">
-                        💨 Gas Pressure Release
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2.5">
+                      <span className="text-xs font-bold text-cyan-200 bg-slate-950/70 backdrop-blur-xs px-2 py-0.5 rounded-md">
+                        Gas Refill
                       </span>
                     </div>
                   </div>
 
-                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md group">
+                  <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md h-44 sm:h-52 md:h-56 group">
                     <img
                       src="/Ac3.jpg"
                       alt="AC Technician Servicing"
-                      className="w-full h-40 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2">
-                      <span className="text-[10px] font-black text-cyan-300 drop-shadow-md">
-                        🛠️ Coil & Valve Test
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-2.5">
+                      <span className="text-xs font-bold text-cyan-200 bg-slate-950/70 backdrop-blur-xs px-2 py-0.5 rounded-md">
+                        Coil & Valve
                       </span>
                     </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>R32 / R410a Gas Refill</span>
-                  </div>
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>Leak Detection Test</span>
                   </div>
                 </div>
               </div>
@@ -273,41 +275,27 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
 
             {/* 3. Refrigerator Gas Charging (frggaschr.jpg) */}
             {active.type === "fridge_graphic" && (
-              <div className="relative w-full max-w-sm bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/30 text-white shadow-2xl space-y-3">
+              <div className="relative w-full max-w-md lg:max-w-lg bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/30 text-white shadow-2xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-7 h-7 text-cyan-300 animate-pulse" />
-                    <div>
-                      <h4 className="font-black text-sm text-white">Refrigerator Gas Charging</h4>
-                      <p className="text-[10px] text-cyan-200 font-semibold">Phidim Fridge Repair</p>
-                    </div>
+                    <ShieldCheck className="w-5 h-5 text-cyan-300 animate-pulse" />
+                    <span className="font-extrabold text-sm sm:text-base text-white">Refrigerator Gas Charging</span>
                   </div>
-                  <span className="bg-cyan-400 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
-                    SAME DAY FIX
+                  <span className="bg-cyan-400 text-slate-950 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
+                    DOORSTEP
                   </span>
                 </div>
 
-                <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-lg group">
+                <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md h-52 sm:h-60 md:h-64 group bg-slate-900/40">
                   <img
                     src="/frggaschr.jpg"
                     alt="Refrigerator Gas Charging Phidim"
-                    className="w-full h-44 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-3">
-                    <span className="text-xs font-black text-cyan-300 drop-shadow-md">
-                      🧊 Fridge Compressor & Gas Refill Service
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent flex items-end p-3">
+                    <span className="text-xs sm:text-sm font-bold text-cyan-200 bg-slate-950/75 backdrop-blur-xs px-3 py-1 rounded-lg border border-white/10">
+                      Compressor & Gas Charging
                     </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>Gas Charging & Soldering</span>
-                  </div>
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>Single & Double Door</span>
                   </div>
                 </div>
               </div>
@@ -315,83 +303,55 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
 
             {/* 4. Ceiling Fan & Electrical (Ceilingfan1.jpg) */}
             {active.type === "fan_graphic" && (
-              <div className="relative w-full max-w-sm bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/30 text-white shadow-2xl space-y-3">
+              <div className="relative w-full max-w-md lg:max-w-lg bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/30 text-white shadow-2xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Wrench className="w-7 h-7 text-green-400 animate-pulse" />
-                    <div>
-                      <h4 className="font-black text-sm text-white">Ceiling Fan & Appliance Repair</h4>
-                      <p className="text-[10px] text-green-200 font-semibold">Phidim Electrical Technician</p>
-                    </div>
+                    <Wrench className="w-5 h-5 text-green-400 animate-pulse" />
+                    <span className="font-extrabold text-sm sm:text-base text-white">Ceiling Fan & Electrical</span>
                   </div>
-                  <span className="bg-green-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
-                    ON-SITE FIX
+                  <span className="bg-green-400 text-slate-950 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
+                    ON-SITE
                   </span>
                 </div>
 
-                <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-lg group">
+                <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md h-52 sm:h-60 md:h-64 group bg-slate-900/40">
                   <img
                     src="/Ceilingfan1.jpg"
                     alt="Ceiling Fan Repair Phidim"
-                    className="w-full h-44 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-3">
-                    <span className="text-xs font-black text-green-300 drop-shadow-md">
-                      ⚡ Motor Winding, Capacitor & Wiring
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent flex items-end p-3">
+                    <span className="text-xs sm:text-sm font-bold text-green-200 bg-slate-950/75 backdrop-blur-xs px-3 py-1 rounded-lg border border-white/10">
+                      Motor Winding, Capacitor & Wiring
                     </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>Capacitor & Regulator Fix</span>
-                  </div>
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>House Wiring & Breakers</span>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* 5. DishHome DP Box & Fiber Networking (dp1.jpg) */}
+            {/* 5. DishHome DP Box & Fiber Networking (image.png) */}
             {active.type === "dp_graphic" && (
-              <div className="relative w-full max-w-sm bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/30 text-white shadow-2xl space-y-3">
+              <div className="relative w-full max-w-md lg:max-w-lg bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/30 text-white shadow-2xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Wifi className="w-7 h-7 text-cyan-300 animate-pulse" />
-                    <div>
-                      <h4 className="font-black text-sm text-white">DishHome Optical Fiber DP Box</h4>
-                      <p className="text-[10px] text-cyan-200 font-semibold">Phidim Broadband Network</p>
-                    </div>
+                    <Wifi className="w-5 h-5 text-cyan-300 animate-pulse" />
+                    <span className="font-extrabold text-sm sm:text-base text-white">DishHome DP Box & Fiber</span>
                   </div>
-                  <span className="bg-cyan-400 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                  <span className="bg-cyan-400 text-slate-950 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
                     DTH & FIBER
                   </span>
                 </div>
 
-                <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-lg group bg-slate-900/50">
+                <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-md h-52 sm:h-60 md:h-64 group bg-slate-900/60">
                   <img
                     src="/image.png"
                     alt="DishHome DTH Official Connection Phidim"
-                    className="w-full h-44 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain sm:object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-3">
-                    <span className="text-xs font-black text-cyan-300 drop-shadow-md">
-                      📡 DishHome DTH Official Connection & Fiber Setup
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent flex items-end p-3">
+                    <span className="text-xs sm:text-sm font-bold text-cyan-200 bg-slate-950/75 backdrop-blur-xs px-3 py-1 rounded-lg border border-white/10">
+                      DTH Connection & Fiber Setup
                     </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>Fiber Splicing & Drop Wire</span>
-                  </div>
-                  <div className="bg-white/10 p-2 rounded-lg border border-white/10 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
-                    <span>DishHome DTH Connection</span>
                   </div>
                 </div>
               </div>
@@ -405,7 +365,7 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
       {/* Slide Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/30 hover:bg-black/60 text-white flex items-center justify-center transition-all z-20 cursor-pointer backdrop-blur-sm border border-white/20 hover:scale-110"
+        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/30 hover:bg-black/60 text-white flex items-center justify-center transition-all z-20 cursor-pointer backdrop-blur-sm border border-white/20 hover:scale-110"
         aria-label="Previous slide"
       >
         <ChevronLeft className="w-6 h-6" />
@@ -413,7 +373,7 @@ export const HeroCarousel = ({ onExploreServices, onFiberSelect, onBookService }
 
       <button
         onClick={nextSlide}
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/30 hover:bg-black/60 text-white flex items-center justify-center transition-all z-20 cursor-pointer backdrop-blur-sm border border-white/20 hover:scale-110"
+        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/30 hover:bg-black/60 text-white flex items-center justify-center transition-all z-20 cursor-pointer backdrop-blur-sm border border-white/20 hover:scale-110"
         aria-label="Next slide"
       >
         <ChevronRight className="w-6 h-6" />

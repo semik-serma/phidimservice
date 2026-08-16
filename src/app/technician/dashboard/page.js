@@ -11,6 +11,6 @@ export const metadata = {
 };
 
 export default async function TechnicianDashboardPageRoute() {
-  await requireRoles([ROLES.TECHNICIAN]);
+  await requireRoles([ROLES.TECHNICIAN, ROLES.ADMIN]);
   return <TechnicianDashboardPage initialTab="dashboard" />;
 }

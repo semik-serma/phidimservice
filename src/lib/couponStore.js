@@ -30,9 +30,65 @@ const INITIAL_COUPONS = [
     active: true,
   },
 ];
+const COUPON_CLAIMS_STORAGE_KEY = "phidim_service_coupon_claims_v1";
 
 let _coupons = null;
 let _listeners = [];
+let _claimListeners = [];
+
+function claimOwnerKey(user) {
+  return String(user?.email || user?.id || "guest").trim().toLowerCase();
+}
+
+function loadCouponClaims() {
+  if (typeof window === "undefined") return {};
+  try {
+    const saved = localStorage.getItem(COUPON_CLAIMS_STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : {};
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+export function getClaimedCouponCodes(user) {
+  const claims = loadCouponClaims();
+  const codes = claims[claimOwnerKey(user)];
+  return Array.isArray(codes) ? codes : [];
+}
+
+export function claimCouponForUser(user, code) {
+  const normalizedCode = String(code || "").trim().toUpperCase();
+  if (!normalizedCode || typeof window === "undefined") return false;
+
+  const owner = claimOwnerKey(user);
+  const claims = loadCouponClaims();
+  const existing = Array.isArray(claims[owner]) ? claims[owner] : [];
+  if (existing.includes(normalizedCode)) return false;
+
+  claims[owner] = [...existing, normalizedCode];
+  try {
+    localStorage.setItem(COUPON_CLAIMS_STORAGE_KEY, JSON.stringify(claims));
+    _claimListeners.forEach((fn) => fn([...claims[owner]]));
+    return true;
+  } catch (e) {
+    console.error("Failed to save claimed coupon:", e);
+    return false;
+  }
+}
+
+export function subscribeCouponClaims(user, fn) {
+  const notify = () => fn(getClaimedCouponCodes(user));
+  _claimListeners.push(notify);
+  const storageHandler = (event) => {
+    if (event.key === COUPON_CLAIMS_STORAGE_KEY) notify();
+  };
+  if (typeof window !== "undefined") window.addEventListener("storage", storageHandler);
+  return () => {
+    _claimListeners = _claimListeners.filter((listener) => listener !== notify);
+    if (typeof window !== "undefined") window.removeEventListener("storage", storageHandler);
+  };
+}
 
 function loadCoupons() {
   if (_coupons) return _coupons;

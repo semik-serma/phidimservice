@@ -64,6 +64,7 @@ export function VideoVoiceCallModal({
   callType = "video",
   initialCallState = "RINGING",
   activeCallId,
+  isCaller = false,
 }) {
   const { user: currentUser } = useAuth();
   const [isVideoOn, setIsVideoOn] = useState(callType === "video");
@@ -100,6 +101,8 @@ export function VideoVoiceCallModal({
   const peerConnectionRef = useRef(null);
   const dataChannelRef = useRef(null);
   const pendingCandidatesRef = useRef([]);
+  const offerSentRef = useRef(false);
+  const mediaReadyPromiseRef = useRef(null);
   const chatEndRef = useRef(null);
 
   const myEmail = (currentUser?.email || currentUser?.username || "").toLowerCase().trim();
@@ -234,8 +237,10 @@ export function VideoVoiceCallModal({
     };
 
     pc.onconnectionstatechange = () => {
-      if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
-        console.warn("Peer connection disconnected or failed");
+      if (pc.connectionState === "failed") {
+        setMediaError("The call connection failed. Check your internet connection and try again.");
+      } else if (pc.connectionState === "disconnected") {
+        setMediaError("The other participant disconnected.");
       }
     };
 
@@ -244,7 +249,11 @@ export function VideoVoiceCallModal({
 
   /* ─── Initiate WebRTC Offer (Caller side) ─── */
   const createAndSendOffer = useCallback(async (pc) => {
+    // The caller is the sole offerer. Having both peers create offers leaves
+    // them in "have-local-offer" and prevents either side from connecting.
+    if (!isCaller || offerSentRef.current || !activeCallId || !pc) return;
     try {
+      offerSentRef.current = true;
       // Create chat data channel
       const dc = pc.createDataChannel("meet_chat");
       dataChannelRef.current = dc;
@@ -269,9 +278,10 @@ export function VideoVoiceCallModal({
       await pc.setLocalDescription(offer);
       sendSdpOffer(activeCallId, offer, myEmail);
     } catch (e) {
+      offerSentRef.current = false;
       console.error("Error creating WebRTC offer:", e);
     }
-  }, [activeCallId, myEmail]);
+  }, [activeCallId, isCaller, myEmail]);
 
   /* ─── Lifecycle & Signaling Subscriptions ─── */
   useEffect(() => {
@@ -281,6 +291,7 @@ export function VideoVoiceCallModal({
       setIsVideoOn(callType === "video");
       setCallState(initialCallState);
       setCallDuration(0);
+      offerSentRef.current = false;
       setMeetMessages([
         {
           id: "sys-1",
@@ -291,18 +302,21 @@ export function VideoVoiceCallModal({
         },
       ]);
 
-      requestMediaAccess().then((stream) => {
+      const mediaPromise = requestMediaAccess();
+      mediaReadyPromiseRef.current = mediaPromise;
+      mediaPromise.then((stream) => {
         if (!isMounted) return;
         const pc = setupPeerConnection(stream);
 
-        if (initialCallState === "CONNECTED") {
-          // If already accepted, start WebRTC offer negotiation
+        if (initialCallState === "CONNECTED" && isCaller) {
+          // Only the originating peer begins SDP negotiation.
           createAndSendOffer(pc);
         } else if (initialCallState === "RINGING") {
           playRingtoneSound("outgoing");
         }
       });
     } else {
+      mediaReadyPromiseRef.current = null;
       cleanupWebRTC();
     }
 
@@ -310,7 +324,7 @@ export function VideoVoiceCallModal({
       isMounted = false;
       cleanupWebRTC();
     };
-  }, [isOpen, callType, initialCallState, requestMediaAccess, setupPeerConnection, createAndSendOffer, cleanupWebRTC]);
+  }, [isOpen, callType, initialCallState, isCaller, requestMediaAccess, setupPeerConnection, createAndSendOffer, cleanupWebRTC]);
 
   // Handle incoming signaling events (Offer, Answer, ICE Candidate, Media State, Chat)
   useEffect(() => {
@@ -321,14 +335,18 @@ export function VideoVoiceCallModal({
       async (type, payload) => {
         if (payload?.callId && payload.callId !== activeCallId) return;
 
-        const pc = peerConnectionRef.current || setupPeerConnection(localStreamRef.current);
+        // A fast offer can arrive while the permission prompt is still open.
+        // Do not create an answer-only peer in that window: wait so its local
+        // camera/microphone tracks are included in the first answer.
+        const localStream = localStreamRef.current || await mediaReadyPromiseRef.current;
+        const pc = peerConnectionRef.current || setupPeerConnection(localStream);
 
         switch (type) {
           case "CALL_ACCEPTED": {
             stopRingtoneSound();
             setCallState("CONNECTED");
-            // Once accepted, caller initiates the offer if not yet sent
-            if (pc && !pc.currentLocalDescription) {
+            // The recipient waits for the caller's offer.
+            if (isCaller && pc && !pc.currentLocalDescription) {
               createAndSendOffer(pc);
             }
             break;
@@ -449,7 +467,7 @@ export function VideoVoiceCallModal({
     return () => {
       unsubscribe();
     };
-  }, [isOpen, activeCallId, currentUser, myEmail, setupPeerConnection, createAndSendOffer, cleanupWebRTC, onClose]);
+  }, [isOpen, activeCallId, currentUser, myEmail, isCaller, setupPeerConnection, createAndSendOffer, cleanupWebRTC, onClose]);
 
   // Duration timer ticks ONLY when connected
   useEffect(() => {

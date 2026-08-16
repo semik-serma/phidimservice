@@ -1,7 +1,7 @@
 import { User } from "../models/User.js";
 import { LoginLog } from "../models/LoginLog.js";
 import { connectDB } from "../config/db.js";
-import { getMemoryUsers, getMemoryLogs, addMemoryLog } from "../utils/memoryStore.js";
+import { getMemoryUsers, getMemoryLogs, addMemoryLog, persistMemoryUsers } from "../utils/memoryStore.js";
 import { seedDemoUsersInMemory } from "../utils/seedDemoUsers.js";
 import { dashboardPathFor } from "@/lib/auth/roles.js";
 
@@ -50,50 +50,40 @@ export async function findUserByEmail(email) {
   const lower = String(email || "").trim().toLowerCase();
   await seedDemoUsers();
 
-  if (!(await ensureBackend())) {
-    const mem = getMemoryUsers();
-    const user = mem.get(lower);
-    return user || null;
+  if (await ensureBackend()) {
+    try {
+      const user = await User.findOne({ email: lower }).select("+password +refreshToken +resetPasswordToken +resetPasswordExpires +loginAttempts +lockUntil");
+      if (user) return normalizeDoc(user);
+    } catch (e) {
+      dbAvailable = false;
+    }
   }
-  try {
-    const user = await User.findOne({ email: lower }).select("+password +refreshToken +resetPasswordToken +resetPasswordExpires +loginAttempts +lockUntil");
-    return normalizeDoc(user) || null;
-  } catch (e) {
-    dbAvailable = false;
-    const mem = getMemoryUsers();
-    return mem.get(lower) || null;
-  }
+  const mem = getMemoryUsers();
+  return mem.get(lower) || null;
 }
 
 export async function findUserByEmailOrPhone(identity) {
   const trimmed = String(identity || "").trim();
   await seedDemoUsers();
 
-  if (!(await ensureBackend())) {
-    const mem = getMemoryUsers();
-    const byEmail = mem.get(trimmed.toLowerCase());
-    if (byEmail) return byEmail;
-    for (const [, user] of mem.entries()) {
-      if (user.phone === trimmed || user._id === trimmed || user.email.toLowerCase() === trimmed.toLowerCase()) return user;
+  if (await ensureBackend()) {
+    try {
+      const user = await User.findOne({
+        $or: [{ email: trimmed.toLowerCase() }, { phone: trimmed }],
+      }).select("+password +resetPasswordToken +resetPasswordExpires +loginAttempts +lockUntil +refreshToken");
+      if (user) return normalizeDoc(user);
+    } catch (e) {
+      dbAvailable = false;
     }
-    return null;
   }
 
-  try {
-    const user = await User.findOne({
-      $or: [{ email: trimmed.toLowerCase() }, { phone: trimmed }],
-    }).select("+password +resetPasswordToken +resetPasswordExpires +loginAttempts +lockUntil +refreshToken");
-    return normalizeDoc(user) || null;
-  } catch (e) {
-    dbAvailable = false;
-    const mem = getMemoryUsers();
-    const byEmail = mem.get(trimmed.toLowerCase());
-    if (byEmail) return byEmail;
-    for (const [, user] of mem.entries()) {
-      if (user.phone === trimmed) return user;
-    }
-    return null;
+  const mem = getMemoryUsers();
+  const byEmail = mem.get(trimmed.toLowerCase());
+  if (byEmail) return byEmail;
+  for (const [, user] of mem.entries()) {
+    if (user.phone === trimmed || user._id === trimmed || user.email?.toLowerCase() === trimmed.toLowerCase()) return user;
   }
+  return null;
 }
 
 export async function createUser({ name, email, phone = "", passwordHash = "", role = "USER", authProvider = "local", avatar = "" }) {
@@ -162,6 +152,7 @@ export async function saveUser(user, fields = {}) {
     const existing = mem.get(key);
     if (existing) {
       mem.set(key, { ...existing, ...fields });
+      persistMemoryUsers();
       return mem.get(key);
     }
     return null;
@@ -181,6 +172,7 @@ export async function saveUser(user, fields = {}) {
     const existing = mem.get(key);
     if (existing) {
       mem.set(key, { ...existing, ...fields });
+      persistMemoryUsers();
       return mem.get(key);
     }
     return null;
@@ -256,8 +248,6 @@ let hasSeededMemory = false;
 
 export async function seedDemoUsers() {
   if (hasSeededMemory) return;
-  if (!(await ensureBackend())) {
-    seedDemoUsersInMemory(getMemoryUsers());
-    hasSeededMemory = true;
-  }
+  seedDemoUsersInMemory(getMemoryUsers());
+  hasSeededMemory = true;
 }
